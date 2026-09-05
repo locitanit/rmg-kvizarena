@@ -4,8 +4,8 @@
 // azonnal frissul a csuszka mozgatasara. Lasd a terv 4.4/3 pontjat.
 
 import {
-  bankokListaja, diasortBetolt, bankKerdesei, kulcsokatBetolt,
-  szur, sorsol, helyesValaszSzovege, TIPUS_NEVE,
+  bankokListaja, diasortBetolt, bankKerdesei, kulcsokatBetolt, felszabaditasokBetolt,
+  felszabaditott, szur, sorsol, helyesValaszSzovege, TIPUS_NEVE,
 } from '../kozos/kerdesbank.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, uzenet, gombbal } from '../kozos/ui.js';
@@ -16,6 +16,7 @@ let kviztIndit = null;      // a jatekvezetes inditasa (tanar/fo.js adja at)
 let aktualisBank = null;
 let aktualisDiasor = null;
 let kerdesek = [];
+let felszabaditasok = new Map();
 let mod = 'dia';
 
 export async function kvizosszeallitotIndit(tanarOsztalyai, inditoFuggveny) {
@@ -24,7 +25,7 @@ export async function kvizosszeallitotIndit(tanarOsztalyai, inditoFuggveny) {
   kotesek();
   osztalylegordulotKitolt();
   try {
-    bankok = await bankokListaja();
+    [bankok, felszabaditasok] = await Promise.all([bankokListaja(), felszabaditasokBetolt()]);
   } catch (hiba) {
     return uzenet('kviz-uzenet', magyarHiba(hiba));
   }
@@ -62,7 +63,7 @@ function kotesek() {
   });
 
   for (const azonosito of ['kviz-dia-tol', 'kviz-dia-ig', 'kviz-nehezseg',
-                           'kviz-elo-tipusok', 'kviz-db']) {
+                           'kviz-elo-tipusok', 'kviz-kihagy-felszabaditott', 'kviz-db']) {
     elem(azonosito).oninput = () => {
       if (azonosito.startsWith('kviz-dia')) csuszkatFrissit(azonosito);
       szamlalotFrissit();
@@ -143,6 +144,14 @@ async function bankotValaszt(bankKod) {
     elem('kviz-szamlalo').textContent = '';
     return uzenet('kviz-uzenet', magyarHiba(hiba));
   }
+
+  // Figyelmeztetes: felszabaditott anyagbol a diak elo kviz alatt is
+  // kiolvashatna a megoldokulcsot.
+  const szabadDb = kerdesek.filter((k) => felszabaditott(k, felszabaditasok)).length;
+  elem('kviz-felszabaditott-info').textContent = szabadDb
+    ? `Ebbol a bankbol ${szabadDb} kerdes gyakorlasra fel van szabaditva - `
+      + 'azoknal a diak latja a megoldast, ezert elo kvizbe nem valok.'
+    : 'Ebbol a bankbol semmi nincs felszabaditva gyakorlasra.';
 
   elem('kviz-bank-info').textContent = aktualisDiasor
     ? `${aktualisDiasor.forras_pptx} - ${aktualisDiasor.szamozott_diaszam} szamozott dia`
@@ -236,6 +245,8 @@ function valogatastOsszeszed() {
     temakorok: bepipalt('temakor'),
     nehezseg_max: Number(elem('kviz-nehezseg').value),
     csak_elo: elem('kviz-elo-tipusok').checked,
+    kihagy_felszabaditott: elem('kviz-kihagy-felszabaditott').checked,
+    felszabaditasok,
     db: Number(elem('kviz-db').value),
     ido_limit: Number(elem('kviz-ido').value),
   };

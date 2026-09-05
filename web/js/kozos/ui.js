@@ -39,3 +39,24 @@ export function nevelo(szam) {
   const azEgyes = elso === '1' && (jegyek === 1 || jegyek === 4 || jegyek === 7);
   return azOtos || azEgyes ? 'az' : 'a';
 }
+
+// Halozat-figyelo sav. A diak telefonjan a wifi barmikor kieshet; ilyenkor a
+// Firestore csendben sorba allitja az irasokat, es a felulet ugy tunne, mintha
+// minden rendben lenne. Ezert kiirjuk.
+export function halozatotFigyel() {
+  let sav = document.getElementById('halozat-sav');
+  if (!sav) {
+    sav = document.createElement('div');
+    sav.id = 'halozat-sav';
+    sav.className = 'halozatsav';
+    sav.hidden = true;
+    document.body.prepend(sav);
+  }
+  const frissit = () => {
+    sav.hidden = navigator.onLine;
+    sav.textContent = 'Nincs internetkapcsolat. Amint visszajon, folytatodik.';
+  };
+  window.addEventListener('online', frissit);
+  window.addEventListener('offline', frissit);
+  frissit();
+}

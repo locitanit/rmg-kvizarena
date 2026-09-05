@@ -19,6 +19,7 @@ import {
   csillagokatSzamol, temakoroketOsszead, ALAP_BEALLITASOK,
 } from '../kozos/csillag.js';
 import { magyarHiba } from '../kozos/hibak.js';
+import { csvLetolt, szazalek, maiDatum, fajlnevre } from '../kozos/csv.js';
 import { elem, kepernyo, uzenet } from '../kozos/ui.js';
 
 let kvizId = null;
@@ -96,6 +97,7 @@ export async function futoKvizt(osztalyok) {
 export async function jatekvezetestIndit(azonosito, visszaHivas) {
   kvizId = azonosito;
   befejezesFolyamatban = false;
+  elem('jatek-mentes-csv').hidden = true;
   visszateres = visszaHivas;
   kotesek();
   figyelesekLeall();
@@ -153,6 +155,21 @@ function kotesek() {
   };
   elem('jatek-megszakitas').onclick = kviztBefejez;
   elem('jatek-vissza').onclick = () => { figyelesekLeall(); visszateres?.(); };
+  elem('jatek-mentes-csv').onclick = vegeredmenytCsvbe;
+}
+
+// Mentokotel, ha a Firestore-ba nem sikerult kiirni (terv 9.3).
+function vegeredmenytCsvbe() {
+  const rendezett = [...jatekosok.values()]
+    .sort((a, b) => (b.pont || 0) - (a.pont || 0));
+  csvLetolt(
+    `vegeredmeny_${fajlnevre(kviz.cim)}_${maiDatum()}`,
+    ['helyezes', 'azonosito', 'becenev', 'pont', 'jo valasz', 'kerdes', 'szazalek'],
+    rendezett.map((j, i) => [
+      j.helyezes || i + 1, j.azonosito, j.becenev, j.pont || 0, j.helyes_db || 0,
+      kerdesek.length, szazalek((j.helyes_db || 0) / Math.max(1, kerdesek.length)),
+    ])
+  );
 }
 
 // ----------------------------------------------------------------- nezetek
@@ -513,7 +530,12 @@ async function kviztBefejez() {
   } catch (hiba) {
     // Hibanal feloldjuk a zarat, hogy ujra lehessen probalni.
     befejezesFolyamatban = false;
-    uzenet('jatek-uzenet', magyarHiba(hiba));
+    // Terv 9.3: ha a napi ingyenes keret elfogyott, az eredmeny nem mentodik el.
+    // Ilyenkor a kepernyon lathato vegeredmeny meg ervenyes - ajanljuk fel a
+    // CSV-letoltest, hogy semmi ne vesszen el.
+    uzenet('jatek-uzenet', magyarHiba(hiba)
+      + ' A kepernyon lathato vegeredmeny ervenyes - mentsd le CSV-be!');
+    elem('jatek-mentes-csv').hidden = false;
   } finally {
     elem('jatek-kovetkezo').disabled = false;
     elem('jatek-megszakitas').disabled = false;

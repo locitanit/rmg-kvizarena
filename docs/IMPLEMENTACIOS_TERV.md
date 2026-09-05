@@ -661,6 +661,40 @@ kvótakezelés, offline viselkedés, adatvédelmi tájékoztató, tanári súgó
 **Kész, ha:** egy diák egyedül, tanár nélkül tud gyakorolni a felszabadított anyagból,
 és a rendszer minden ismert hibaesetre értelmes magyar üzenetet ad.
 
+#### 5.1 Hogyan lehet gyakorolni úgy, hogy a megoldókulcs mégse szivárogjon ki
+
+Ez a fázis egyetlen nehéz kérdésen áll: **gyakorláskor a diáknak látnia kell a helyes
+választ — de a 2.1 pont szerint a megoldókulcs soha nem juthat el a diák kliensére.**
+A kettő csak úgy fér meg, ha a kulcs nem mindig, hanem *kijelölt anyagra* nyílik meg.
+
+Innen a terv „felszabadított anyag" kifejezése, konkrétan:
+
+```
+felszabaditasok/{bankKod}
+  mind: false          # az egész bank szabad-e
+  fejezetek: [0,1,2]   # vagy csak ezek a fejezetek (tömbindex, lásd 4.4/4)
+  frissitve: <ts>
+```
+
+- A `kulcsok/{kerdesId}` **get** művelete akkor engedett a diáknak, ha a kérdés bankja
+  (vagy a fejezete) fel van szabadítva. A **list** továbbra is csak tanárnak — a
+  kulcsokat egyben letölteni sosem lehet.
+- **Élő kvíz alatt a bank nincs felszabadítva**, ezért a kulcs elérhetetlen.
+- Hogy a kettő ne csúszhasson egymásba, a **kvízösszeállító alapból kihagyja a
+  felszabadított kérdéseket**, és kiírja, hány ilyen van a bankban.
+
+A tanár a felszabadítást a böngészőből állítja (*Eredmények → Gyakorlásra szabadítás*),
+nem az admin CLI-ből: gyakran változik, és nem a kérdésbankot írja, csak egy külön
+kapcsolót — a `kerdesek`/`kulcsok` kollekció továbbra is kliensből írhatatlan.
+
+#### 5.2 A gyakorlás eredménye külön él
+
+A terv 0. pontja szerint a gyakorlás „csak a saját statisztikáját javítja". Ezt
+**külön kollekcióban** valósítjuk meg (`gyakorlas/{osztalyId}_{uid}`), amit a diák maga
+ír. A csillagokat vezérlő `statisztika/` kollekcióhoz a diák nem nyúlhat — különben
+otthon, egyedül gyakorolva szerezhetne mesterfok-csillagot, ami a 7.3 pont egész
+gondolatmenetét kiütné.
+
 ---
 
 ## 11. Kockázatok

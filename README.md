@@ -4,17 +4,19 @@ Osztálytermi kvízverseny a Radnóti digitális kultúra óráihoz. A tanár ó
 az osztálynak a diasor aktuális állásához igazítva, a diákok telefonról versenyeznek, és
 csillagokat gyűjtenek órai munka jegyre.
 
-**Állapot:** 4. fázis kész. A Firebase projekt él (europe-west1), a biztonsági
+**Állapot:** mind az 5 fázis kész. A Firebase projekt él (europe-west1), a biztonsági
 szabályok ki vannak küldve, az oldal fent van a GitHub Pages-en, és **2809 kérdés**
 publikálva 21 bankból, és az élő kvíz végigmegy (lobbi, pontozás, ranglista,
-összeomlás utáni folytatás), a csillagrendszer és a statisztikák is működnek.
-Hátra: a diákazonosítók feltöltése, majd az 5. fázis (gyakorló mód, csiszolás).
+összeomlás utáni folytatás), a csillagrendszer, a statisztikák és az önálló
+gyakorló mód is működik. **Hátra: a diákazonosítók feltöltése és az éles kipróbálás.**
 
 - Diák: <https://locitanit.github.io/icdl-gyakorlo/>
 - Tanári pult: <https://locitanit.github.io/icdl-gyakorlo/tanar.html>
 
 - A teljes terv: [`docs/IMPLEMENTACIOS_TERV.md`](docs/IMPLEMENTACIOS_TERV.md)
 - Beüzemelés lépésről lépésre: [`docs/telepites.md`](docs/telepites.md)
+- Tanári súgó: [`docs/tanari_sugo.md`](docs/tanari_sugo.md)
+- Adatvédelmi tájékoztató: [`docs/adatvedelmi_tajekoztato.md`](docs/adatvedelmi_tajekoztato.md)
 - A repó szabályai: [`CLAUDE.md`](CLAUDE.md)
 
 ## Röviden
@@ -64,4 +66,4 @@ node admin\icdl-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
 | 2. Kérdésbank publikálása, kvízösszeállítás | ✅ kész |
 | 3. Az élő kvíz | ✅ kész |
 | 4. Csillagok és statisztika | ✅ kész |
-| 5. Gyakorlás és csiszolás | |
+| 5. Gyakorlás és csiszolás | ✅ kész |

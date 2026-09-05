@@ -11,8 +11,9 @@ import {
 } from '../auth.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { ALAP_BEALLITASOK, otosigHatra } from '../kozos/csillag.js';
-import { elem, kepernyo, uzenet, gombbal } from '../kozos/ui.js';
+import { elem, kepernyo, uzenet, gombbal, halozatotFigyel } from '../kozos/ui.js';
 import { csatlakozas, visszateresHaBentVan, figyelesekLeall } from './jatek.js';
+import { gyakorlastIndit } from './gyakorlas.js';
 
 // Az utoljara valasztott osztaly, hogy a diaknak ne kelljen ujra kikeresnie.
 const TAROLO_KULCS = 'icdl_utolso_osztaly';
@@ -31,6 +32,7 @@ if (!konfigKitoltve()) {
 }
 
 function indul() {
+  halozatotFigyel();
   kotesek();
 
   onAuthStateChanged(auth, async (felhasznalo) => {
@@ -84,6 +86,7 @@ function kotesek() {
   elem('fo-becenev-mentes').onclick = becenevMentes;
   elem('fo-csatlakozas').onclick = csatlakozasGomb;
   elem('fo-statisztika').onclick = statisztikatMutat;
+  elem('fo-gyakorlas').onclick = () => gyakorlastIndit(aktualisOsztalyId, fooldalraVissza);
   elem('stat-vissza').onclick = () => kepernyo('fooldal');
   elem('fo-kilepes').onclick = () => kilepes();
 }

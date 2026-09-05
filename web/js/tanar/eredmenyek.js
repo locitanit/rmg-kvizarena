@@ -10,6 +10,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { db } from '../firebase.js';
 import { ALAP_BEALLITASOK } from '../kozos/csillag.js';
+import { bankokListaja, diasortBetolt, felszabaditasokBetolt } from '../kozos/kerdesbank.js';
 import { csvLetolt, szazalek, maiDatum, fajlnevre } from '../kozos/csv.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, uzenet } from '../kozos/ui.js';
@@ -22,6 +23,9 @@ let tagok = [];
 let valasztottKviz = null;
 let valasztottDiak = null;
 let beallitasok = { ...ALAP_BEALLITASOK };
+let bankok = [];
+let felszabaditasok = new Map();
+let fszDiasor = null;
 
 export async function eredmenyeketIndit(tanarOsztalyai) {
   osztalyok = tanarOsztalyai;
@@ -37,7 +41,85 @@ export async function eredmenyeketIndit(tanarOsztalyai) {
   }
 
   await beallitasokatBetolt();
+  await felszabaditastIndit();
   if (osztalyok.length) await osztalytValaszt(osztalyok[0].id);
+}
+
+// ------------------------------------------------- gyakorlasra szabaditas
+
+async function felszabaditastIndit() {
+  try {
+    [bankok, felszabaditasok] = await Promise.all([bankokListaja(), felszabaditasokBetolt()]);
+  } catch (hiba) {
+    return uzenet('fsz-uzenet', magyarHiba(hiba));
+  }
+
+  const legordulo = elem('fsz-bank');
+  legordulo.innerHTML = '';
+  if (!bankok.length) {
+    legordulo.innerHTML = '<option value="">(meg nincs publikalt bank)</option>';
+    return;
+  }
+  for (const bank of bankok) {
+    const f = felszabaditasok.get(bank.kod);
+    const jeloles = f?.mind ? ' - EGESZBEN szabad'
+      : (f?.fejezetek?.length ? ` - ${f.fejezetek.length} fejezet szabad` : '');
+    const sor = document.createElement('option');
+    sor.value = bank.kod;
+    sor.textContent = `${bank.cim}${jeloles}`;
+    legordulo.append(sor);
+  }
+  await fszBankotValaszt(bankok[0].kod);
+}
+
+async function fszBankotValaszt(bankKod) {
+  const bank = bankok.find((b) => b.kod === bankKod);
+  const meglevo = felszabaditasok.get(bankKod) || { mind: false, fejezetek: [] };
+  elem('fsz-mind').checked = Boolean(meglevo.mind);
+  uzenet('fsz-uzenet', '');
+
+  const doboz = elem('fsz-fejezetek');
+  doboz.innerHTML = '<p class="alcim">Betoltes...</p>';
+  fszDiasor = bank?.diasor ? await diasortBetolt(bank.diasor) : null;
+
+  doboz.innerHTML = '';
+  if (!fszDiasor) {
+    doboz.innerHTML = '<p class="alcim">Ehhez a bankhoz nincs diasor - '
+      + 'csak az egesz bank szabadithato fel.</p>';
+    return;
+  }
+  fszDiasor.fejezetek.forEach((fejezet, index) => {
+    const sor = document.createElement('label');
+    sor.className = 'pipa';
+    sor.innerHTML = '<input type="checkbox" data-fsz-fejezet><span></span>';
+    const be = sor.querySelector('input');
+    be.value = index;
+    be.checked = (meglevo.fejezetek || []).includes(index);
+    sor.querySelector('span').textContent =
+      `${fejezet.cim} (${fejezet.elso_dia}-${fejezet.utolso_dia}. dia)`;
+    doboz.append(sor);
+  });
+}
+
+async function felszabaditastMent() {
+  const bankKod = elem('fsz-bank').value;
+  if (!bankKod) return;
+
+  const fejezetek = [...document.querySelectorAll('#fsz-fejezetek input:checked')]
+    .map((be) => Number(be.value));
+  const ujak = { mind: elem('fsz-mind').checked, fejezetek, frissitve: new Date() };
+
+  try {
+    await setDoc(doc(db, `felszabaditasok/${bankKod}`), ujak);
+    felszabaditasok.set(bankKod, ujak);
+    const mit = ujak.mind ? 'az egesz bank'
+      : (fejezetek.length ? `${fejezetek.length} fejezet` : 'semmi');
+    uzenet('fsz-uzenet',
+      `Mentve: ${mit} szabad gyakorlasra. A diakok azonnal latjak.`, 'siker');
+    await felszabaditastIndit();
+  } catch (hiba) {
+    uzenet('fsz-uzenet', magyarHiba(hiba));
+  }
 }
 
 function kotesek() {
@@ -58,6 +140,8 @@ function kotesek() {
   elem('elemzes-csv').onclick = elemzesCsv;
   elem('diaklap-csv').onclick = diaklapCsv;
   elem('diaklap-bevaltas').onclick = csillagotBevalt;
+  elem('fsz-bank').onchange = (e) => fszBankotValaszt(e.target.value);
+  elem('fsz-mentes').onclick = felszabaditastMent;
 }
 
 async function osztalytValaszt(id) {

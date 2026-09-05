@@ -232,3 +232,19 @@ th { color: var(--halvany); font-weight: 600; font-size: 0.8rem; }
 .temakorsor .rud { flex: 1; height: 16px; background: var(--hatter); border-radius: 4px; }
 .temakorsor .rud i { display: block; height: 100%; background: var(--fo); border-radius: 4px; }
 .temakorsor .ertek { min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Halozat-sav: a lap tetejere ragad, ha nincs net. */
+.halozatsav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 9px 14px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--rossz);
+}
+
+/* gyakorlas: parosito legordulok */
+#gyak-beviteli-mezo label { margin-top: 12px; font-weight: 500; color: var(--szoveg); }

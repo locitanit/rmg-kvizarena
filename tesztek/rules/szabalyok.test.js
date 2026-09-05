@@ -227,7 +227,34 @@ describe('A diak megprobalja - es elbukik', () => {
     await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}`), { aktualis: 5 }));
   });
 
-  it('33. nem allithatja at a csillagrendszer kapcsoloit', async () => {
+  it('33a. nem olvashatja a FEL NEM szabaditott kerdes kulcsat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(getDoc(doc(db, 'kulcsok/zart_1')));
+  });
+
+  it('33b. nem olvashat kulcsot olyan bankbol, amit senki nem szabaditott fel', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(getDoc(doc(db, 'kulcsok/adatbaziskezeles_icdl_1')));
+  });
+
+  it('33c. felszabaditas ide vagy oda, a kulcsokat NEM listazhatja ki', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(getDocs(collection(db, 'kulcsok')));
+  });
+
+  it('33d. nem szabadithat fel maganak anyagot', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(setDoc(doc(db, 'felszabaditasok/gyakorlo_bank'), { mind: true }));
+    await assertFails(setDoc(doc(db, 'felszabaditasok/adatbaziskezeles_2026_icdl'), { mind: true }));
+  });
+
+  it('33e. nem irhatja mas diak gyakorlo-statisztikajat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(setDoc(doc(db, `gyakorlas/${OSZTALY}_diak2`), { kerdes_db: 100 }));
+    await assertFails(getDoc(doc(db, `gyakorlas/${OSZTALY}_diak2`)));
+  });
+
+  it('34. nem allithatja at a csillagrendszer kapcsoloit', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertFails(updateDoc(doc(db, 'beallitasok/csillagok'), { jegy_kuszob: 1 }));
     await assertFails(setDoc(doc(db, 'beallitasok/sajat'), { jegy_kuszob: 1 }));
@@ -313,6 +340,29 @@ describe('Amit a diaknak tudnia KELL', () => {
     const db = mint(kornyezet, 'diak1');
     await assertSucceeds(getDocs(
       query(collection(db, 'kvizek'), where('osztalyId', '==', OSZTALY))));
+  });
+
+  it('gyakorlaskor latja a FELSZABADITOTT fejezet kulcsat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDoc(doc(db, 'kulcsok/szabad_1')));
+  });
+
+  it('latja az egeszben felszabaditott bank kulcsat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDoc(doc(db, 'kulcsok/mind_1')));
+  });
+
+  it('latja, mi van felszabaditva', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDocs(collection(db, 'felszabaditasok')));
+  });
+
+  it('irhatja a SAJAT gyakorlo-statisztikajat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(setDoc(doc(db, `gyakorlas/${OSZTALY}_diak1`), {
+      osztalyId: OSZTALY, uid: 'diak1', kerdes_db: 10, jo_db: 7,
+    }));
+    await assertSucceeds(getDoc(doc(db, `gyakorlas/${OSZTALY}_diak1`)));
   });
 
   it('olvassa a csillagbeallitasokat (tudnia kell, mennyi kell az otoshoz)', async () => {

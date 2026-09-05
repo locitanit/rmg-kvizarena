@@ -7,7 +7,7 @@ import {
   onAuthStateChanged, tanarBelepes, tanarOsztalyai, osztalyTagjai, kilepes, BelepesHiba,
 } from '../auth.js';
 import { magyarHiba } from '../kozos/hibak.js';
-import { elem, kepernyo, uzenet, gombbal, nevelo } from '../kozos/ui.js';
+import { elem, kepernyo, uzenet, gombbal, halozatotFigyel, nevelo } from '../kozos/ui.js';
 import { kvizosszeallitotIndit } from './kvizosszeallito.js';
 import {
   kviztInditani, futoKvizt, jatekvezetestIndit, figyelesekLeall,
@@ -23,6 +23,7 @@ if (!konfigKitoltve()) {
 }
 
 function indul() {
+  halozatotFigyel();
   elem('belepes-urlap').onsubmit = async (esemeny) => {
     esemeny.preventDefault();
     uzenet('belepes-uzenet', '');

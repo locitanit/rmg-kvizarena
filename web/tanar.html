@@ -121,8 +121,14 @@
 
           <label class="pipa">
             <input type="checkbox" id="kviz-elo-tipusok" checked>
-            Csak elo kvizben hasznalhato tipusok
+            <span>Csak elo kvizben hasznalhato tipusok</span>
           </label>
+
+          <label class="pipa">
+            <input type="checkbox" id="kviz-kihagy-felszabaditott" checked>
+            <span>Felszabaditott kerdesek kihagyasa</span>
+          </label>
+          <p class="sugosor" id="kviz-felszabaditott-info">&nbsp;</p>
 
           <label for="kviz-db">Hany kerdes legyen?</label>
           <input type="number" id="kviz-db" value="12" min="1" max="50">
@@ -160,6 +166,7 @@
         <button type="button" class="alful" data-alful="osztaly">Osztalystatisztika</button>
         <button type="button" class="alful" data-alful="diakok">Diakok</button>
         <button type="button" class="alful" data-alful="csillagok">Csillagbeallitas</button>
+        <button type="button" class="alful" data-alful="gyakorlas">Gyakorlasra szabaditas</button>
       </nav>
 
       <!-- archivum -->
@@ -218,6 +225,40 @@
             </button>
             <button type="button" class="masodlagos" id="diaklap-csv" hidden>CSV letoltese</button>
             <div class="uzenet" id="diaklap-uzenet" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- gyakorlasra szabaditas -->
+      <div data-alpanel="gyakorlas" hidden>
+        <div class="oszlopok">
+          <div class="lap">
+            <h2>Mit gyakorolhatnak egyedul?</h2>
+            <p class="sugosor">
+              A felszabaditott anyaghoz a diak <b>latja a helyes valaszt es a magyarazatot</b>,
+              es barmikor gyakorolhat vele - csillagot viszont nem er.
+            </p>
+            <p class="sugosor" style="color:var(--csillag)">
+              Ezert felszabaditott anyagbol NE indits elo kvizt: a kulcs ott mar
+              elerheto a diaknak. A kvizosszeallito ezeket alapbol ki is hagyja.
+            </p>
+
+            <label for="fsz-bank">Kerdesbank</label>
+            <select id="fsz-bank"></select>
+
+            <label class="pipa">
+              <input type="checkbox" id="fsz-mind">
+              <span>Az EGESZ bank felszabaditasa</span>
+            </label>
+
+            <button type="button" id="fsz-mentes">Mentes</button>
+            <div class="uzenet" id="fsz-uzenet" hidden></div>
+          </div>
+
+          <div class="lap">
+            <h2>Fejezetenkent</h2>
+            <p class="sugosor">Ha nem az egesz bank kell, pipald ki a fejezeteket.</p>
+            <div id="fsz-fejezetek" class="pipalista"></div>
           </div>
         </div>
       </div>
@@ -330,6 +371,9 @@
     </div>
 
     <div class="uzenet" id="jatek-uzenet" hidden></div>
+    <button type="button" class="masodlagos" id="jatek-mentes-csv" hidden>
+      Vegeredmeny mentese CSV-be
+    </button>
   </section>
 
   <!-- ------------------------------------------------ folytatas felajanlasa -->

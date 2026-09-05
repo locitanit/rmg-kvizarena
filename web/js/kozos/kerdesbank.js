@@ -24,6 +24,23 @@ export const TIPUS_NEVE = {
 
 const gyorsitotar = new Map();
 
+// Melyik bankot (vagy azon belul melyik fejezeteket) szabaditotta fel a tanar
+// onallo gyakorlasra. Ehhez az anyaghoz a diak a megoldokulcsot is olvashatja.
+export async function felszabaditasokBetolt() {
+  const pillanat = await getDocs(collection(db, 'felszabaditasok'));
+  return new Map(pillanat.docs.map((d) => [d.id, { mind: false, fejezetek: [], ...d.data() }]));
+}
+
+// Egy kerdes gyakorolhato-e. Ugyanaz a feltetel, amit a biztonsagi szabaly is
+// ellenoriz - itt csak azert ismeteljuk meg, hogy a felulet ne kinaljon olyat,
+// amihez ugysem lenne kulcs.
+export function felszabaditott(kerdes, felszabaditasok) {
+  const f = felszabaditasok?.get(kerdes.bank);
+  if (!f) return false;
+  return f.mind === true
+    || (Number.isInteger(kerdes.fejezet) && (f.fejezetek || []).includes(kerdes.fejezet));
+}
+
 export async function bankokListaja() {
   const pillanat = await getDocs(collection(db, 'bankok'));
   return pillanat.docs
@@ -67,6 +84,9 @@ export function szur(kerdesek, valogatas) {
   return kerdesek.filter((k) => {
     if (k.nehezseg > (valogatas.nehezseg_max ?? 3)) return false;
     if (valogatas.csak_elo && !ELO_KVIZ_TIPUSOK.includes(k.tipus)) return false;
+    // Felszabaditott kerdesnel a diak elo kviz alatt is elerne a kulcsot.
+    if (valogatas.kihagy_felszabaditott
+        && felszabaditott(k, valogatas.felszabaditasok)) return false;
 
     switch (valogatas.mod) {
       case 'dia':

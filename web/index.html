@@ -111,11 +111,63 @@
     </div>
 
     <div class="lap">
-      <h2>Kovetkezik</h2>
+      <h2>Gyakorlas</h2>
       <p class="sugosor">
-        A gyakorlo mod a kovetkezo fazisban keszul el.
+        Egyedul is gyakorolhatsz abbol, amit a tanarod felszabaditott.
+        Csillagot nem er, de a helyes valaszt es a magyarazatot azonnal latod.
       </p>
+      <button class="masodlagos" id="fo-gyakorlas">Gyakorlas inditasa</button>
       <button class="masodlagos" id="fo-kilepes">Kilepes</button>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ gyakorlas -->
+  <section data-kepernyo="gyakorlas" hidden>
+    <h1>Gyakorlas</h1>
+    <p class="alcim">Ez nem er csillagot - nyugodtan hibazhatsz.</p>
+
+    <div class="lap" id="gyak-valaszto">
+      <label for="gyak-bank">Mibol gyakorolsz?</label>
+      <select id="gyak-bank"></select>
+
+      <label for="gyak-resz">Melyik resz?</label>
+      <select id="gyak-resz"></select>
+
+      <label for="gyak-db">Hany kerdes?</label>
+      <input type="number" id="gyak-db" value="10" min="1" max="50">
+
+      <button id="gyak-inditas">Kezdjuk</button>
+      <button class="masodlagos" id="gyak-vissza">Vissza a fooldalra</button>
+      <div class="uzenet" id="gyak-uzenet" hidden></div>
+    </div>
+
+    <div id="gyak-jatek" hidden>
+      <div class="jatekfej">
+        <span id="gyak-sorszam">&nbsp;</span>
+        <span id="gyak-allas">&nbsp;</span>
+      </div>
+      <div class="lap">
+        <div class="kerdesszoveg-diak" id="gyak-kerdes">&nbsp;</div>
+        <div id="gyak-beviteli-mezo"></div>
+      </div>
+      <div id="gyak-valaszok" class="valaszgombok"></div>
+      <button id="gyak-kuldes" hidden>Ellenorzes</button>
+
+      <div class="lap kozepre" id="gyak-visszajelzes" hidden>
+        <div class="nagyjelzes" id="gyak-jelzes">&nbsp;</div>
+        <p class="alcim">A helyes valasz:</p>
+        <p id="gyak-helyes"><b>&nbsp;</b></p>
+        <p class="sugosor" id="gyak-magyarazat">&nbsp;</p>
+        <button id="gyak-kovetkezo">Kovetkezo</button>
+      </div>
+    </div>
+
+    <div class="lap kozepre" id="gyak-vege" hidden>
+      <h2>Kesz!</h2>
+      <div class="pontok" id="gyak-eredmeny">&nbsp;</div>
+      <p class="alcim" id="gyak-osszegzes">&nbsp;</p>
+      <button id="gyak-ujra">Meg egy kor</button>
+      <button class="masodlagos" id="gyak-vege-vissza">Vissza a fooldalra</button>
     </div>
   </section>
 

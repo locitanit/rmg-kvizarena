@@ -61,6 +61,22 @@ service cloud.firestore {
              == request.auth.token.email;
     }
 
+    // Gyakorlasra felszabadult-e a kerdes? Vagy az egesz bank, vagy az a fejezet,
+    // amibe a kerdes esik.
+    function gyakorlasraSzabad(kerdesId) {
+      let kerdes = get(/databases/$(database)/documents/kerdesek/$(kerdesId)).data;
+      return exists(/databases/$(database)/documents/felszabaditasok/$(kerdes.bank))
+        && szabadE(get(/databases/$(database)/documents/felszabaditasok/$(kerdes.bank)).data,
+                   kerdes);
+    }
+
+    function szabadE(felszabaditas, kerdes) {
+      return felszabaditas.mind == true
+        || (kerdes.fejezet != null
+            && felszabaditas.fejezetek is list
+            && kerdes.fejezet in felszabaditas.fejezetek);
+    }
+
     function csakEzekAKulcsok(engedett) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(engedett);
     }
@@ -175,9 +191,27 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // A MEGOLDOKULCS. Diak semmit nem lat belole - ez a csalasvedelem gerince.
+    // ------------------------------------------------------- felszabaditasok
+    // Melyik bankot (vagy azon belul melyik fejezeteket) engedte el a tanar
+    // ONALLO GYAKORLASRA. Csak ezekhez a kerdesekhez lathatja a diak a
+    // megoldokulcsot - lasd lentebb.
+
+    match /felszabaditasok/{bankKod} {
+      allow read: if belepett();
+      allow write: if tanar();
+    }
+
+    // A MEGOLDOKULCS. Ez a csalasvedelem gerince.
+    //
+    // A diak CSAK akkor lathatja, ha a kerdes bankjat (vagy a fejezetet, amibe
+    // esik) a tanar kifejezetten felszabaditotta gyakorlasra. Elo kviz alatt a
+    // kerdesbank nincs felszabaditva, ezert a kulcs elerhetetlen.
+    //
+    // FIGYELEM: emiatt felszabaditott anyagbol NEM szabad elo kvizt inditani.
+    // A kvizosszeallito ezert alapbol ki is hagyja a felszabaditott kerdeseket.
     match /kulcsok/{kerdesId} {
-      allow read: if tanar();
+      allow get: if tanar() || (belepett() && gyakorlasraSzabad(kerdesId));
+      allow list: if tanar();
       allow write: if false;
     }
 
@@ -230,6 +264,20 @@ service cloud.firestore {
         // Lezaras utan nem lehet "javitani" a sajat valaszt.
         allow update, delete: if false;
       }
+    }
+
+    // ------------------------------------------------------------- gyakorlas
+    // Az onallo gyakorlas sajat statisztikaja. SZANDEKOSAN kulon all a
+    // "statisztika" kollekciotol: azt a tanari kliens irja, es abbol szamolnak a
+    // csillagok. Ha a diak a sajat gyakorlasaval irhatna azt, egyedul otthon
+    // szerezhetne mesterfok-csillagot.
+
+    match /gyakorlas/{gyakorlasId} {
+      allow get: if tanar()
+        || (belepett() && gyakorlasId.matches('^.*_' + request.auth.uid + '$'));
+      allow list: if tanar();
+      allow write: if tanar()
+        || (belepett() && gyakorlasId.matches('^.*_' + request.auth.uid + '$'));
     }
 
     // ------------------------------------------------------------ statisztika

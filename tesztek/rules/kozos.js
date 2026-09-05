@@ -97,6 +97,25 @@ export async function adatokatFeltolt(kornyezet) {
     });
     await db.doc('kulcsok/adatbaziskezeles_icdl_1').set({ helyes: [1], magyarazat: 'Mert...' });
 
+    // Egy masik bank ket kerdese: az egyik olyan fejezetben, amit a tanar
+    // gyakorlasra felszabaditott, a masik nem.
+    await db.doc('kerdesek/szabad_1').set({
+      bank: 'gyakorlo_bank', fejezet: 2, tipus: 'igaz_hamis', kerdes: 'Szabad kerdes?',
+    });
+    await db.doc('kulcsok/szabad_1').set({ helyes: 'igaz', magyarazat: 'Igen.' });
+    await db.doc('kerdesek/zart_1').set({
+      bank: 'gyakorlo_bank', fejezet: 9, tipus: 'igaz_hamis', kerdes: 'Zart kerdes?',
+    });
+    await db.doc('kulcsok/zart_1').set({ helyes: 'hamis', magyarazat: 'Nem.' });
+    await db.doc('felszabaditasok/gyakorlo_bank').set({ mind: false, fejezetek: [1, 2, 3] });
+
+    // Egy masik bank, amit EGESZBEN felszabaditott.
+    await db.doc('kerdesek/mind_1').set({
+      bank: 'mind_bank', fejezet: null, tipus: 'igaz_hamis', kerdes: 'Mind szabad?',
+    });
+    await db.doc('kulcsok/mind_1').set({ helyes: 'igaz', magyarazat: '' });
+    await db.doc('felszabaditasok/mind_bank').set({ mind: true, fejezetek: [] });
+
     await db.doc(`kvizek/${KVIZ}`).set({
       osztalyId: OSZTALY, tanarUid: 'tanar1', cim: 'Ismetles',
       allapot: 'kerdes', aktualis: 0, ido_limit: 25, pin: '418293',
