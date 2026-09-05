@@ -7,6 +7,7 @@ import {
 } from '../auth.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, kepernyo, uzenet, gombbal } from '../kozos/ui.js';
+import { kvizosszeallitotIndit } from './kvizosszeallito.js';
 
 let osztalyok = [];
 
@@ -30,6 +31,7 @@ function indul() {
   };
 
   elem('pult-kilepes').onclick = () => kilepes();
+  fuleketBeallit();
 
   onAuthStateChanged(auth, async (felhasznalo) => {
     if (!felhasznalo) {
@@ -39,6 +41,26 @@ function indul() {
     // A tanari jogot a tanarBelepes() ellenorizte. Ha valaki diakkent lepett be
     // ezen az oldalon (kozos Auth munkamenet), a lekerdezes ures listat ad.
     await pultotMutat(felhasznalo);
+  });
+}
+
+// A ket ful kozotti valtas. A kvizosszeallitot csak az elso megnyitaskor
+// toltjuk be, hogy a bejelentkezes ne varjon a kerdesbankra.
+let kvizFulKesz = false;
+
+function fuleketBeallit() {
+  document.querySelectorAll('.ful').forEach((gomb) => {
+    gomb.onclick = async () => {
+      document.querySelectorAll('.ful').forEach((g) =>
+        g.classList.toggle('kivalasztott', g === gomb));
+      document.querySelectorAll('[data-panel]').forEach((p) => {
+        p.hidden = p.dataset.panel !== gomb.dataset.ful;
+      });
+      if (gomb.dataset.ful === 'kviz' && !kvizFulKesz) {
+        kvizFulKesz = true;
+        await kvizosszeallitotIndit();
+      }
+    };
   });
 }
 

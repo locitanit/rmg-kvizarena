@@ -50,3 +50,111 @@
   letter-spacing: 1px;
   color: var(--fo);
 }
+
+/* --------------------------------------------------------------------- fulek */
+
+.fulek {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--keret);
+}
+
+.ful {
+  width: auto;
+  margin: 0;
+  padding: 10px 16px;
+  font-weight: 500;
+  color: var(--halvany);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+}
+
+.ful.kivalasztott { color: var(--fo); border-bottom-color: var(--fo); }
+
+/* ----------------------------------------------------------- kvizosszeallito */
+
+.modvalaszto { display: flex; gap: 6px; margin-top: 4px; }
+
+.modgomb {
+  flex: 1;
+  margin: 0;
+  padding: 9px 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--szoveg);
+  background: var(--hatter);
+  border: 1px solid var(--keret);
+  border-radius: 8px;
+}
+
+.modgomb.kivalasztott { color: var(--fo-szoveg); background: var(--fo); border-color: var(--fo); }
+.modgomb:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* A csuszka nem oroklheti a szoveges mezok kereteit. */
+input[type="range"] {
+  padding: 0;
+  height: 26px;
+  background: transparent;
+  border: none;
+  accent-color: var(--fo);
+}
+
+input[type="checkbox"] { width: auto; margin: 0 8px 0 0; accent-color: var(--fo); }
+
+label.pipa {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 7px 2px;
+  font-size: 0.9rem;
+  color: var(--szoveg);
+  cursor: pointer;
+}
+
+label.pipa span:first-of-type { flex: 1; }
+label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+
+.pipalista { max-height: 320px; overflow-y: auto; }
+
+.szamlalo {
+  margin-top: 18px;
+  padding: 13px 14px;
+  font-weight: 600;
+  color: var(--fo);
+  background: rgba(47, 107, 255, 0.1);
+  border-radius: 8px;
+}
+
+.szamlalo.keves { color: var(--csillag); background: rgba(240, 165, 0, 0.12); }
+.szamlalo.ures { color: var(--rossz); background: rgba(200, 50, 60, 0.1); }
+
+/* --------------------------------------------------------------- elonezet */
+
+.elonezetsor {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--keret);
+}
+
+.elonezetsor:last-child { border-bottom: none; }
+.elonezetsor .sorszam { color: var(--halvany); font-variant-numeric: tabular-nums; min-width: 26px; }
+.elonezetsor .torzs { flex: 1; }
+.elonezetsor .kerdesszoveg { margin-bottom: 6px; }
+
+.cimkesor { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+
+.jelolo {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  color: var(--halvany);
+  background: var(--hatter);
+  border: 1px solid var(--keret);
+  border-radius: 20px;
+}
+
+.elonezetsor .helyes { font-size: 0.88rem; color: var(--jo); }

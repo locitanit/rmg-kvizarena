@@ -47,21 +47,98 @@
       <button class="masodlagos keskeny-gomb" id="pult-kilepes">Kilepes</button>
     </header>
 
-    <div class="oszlopok">
-      <div class="lap">
-        <h2>Osztalyaim</h2>
-        <div id="osztalylista"></div>
-        <p class="sugosor">
-          Uj osztalyt az admin parancssor hoz letre:<br>
-          <code>node admin/icdl-admin.js osztaly letrehoz 10T</code>
-        </p>
+    <nav class="fulek">
+      <button class="ful kivalasztott" data-ful="osztalyok">Osztalyok</button>
+      <button class="ful" data-ful="kviz">Kviz osszeallitasa</button>
+    </nav>
+
+    <!-- ------------------------------------------------------- osztalyok ful -->
+    <div data-panel="osztalyok">
+      <div class="oszlopok">
+        <div class="lap">
+          <h2>Osztalyaim</h2>
+          <div id="osztalylista"></div>
+          <p class="sugosor">
+            Uj osztalyt az admin parancssor hoz letre:<br>
+            <code>node admin/icdl-admin.js osztaly letrehoz 10T</code>
+          </p>
+        </div>
+
+        <div class="lap">
+          <h2 id="tagok-cim">Tagok</h2>
+          <p class="alcim" id="tagok-kod">&nbsp;</p>
+          <div id="tagoklista"><p class="alcim">Valassz osztalyt a bal oldalon.</p></div>
+          <div class="uzenet" id="pult-uzenet" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------------ kviz ful -->
+    <div data-panel="kviz" hidden>
+      <div class="oszlopok">
+
+        <div class="lap">
+          <h2>Mibol kerdezunk?</h2>
+
+          <label for="kviz-bank">Kerdesbank</label>
+          <select id="kviz-bank"></select>
+          <p class="alcim" id="kviz-bank-info">&nbsp;</p>
+
+          <label>Valogatas modja</label>
+          <div class="modvalaszto">
+            <button type="button" class="modgomb kivalasztott" data-mod="dia">Diatartomany</button>
+            <button type="button" class="modgomb" data-mod="fejezet">Fejezet</button>
+            <button type="button" class="modgomb" data-mod="temakor">Temakor</button>
+          </div>
+
+          <div data-mod-panel="dia">
+            <label for="kviz-dia-tol">Melyik diatol? <b id="kviz-dia-tol-ertek">1</b></label>
+            <input type="range" id="kviz-dia-tol" min="1" max="1" value="1">
+            <label for="kviz-dia-ig">Meddig jutottunk? <b id="kviz-dia-ig-ertek">1</b></label>
+            <input type="range" id="kviz-dia-ig" min="1" max="1" value="1">
+            <p class="sugosor" id="kviz-dia-cim">&nbsp;</p>
+          </div>
+
+          <div data-mod-panel="fejezet" hidden>
+            <div id="kviz-fejezetek" class="pipalista"></div>
+          </div>
+
+          <div data-mod-panel="temakor" hidden>
+            <div id="kviz-temakorok" class="pipalista"></div>
+          </div>
+        </div>
+
+        <div class="lap">
+          <h2>Beallitasok</h2>
+
+          <label for="kviz-nehezseg">Nehezseg legfeljebb</label>
+          <select id="kviz-nehezseg">
+            <option value="1">1 - konnyu</option>
+            <option value="2">2 - kozepes</option>
+            <option value="3" selected>3 - nehez (mind)</option>
+          </select>
+
+          <label class="pipa">
+            <input type="checkbox" id="kviz-elo-tipusok" checked>
+            Csak elo kvizben hasznalhato tipusok
+          </label>
+
+          <label for="kviz-db">Hany kerdes legyen?</label>
+          <input type="number" id="kviz-db" value="12" min="1" max="50">
+
+          <label for="kviz-ido">Idolimit kerdesenkent (mp)</label>
+          <input type="number" id="kviz-ido" value="25" min="5" max="120">
+
+          <div class="szamlalo" id="kviz-szamlalo">&nbsp;</div>
+
+          <button type="button" id="kviz-elonezet">Elonezet</button>
+          <div class="uzenet" id="kviz-uzenet" hidden></div>
+        </div>
       </div>
 
-      <div class="lap">
-        <h2 id="tagok-cim">Tagok</h2>
-        <p class="alcim" id="tagok-kod">&nbsp;</p>
-        <div id="tagoklista"><p class="alcim">Valassz osztalyt a bal oldalon.</p></div>
-        <div class="uzenet" id="pult-uzenet" hidden></div>
+      <div class="lap" id="kviz-elonezet-lap" hidden>
+        <h2 id="kviz-elonezet-cim">Elonezet</h2>
+        <div id="kviz-elonezet-lista"></div>
       </div>
     </div>
   </section>

@@ -1,0 +1,248 @@
+// Kviz osszeallitasa: bank -> valogatas -> elonezet.
+//
+// A szures memoriaban fut (a bank egyben be van toltve), ezert a talalatszamlalo
+// azonnal frissul a csuszka mozgatasara. Lasd a terv 4.4/3 pontjat.
+
+import {
+  bankokListaja, diasortBetolt, bankKerdesei, kulcsokatBetolt,
+  szur, sorsol, helyesValaszSzovege, TIPUS_NEVE,
+} from '../kozos/kerdesbank.js';
+import { magyarHiba } from '../kozos/hibak.js';
+import { elem, uzenet, gombbal } from '../kozos/ui.js';
+
+let bankok = [];
+let aktualisBank = null;
+let aktualisDiasor = null;
+let kerdesek = [];
+let mod = 'dia';
+
+export async function kvizosszeallitotIndit() {
+  kotesek();
+  try {
+    bankok = await bankokListaja();
+  } catch (hiba) {
+    return uzenet('kviz-uzenet', magyarHiba(hiba));
+  }
+
+  const legordulo = elem('kviz-bank');
+  legordulo.innerHTML = '';
+  if (!bankok.length) {
+    legordulo.innerHTML = '<option value="">(meg nincs publikalt bank)</option>';
+    uzenet('kviz-uzenet',
+      'Meg nincs publikalt kerdesbank. Futtasd: node admin/icdl-admin.js publikal', 'info');
+    return;
+  }
+  for (const bank of bankok) {
+    const sor = document.createElement('option');
+    sor.value = bank.kod;
+    sor.textContent = `${bank.cim} (${bank.kerdes_db} kerdes)`;
+    legordulo.append(sor);
+  }
+  await bankotValaszt(bankok[0].kod);
+}
+
+function kotesek() {
+  elem('kviz-bank').onchange = (e) => bankotValaszt(e.target.value);
+
+  document.querySelectorAll('.modgomb').forEach((gomb) => {
+    gomb.onclick = () => {
+      mod = gomb.dataset.mod;
+      document.querySelectorAll('.modgomb').forEach((g) =>
+        g.classList.toggle('kivalasztott', g === gomb));
+      document.querySelectorAll('[data-mod-panel]').forEach((p) => {
+        p.hidden = p.dataset.modPanel !== mod;
+      });
+      szamlalotFrissit();
+    };
+  });
+
+  for (const azonosito of ['kviz-dia-tol', 'kviz-dia-ig', 'kviz-nehezseg',
+                           'kviz-elo-tipusok', 'kviz-db']) {
+    elem(azonosito).oninput = () => {
+      if (azonosito.startsWith('kviz-dia')) csuszkatFrissit(azonosito);
+      szamlalotFrissit();
+    };
+  }
+
+  elem('kviz-elonezet').onclick = elonezet;
+}
+
+async function bankotValaszt(bankKod) {
+  aktualisBank = bankok.find((b) => b.kod === bankKod);
+  uzenet('kviz-uzenet', '');
+  elem('kviz-elonezet-lap').hidden = true;
+  elem('kviz-szamlalo').textContent = 'Betoltes...';
+
+  try {
+    [aktualisDiasor, kerdesek] = await Promise.all([
+      diasortBetolt(aktualisBank.diasor),
+      bankKerdesei(bankKod),
+    ]);
+  } catch (hiba) {
+    elem('kviz-szamlalo').textContent = '';
+    return uzenet('kviz-uzenet', magyarHiba(hiba));
+  }
+
+  elem('kviz-bank-info').textContent = aktualisDiasor
+    ? `${aktualisDiasor.forras_pptx} - ${aktualisDiasor.szamozott_diaszam} szamozott dia`
+    : 'Ehhez a bankhoz nincs diasor - csak temakor szerint valogathato.';
+
+  diaCsuszkatBeallit();
+  fejezeteketKirak();
+  temakorokKirak();
+
+  // Diasor nelkul a dia- es fejezet-mod ertelmetlen: temakorre valtunk.
+  const diaGomb = document.querySelector('.modgomb[data-mod="dia"]');
+  const fejezetGomb = document.querySelector('.modgomb[data-mod="fejezet"]');
+  diaGomb.disabled = fejezetGomb.disabled = !aktualisDiasor;
+  if (!aktualisDiasor && mod !== 'temakor') {
+    document.querySelector('.modgomb[data-mod="temakor"]').click();
+  }
+
+  szamlalotFrissit();
+}
+
+function diaCsuszkatBeallit() {
+  const max = aktualisDiasor?.szamozott_diaszam || 1;
+  for (const [azonosito, ertek] of [['kviz-dia-tol', 1], ['kviz-dia-ig', max]]) {
+    const csuszka = elem(azonosito);
+    csuszka.max = max;
+    csuszka.value = ertek;
+  }
+  csuszkatFrissit('kviz-dia-ig');
+}
+
+// A ket csuszka nem mehet at egymason, es kiirjuk az adott dia cimet is -
+// ettol lesz ertelme a "meddig jutottunk?" kerdesnek.
+function csuszkatFrissit(melyik) {
+  const tol = elem('kviz-dia-tol');
+  const ig = elem('kviz-dia-ig');
+  if (Number(tol.value) > Number(ig.value)) {
+    if (melyik === 'kviz-dia-tol') ig.value = tol.value;
+    else tol.value = ig.value;
+  }
+  elem('kviz-dia-tol-ertek').textContent = tol.value;
+  elem('kviz-dia-ig-ertek').textContent = ig.value;
+
+  const dia = (aktualisDiasor?.diak || []).find((d) => d.szamozott === Number(ig.value));
+  elem('kviz-dia-cim').textContent = dia ? `${ig.value}. dia: ${dia.cim}` : '';
+}
+
+function fejezeteketKirak() {
+  const doboz = elem('kviz-fejezetek');
+  doboz.innerHTML = '';
+  if (!aktualisDiasor) {
+    doboz.innerHTML = '<p class="alcim">Ehhez a bankhoz nincs diasor.</p>';
+    return;
+  }
+  aktualisDiasor.fejezetek.forEach((fejezet, index) => {
+    const db = kerdesek.filter((k) => k.fejezet === index).length;
+    doboz.append(pipa('fejezet', index, `${fejezet.cim}  (${fejezet.elso_dia}-${fejezet.utolso_dia})`, db));
+  });
+}
+
+function temakorokKirak() {
+  const doboz = elem('kviz-temakorok');
+  doboz.innerHTML = '';
+  for (const { kod, db } of aktualisBank.temakorok || []) {
+    doboz.append(pipa('temakor', kod, kod, db));
+  }
+}
+
+function pipa(csoport, ertek, cimke, db) {
+  const sor = document.createElement('label');
+  sor.className = 'pipa';
+  sor.innerHTML =
+    `<input type="checkbox" data-csoport="${csoport}" value="${ertek}">` +
+    `<span>${cimke}</span><span class="db">${db}</span>`;
+  sor.querySelector('input').onchange = szamlalotFrissit;
+  return sor;
+}
+
+function valogatastOsszeszed() {
+  const bepipalt = (csoport) =>
+    [...document.querySelectorAll(`input[data-csoport="${csoport}"]:checked`)]
+      .map((be) => be.value);
+
+  return {
+    mod,
+    dia_tol: Number(elem('kviz-dia-tol').value),
+    dia_ig: Number(elem('kviz-dia-ig').value),
+    fejezetek: bepipalt('fejezet').map(Number),
+    temakorok: bepipalt('temakor'),
+    nehezseg_max: Number(elem('kviz-nehezseg').value),
+    csak_elo: elem('kviz-elo-tipusok').checked,
+    db: Number(elem('kviz-db').value),
+    ido_limit: Number(elem('kviz-ido').value),
+  };
+}
+
+function szamlalotFrissit() {
+  const valogatas = valogatastOsszeszed();
+  const talalatok = szur(kerdesek, valogatas);
+  const kisorsolt = Math.min(valogatas.db, talalatok.length);
+
+  const szamlalo = elem('kviz-szamlalo');
+  if (!talalatok.length) {
+    szamlalo.className = 'szamlalo ures';
+    szamlalo.textContent = mod === 'dia'
+      ? 'Ebben a diatartomanyban nincs kerdes.'
+      : 'Nincs kivalasztva semmi, vagy nincs ra kerdes.';
+  } else {
+    szamlalo.className = kisorsolt < valogatas.db ? 'szamlalo keves' : 'szamlalo';
+    szamlalo.textContent = kisorsolt < valogatas.db
+      ? `${talalatok.length} kerdes felel meg - ennyi lesz kisorsolva, mert kevesebb, mint ${valogatas.db}.`
+      : `${talalatok.length} kerdes felel meg, ebbol ${kisorsolt} lesz kisorsolva.`;
+  }
+  return { valogatas, talalatok };
+}
+
+async function elonezet(esemeny) {
+  const { valogatas, talalatok } = szamlalotFrissit();
+  uzenet('kviz-uzenet', '');
+
+  if (!talalatok.length) {
+    return uzenet('kviz-uzenet', 'Nincs mibol sorsolni. Bovitsd a tartomanyt vagy a nehezseget.');
+  }
+
+  await gombbal(esemeny.target, async () => {
+    const kisorsolt = sorsol(talalatok, valogatas.db);
+    let kulcsok;
+    try {
+      kulcsok = await kulcsokatBetolt(kisorsolt.map((k) => k.id));
+    } catch (hiba) {
+      return uzenet('kviz-uzenet', magyarHiba(hiba));
+    }
+
+    elem('kviz-elonezet-cim').textContent =
+      `Elonezet - ${kisorsolt.length} kerdes (${valogatas.ido_limit} mp / kerdes)`;
+
+    const lista = elem('kviz-elonezet-lista');
+    lista.innerHTML = '';
+    kisorsolt.forEach((kerdes, index) => {
+      const doboz = document.createElement('div');
+      doboz.className = 'elonezetsor';
+      doboz.innerHTML =
+        `<div class="sorszam">${index + 1}.</div>` +
+        `<div class="torzs">` +
+          `<div class="kerdesszoveg"></div>` +
+          `<div class="cimkesor">` +
+            `<span class="jelolo">${TIPUS_NEVE[kerdes.tipus] || kerdes.tipus}</span>` +
+            `<span class="jelolo">nehezseg ${kerdes.nehezseg}</span>` +
+            (Number.isInteger(kerdes.dia) ? `<span class="jelolo">${kerdes.dia}. dia</span>` : '') +
+            `<span class="jelolo">${kerdes.temakor || ''}</span>` +
+          `</div>` +
+          `<div class="helyes"></div>` +
+        `</div>`;
+      // A kerdes es a valasz szovegkent megy be, hogy a bankban levo < > jelek
+      // (pl. HTML-kerdesek) ne torjek el a felulet szerkezetet.
+      doboz.querySelector('.kerdesszoveg').textContent = kerdes.kerdes;
+      doboz.querySelector('.helyes').textContent =
+        `Helyes: ${helyesValaszSzovege(kerdes, kulcsok.get(kerdes.id))}`;
+      lista.append(doboz);
+    });
+
+    elem('kviz-elonezet-lap').hidden = false;
+    elem('kviz-elonezet-lap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+}
