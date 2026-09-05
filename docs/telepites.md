@@ -118,14 +118,21 @@ Ez `admin\kiosztas_10T.csv` neven kiirja az azonosito-jelszo parokat.
 
 ## 8. GitHub Pages
 
-1. Told fel a repot GitHubra.
-2. **Settings &rarr; Pages &rarr; Source: `GitHub Actions`**.
-3. A `main` agra puskolva a `.github/workflows/pages.yml` felteszi a `web/` mappat.
+**Ez megvan** (2026-09-05): a repo publikus, a Pages forrasa `GitHub Actions`.
+A `main` agra puskolva a `.github/workflows/pages.yml` felteszi a `web/` mappat.
 
-Cimek:
+| | |
+|---|---|
+| repo | <https://github.com/locitanit/icdl-gyakorlo> |
+| diak | <https://locitanit.github.io/icdl-gyakorlo/> |
+| tanar | <https://locitanit.github.io/icdl-gyakorlo/tanar.html> |
 
-- diak: `https://<felhasznalo>.github.io/icdl-gyakorlo/`
-- tanar: `https://<felhasznalo>.github.io/icdl-gyakorlo/tanar.html`
+> **Buktato, ami mar egyszer megtortent:** a Firebase konzol
+> `const firebaseConfig = {...}` alakban adja a konfiguraciot. A
+> `web/js/firebase-config.js`-ben **csak az ertekeket** ird at - az
+> `export const FIREBASE_CONFIG =` sorkezdetet hagyd valtozatlanul, kulonben a tobbi
+> modul nem talalja meg, es az oldal ures marad. A localhoston ez nem latszik,
+> mert ott az emulator-konfig fut!
 
 ---
 

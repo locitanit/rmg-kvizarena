@@ -4,7 +4,12 @@ Osztálytermi kvízverseny a Radnóti digitális kultúra óráihoz. A tanár ó
 az osztálynak a diasor aktuális állásához igazítva, a diákok telefonról versenyeznek, és
 csillagokat gyűjtenek órai munka jegyre.
 
-**Állapot:** 1. fázis (váz és belépés) — a kód kész, a Firebase projekt beüzemelése hátravan.
+**Állapot:** 1. fázis (váz és belépés). A Firebase projekt él (europe-west1), a
+biztonsági szabályok ki vannak küldve, az oldal fent van a GitHub Pages-en.
+Hátra: a diákazonosítók feltöltése és egy valódi belépés kipróbálása.
+
+- Diák: <https://locitanit.github.io/icdl-gyakorlo/>
+- Tanári pult: <https://locitanit.github.io/icdl-gyakorlo/tanar.html>
 
 - A teljes terv: [`docs/IMPLEMENTACIOS_TERV.md`](docs/IMPLEMENTACIOS_TERV.md)
 - Beüzemelés lépésről lépésre: [`docs/telepites.md`](docs/telepites.md)
