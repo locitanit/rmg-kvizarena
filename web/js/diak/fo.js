@@ -97,8 +97,8 @@ async function osztalylistatTolt() {
     const osztalyok = await nyilvanosOsztalyok();
     legordulo.innerHTML = '';
     if (!osztalyok.length) {
-      legordulo.innerHTML = '<option value="">(meg nincs osztaly)</option>';
-      uzenet('belepes-uzenet', 'Meg nincs egyetlen osztaly sem. Szolj a tanarodnak.');
+      legordulo.innerHTML = '<option value="">(még nincs osztály)</option>';
+      uzenet('belepes-uzenet', 'Még nincs egyetlen osztály sem. Szólj a tanárodnak.');
       return;
     }
     for (const osztaly of osztalyok) {
@@ -123,7 +123,7 @@ async function fooldaltMutat(uid) {
     await osztalylistatTolt();
     kepernyo('belepes');
     uzenet('belepes-uzenet',
-      'A fiokod megvan, de a regisztracio nem fejezodott be. Kezdd ujra a Regisztraciot.');
+      'A fiókod megvan, de a regisztráció nem fejeződött be. Kezdd újra a Regisztrációt.');
     return;
   }
 
@@ -139,8 +139,8 @@ async function fooldaltMutat(uid) {
     '★'.repeat(tag.csillag_aktualis || 0) + '☆'.repeat(hatralevo);
   elem('fo-csillagszam').textContent = `${tag.csillag_ossz || 0} csillag`;
   elem('fo-hatralevo').textContent = hatralevo === 0
-    ? 'Megvan az otos! Szolj a tanarodnak.'
-    : `Meg ${hatralevo} csillag az otosig.`;
+    ? 'Megvan az ötös! Szólj a tanárodnak.'
+    : `Még ${hatralevo} csillag az ötösig.`;
   elem('fo-becenev-input').value = tag.becenev || '';
   csillagnaplotKirak();
 
@@ -159,7 +159,7 @@ function futoKvizetFigyel() {
     uzenet('fo-kviz-uzenet', '');
 
     if (!aktivKvizId) return;
-    elem('fo-kviz-cim').textContent = 'Az osztalyodban most fut egy kviz.';
+    elem('fo-kviz-cim').textContent = 'Az osztályodban most fut egy kvíz.';
 
     // Ha mar jatekos (pl. ujratoltotte az oldalt), tegyuk vissza a jatekba.
     try {
@@ -190,8 +190,8 @@ async function sajatAdatokatBetolt(uid) {
 }
 
 const FORRAS_NEVE = {
-  dobogo: 'dobogo', csucs: 'szemelyes csucs',
-  mesterfok: 'mesterfok', kitartas: 'kitartas',
+  dobogo: 'dobogó', csucs: 'személyes csúcs',
+  mesterfok: 'mesterfok', kitartas: 'kitartás',
 };
 
 function csillagnaplotKirak() {
@@ -200,18 +200,18 @@ function csillagnaplotKirak() {
   const naplo = [...(sajatStat?.csillag_naplo || [])].reverse().slice(0, 5);
 
   if (!naplo.length) {
-    doboz.innerHTML = '<p class="sugosor">Meg nincs csillagod. Az elso kvizen mar szerezhetsz!</p>';
+    doboz.innerHTML = '<p class="sugosor">Még nincs csillagod. Az első kvízen már szerezhetsz!</p>';
     return;
   }
   for (const bejegyzes of naplo) {
     const forrasok = Object.entries(FORRAS_NEVE)
       .filter(([kulcs]) => bejegyzes[kulcs])
       .map(([kulcs, nev]) => `${nev} ${bejegyzes[kulcs]}`)
-      .join(', ') || 'nem kaptal csillagot';
+      .join(', ') || 'nem kaptál csillagot';
     const sor = document.createElement('div');
     sor.className = 'jatekossor';
     sor.innerHTML = '<span class="nev"></span><span class="pont"></span>';
-    sor.querySelector('.nev').textContent = bejegyzes.cim || 'Kviz';
+    sor.querySelector('.nev').textContent = bejegyzes.cim || 'Kvíz';
     sor.querySelector('.pont').textContent =
       bejegyzes.csillag ? `${'★'.repeat(bejegyzes.csillag)} ${forrasok}` : forrasok;
     doboz.append(sor);
@@ -234,7 +234,7 @@ function savotRajzol(cimke, arany, ertek) {
 function statisztikatMutat() {
   const csucs = Math.round((sajatStat?.szemelyes_csucs || 0) * 100);
   elem('stat-osszegzes').textContent =
-    `${sajatStat?.kvizek_szama || 0} kviz - szemelyes csucsod: ${csucs}%`;
+    `${sajatStat?.kvizek_szama || 0} kvíz – személyes csúcsod: ${csucs}%`;
 
   const temakorDoboz = elem('stat-temakorok');
   temakorDoboz.innerHTML = '';
@@ -243,7 +243,7 @@ function statisztikatMutat() {
     .sort((a, b) => a.arany - b.arany);
 
   if (!temakorok.length) {
-    temakorDoboz.innerHTML = '<p class="sugosor">Meg nincs adat - jatssz egy kvizt!</p>';
+    temakorDoboz.innerHTML = '<p class="sugosor">Még nincs adat – játssz egy kvízt!</p>';
   }
   for (const t of temakorok) {
     const mester = (sajatStat?.mesterfok || []).includes(t.temakor) ? ' ★' : '';
@@ -254,14 +254,14 @@ function statisztikatMutat() {
   const kvizDoboz = elem('stat-kvizek');
   kvizDoboz.innerHTML = '';
   const naplo = [...(sajatStat?.csillag_naplo || [])].reverse();
-  if (!naplo.length) kvizDoboz.innerHTML = '<p class="sugosor">Meg nem jatszottal kvizt.</p>';
+  if (!naplo.length) kvizDoboz.innerHTML = '<p class="sugosor">Még nem játszottál kvízt.</p>';
   for (const bejegyzes of naplo) {
     const sor = document.createElement('div');
     sor.className = 'jatekossor';
     sor.innerHTML = '<span class="nev"></span><span class="pont"></span>';
-    sor.querySelector('.nev').textContent = bejegyzes.cim || 'Kviz';
+    sor.querySelector('.nev').textContent = bejegyzes.cim || 'Kvíz';
     sor.querySelector('.pont').textContent =
-      `${Math.round((bejegyzes.szazalek || 0) * 100)}% - ${bejegyzes.helyezes}. hely`
+      `${Math.round((bejegyzes.szazalek || 0) * 100)}% – ${bejegyzes.helyezes}. hely`
       + (bejegyzes.csillag ? ` ${'★'.repeat(bejegyzes.csillag)}` : '');
     kvizDoboz.append(sor);
   }
@@ -271,7 +271,7 @@ function statisztikatMutat() {
 
 async function csatlakozasGomb(esemeny) {
   uzenet('fo-kviz-uzenet', '');
-  if (!aktivKvizId) return uzenet('fo-kviz-uzenet', 'Most nem fut kviz.');
+  if (!aktivKvizId) return uzenet('fo-kviz-uzenet', 'Most nem fut kvíz.');
 
   await gombbal(esemeny.target, async () => {
     try {
@@ -285,15 +285,15 @@ async function csatlakozasGomb(esemeny) {
 
 async function becenevMentes(esemeny) {
   const ujBecenev = elem('fo-becenev-input').value.trim();
-  if (!ujBecenev) return uzenet('fo-uzenet', 'A becenev nem lehet ures.');
-  if (ujBecenev.length > 20) return uzenet('fo-uzenet', 'A becenev legfeljebb 20 karakter lehet.');
+  if (!ujBecenev) return uzenet('fo-uzenet', 'A becenév nem lehet üres.');
+  if (ujBecenev.length > 20) return uzenet('fo-uzenet', 'A becenév legfeljebb 20 karakter lehet.');
 
   await gombbal(esemeny.target, async () => {
     try {
       await updateDoc(doc(db, `osztalyok/${aktualisOsztalyId}/tagok/${auth.currentUser.uid}`),
         { becenev: ujBecenev });
       elem('fo-becenev').textContent = ujBecenev;
-      uzenet('fo-uzenet', 'Becenev mentve.', 'siker');
+      uzenet('fo-uzenet', 'Becenév mentve.', 'siker');
     } catch (hiba) {
       uzenet('fo-uzenet', magyarHiba(hiba));
     }

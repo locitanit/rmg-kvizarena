@@ -22,13 +22,6 @@ export const ALAP_BEALLITASOK = {
   jegy_kuszob: 5,                 // ennyi csillag = egy orai munka otos
 };
 
-export const CSILLAG_FORRASOK = {
-  dobogo: 'dobogo',
-  csucs: 'szemelyes csucs',
-  mesterfok: 'mesterfok',
-  kitartas: 'kitartas',
-};
-
 // Temakoronkenti osszesites egy kviz utan: a korabbi allashoz hozzaadjuk az uj
 // kviz eredmenyeit. { <temakor>: {jo, ossz} }
 export function temakoroketOsszead(korabbi, ujKviz) {
@@ -80,7 +73,7 @@ export function csillagokatSzamol(
   let dobogo = 0;
   if (b.dobogo_be && jatekos.helyezes >= 1 && jatekos.helyezes <= b.dobogo_ertekek.length) {
     dobogo = b.dobogo_ertekek[jatekos.helyezes - 1] || 0;
-    if (dobogo) reszletek.push({ forras: 'dobogo', csillag: dobogo, mire: `${jatekos.helyezes}. helyezes` });
+    if (dobogo) reszletek.push({ forras: 'dobogo', csillag: dobogo, mire: `${jatekos.helyezes}. helyezés` });
   }
 
   // 2. Szemelyes csucs. Az ELERES is szamit (>=), kulonben aki egyszer 100%-ot
@@ -109,7 +102,7 @@ export function csillagokatSzamol(
   if (b.kitartas_be && b.kitartas_gyakorisag > 0
       && kvizekSzamaMost % b.kitartas_gyakorisag === 0) {
     kitartas = 1;
-    reszletek.push({ forras: 'kitartas', csillag: 1, mire: `${kvizekSzamaMost}. kviz` });
+    reszletek.push({ forras: 'kitartas', csillag: 1, mire: `${kvizekSzamaMost}. kvíz` });
   }
 
   const nyers = dobogo + csucs + mesterfok + kitartas;

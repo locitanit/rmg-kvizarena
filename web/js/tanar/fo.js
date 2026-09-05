@@ -53,8 +53,8 @@ function indul() {
       figyelesekLeall();
       kepernyo('belepes');
       uzenet('belepes-uzenet',
-        `${felhasznalo.email} nem tanari fiok. Ha ugyanebben a bongeszoben diakkent `
-        + 'is beleptel, az kilepteti a tanart - hasznalj masik bongeszot vagy inkognito ablakot.');
+        `${felhasznalo.email} nem tanári fiók. Ha ugyanebben a böngészőben diákként `
+        + 'is beléptél, az kilépteti a tanárt – használj másik böngészőt vagy inkognitóablakot.');
       return;
     }
     await pultotMutat(felhasznalo);
@@ -97,7 +97,7 @@ async function tanariJoga(uid) {
 }
 
 async function pultotMutat(felhasznalo) {
-  elem('pult-nev').textContent = felhasznalo.displayName || 'Tanari pult';
+  elem('pult-nev').textContent = felhasznalo.displayName || 'Tanári pult';
   elem('pult-email').textContent = felhasznalo.email;
   kepernyo('pult');
 
@@ -112,7 +112,7 @@ async function pultotMutat(felhasznalo) {
   lista.innerHTML = '';
 
   if (!osztalyok.length) {
-    lista.innerHTML = '<p class="alcim">Meg nincs osztalyod.</p>';
+    lista.innerHTML = '<p class="alcim">Még nincs osztályod.</p>';
     return;
   }
 
@@ -134,9 +134,9 @@ async function pultotMutat(felhasznalo) {
 
 function folytatastFelajanl(futo) {
   elem('folytatas-szoveg').textContent =
-    `A(z) "${futo.cim}" kviz (${futo.osztalyNev}) ${nevelo(futo.aktualis + 1)} ` +
-    `${futo.aktualis + 1}. kerdesnel tart. ` +
-    'A diakok addig varakoznak.';
+    `A(z) „${futo.cim}” kvíz (${futo.osztalyNev}) ${nevelo(futo.aktualis + 1)} ` +
+    `${futo.aktualis + 1}. kérdésnél tart. ` +
+    'A diákok addig várakoznak.';
   elem('folytatas-igen').onclick = () => jatekvezetestIndit(futo.id, pultraVissza);
   elem('folytatas-nem').onclick = async () => {
     // Nem toroljuk a kvizt, csak lezarjuk - az eredmenye igy megmarad.
@@ -163,23 +163,23 @@ async function osztalytValaszt(index) {
     gomb.classList.toggle('kivalasztott', i === index);
   });
 
-  elem('tagok-cim').textContent = `${osztaly.nev || osztaly.id} - tagok`;
+  elem('tagok-cim').textContent = `${osztaly.nev || osztaly.id} – tagok`;
   elem('tagok-kod').innerHTML =
-    `Belepokod a diakoknak: <span class="kod">${osztaly.belepokod || '-'}</span>`;
-  elem('tagoklista').innerHTML = '<p class="alcim">Betoltes...</p>';
+    `Belépőkód a diákoknak: <span class="kod">${osztaly.belepokod || '-'}</span>`;
+  elem('tagoklista').innerHTML = '<p class="alcim">Betöltés…</p>';
   uzenet('pult-uzenet', '');
 
   try {
     const tagok = await osztalyTagjai(osztaly.id);
     if (!tagok.length) {
       elem('tagoklista').innerHTML =
-        '<p class="alcim">Meg senki nem regisztralt ezzel a koddal.</p>';
+        '<p class="alcim">Még senki nem regisztrált ezzel a kóddal.</p>';
       return;
     }
 
     const tabla = document.createElement('table');
     tabla.innerHTML =
-      '<thead><tr><th>azonosito</th><th>becenev</th><th>csillag</th><th>jegyek</th></tr></thead>';
+      '<thead><tr><th>azonosító</th><th>becenév</th><th>csillag</th><th>jegyek</th></tr></thead>';
     const torzs = document.createElement('tbody');
     for (const tag of tagok) {
       const sor = document.createElement('tr');

@@ -58,10 +58,10 @@ export async function gyakorlastIndit(osztaly, visszaHivas) {
   const legordulo = elem('gyak-bank');
   legordulo.innerHTML = '';
   if (!szabadBankok.length) {
-    legordulo.innerHTML = '<option value="">(meg nincs felszabaditott anyag)</option>';
+    legordulo.innerHTML = '<option value="">(még nincs felszabadított anyag)</option>';
     elem('gyak-resz').innerHTML = '';
     return uzenet('gyak-uzenet',
-      'A tanarod meg nem szabaditott fel anyagot gyakorlasra. Szolj neki!', 'info');
+      'A tanárod még nem szabadított fel anyagot gyakorlásra. Szólj neki!', 'info');
   }
 
   for (const bank of szabadBankok) {
@@ -93,7 +93,7 @@ function nezetet(melyik) {
 async function bankotValaszt(bankKod) {
   const bank = bankok.find((b) => b.kod === bankKod);
   uzenet('gyak-uzenet', '');
-  elem('gyak-resz').innerHTML = '<option value="">Betoltes...</option>';
+  elem('gyak-resz').innerHTML = '<option value="">Betöltés…</option>';
 
   try {
     const [d, osszes] = await Promise.all([
@@ -115,7 +115,7 @@ async function bankotValaszt(bankKod) {
     sor.textContent = szoveg;
     legordulo.append(sor);
   };
-  opcio('mind', `A teljes felszabaditott anyag (${szabadKerdesek.length} kerdes)`);
+  opcio('mind', `A teljes felszabadított anyag (${szabadKerdesek.length} kérdés)`);
 
   const fejezetekben = new Map();
   const temakorokben = new Map();
@@ -131,7 +131,7 @@ async function bankotValaszt(bankKod) {
     opcio(`fejezet:${index}`, `${cim} (${db_})`);
   }
   for (const [tk, db_] of [...temakorokben].sort((a, b) => a[0].localeCompare(b[0], 'hu'))) {
-    opcio(`temakor:${tk}`, `temakor: ${tk} (${db_})`);
+    opcio(`temakor:${tk}`, `témakör: ${tk} (${db_})`);
   }
 }
 
@@ -146,7 +146,7 @@ function reszSzerintSzur() {
 async function sorozatotInditani(esemeny) {
   uzenet('gyak-uzenet', '');
   const jeloltek = reszSzerintSzur();
-  if (!jeloltek.length) return uzenet('gyak-uzenet', 'Ehhez a reszhez nincs kerdes.');
+  if (!jeloltek.length) return uzenet('gyak-uzenet', 'Ehhez a részhez nincs kérdés.');
 
   await gombbal(esemeny.target, async () => {
     sorozat = sorsol(jeloltek, Number(elem('gyak-db').value) || 10);
@@ -157,7 +157,7 @@ async function sorozatotInditani(esemeny) {
     }
     if (!kulcsok.size) {
       return uzenet('gyak-uzenet',
-        'Ehhez az anyaghoz most nem tudom betolteni a megoldast. Szolj a tanarodnak.');
+        'Ehhez az anyaghoz most nem tudom betölteni a megoldást. Szólj a tanárodnak.');
     }
     hol = 0;
     joDb = 0;
@@ -218,7 +218,7 @@ function valaszgombok(kerdes) {
 function rovidValaszMezo() {
   const mezo = document.createElement('input');
   mezo.id = 'gyak-rovid';
-  mezo.placeholder = 'Ird be a valaszt';
+  mezo.placeholder = 'Írd be a választ';
   mezo.autocomplete = 'off';
   mezo.oninput = () => { valasztott = mezo.value; };
   mezo.onkeydown = (e) => { if (e.key === 'Enter') ellenoriz(); };
@@ -234,7 +234,7 @@ function parositoMezok(kerdes) {
     const cimke = document.createElement('label');
     cimke.textContent = bal;
     const legordulo = document.createElement('select');
-    legordulo.innerHTML = '<option value="">- valassz -</option>';
+    legordulo.innerHTML = '<option value="">– válassz –</option>';
     for (const jobb of kerdes.parok_jobb_kevert) {
       const sor = document.createElement('option');
       sor.value = jobb;
@@ -254,7 +254,7 @@ function ellenoriz() {
     || (Array.isArray(valasztott) && !valasztott.length)
     || (typeof valasztott === 'string' && !valasztott.trim())
     || (kerdes.tipus === 'parosito' && valasztott.some((p) => !p.jobb));
-  if (ures) return uzenet('gyak-uzenet', 'Valaszolj eloszor!');
+  if (ures) return uzenet('gyak-uzenet', 'Válaszolj először!');
 
   uzenet('gyak-uzenet', '');
   const kulcs = kulcsok.get(kerdes.id);
@@ -266,10 +266,10 @@ function ellenoriz() {
   elem('gyak-kuldes').hidden = true;
   elem('gyak-visszajelzes').hidden = false;
   elem('gyak-visszajelzes').className = `lap kozepre ${helyes ? 'jolap' : 'rosszlap'}`;
-  elem('gyak-jelzes').textContent = helyes ? 'Jo valasz!' : 'Nem talalt';
+  elem('gyak-jelzes').textContent = helyes ? 'Jó válasz!' : 'Nem talált';
   elem('gyak-helyes').textContent = helyesValaszSzovege(kerdes, kulcs);
   elem('gyak-magyarazat').textContent = kulcs?.magyarazat || '';
-  elem('gyak-kovetkezo').textContent = hol + 1 < sorozat.length ? 'Kovetkezo' : 'Eredmeny';
+  elem('gyak-kovetkezo').textContent = hol + 1 < sorozat.length ? 'Következő' : 'Eredmény';
 }
 
 async function kovetkezo() {
@@ -279,9 +279,9 @@ async function kovetkezo() {
   const arany = sorozat.length ? joDb / sorozat.length : 0;
   elem('gyak-eredmeny').textContent = `${joDb} / ${sorozat.length}`;
   elem('gyak-osszegzes').textContent = arany >= 0.8
-    ? 'Ez nagyon jo! Ezt a reszt tudod.'
-    : (arany >= 0.5 ? 'Nem rossz - meg egy kor, es meglesz.'
-                    : 'Ezt a reszt erdemes atnezni a diasorban.');
+    ? 'Ez nagyon jó! Ezt a részt tudod.'
+    : (arany >= 0.5 ? 'Nem rossz – még egy kör, és meglesz.'
+                    : 'Ezt a részt érdemes átnézni a diasorban.');
   nezetet('vege');
   await eredmenytMent();
 }

@@ -57,13 +57,13 @@ async function felszabaditastIndit() {
   const legordulo = elem('fsz-bank');
   legordulo.innerHTML = '';
   if (!bankok.length) {
-    legordulo.innerHTML = '<option value="">(meg nincs publikalt bank)</option>';
+    legordulo.innerHTML = '<option value="">(még nincs felszabadítható bank)</option>';
     return;
   }
   for (const bank of bankok) {
     const f = felszabaditasok.get(bank.kod);
-    const jeloles = f?.mind ? ' - EGESZBEN szabad'
-      : (f?.fejezetek?.length ? ` - ${f.fejezetek.length} fejezet szabad` : '');
+    const jeloles = f?.mind ? ' – EGÉSZBEN szabad'
+      : (f?.fejezetek?.length ? ` – ${f.fejezetek.length} fejezet szabad` : '');
     const sor = document.createElement('option');
     sor.value = bank.kod;
     sor.textContent = `${bank.cim}${jeloles}`;
@@ -79,13 +79,13 @@ async function fszBankotValaszt(bankKod) {
   uzenet('fsz-uzenet', '');
 
   const doboz = elem('fsz-fejezetek');
-  doboz.innerHTML = '<p class="alcim">Betoltes...</p>';
+  doboz.innerHTML = '<p class="alcim">Betöltés…</p>';
   fszDiasor = bank?.diasor ? await diasortBetolt(bank.diasor) : null;
 
   doboz.innerHTML = '';
   if (!fszDiasor) {
-    doboz.innerHTML = '<p class="alcim">Ehhez a bankhoz nincs diasor - '
-      + 'csak az egesz bank szabadithato fel.</p>';
+    doboz.innerHTML = '<p class="alcim">Ehhez a bankhoz nincs diasor – '
+      + 'csak az egész bank szabadítható fel.</p>';
     return;
   }
   fszDiasor.fejezetek.forEach((fejezet, index) => {
@@ -96,7 +96,7 @@ async function fszBankotValaszt(bankKod) {
     be.value = index;
     be.checked = (meglevo.fejezetek || []).includes(index);
     sor.querySelector('span').textContent =
-      `${fejezet.cim} (${fejezet.elso_dia}-${fejezet.utolso_dia}. dia)`;
+      `${fejezet.cim} (${fejezet.elso_dia}–${fejezet.utolso_dia}. dia)`;
     doboz.append(sor);
   });
 }
@@ -112,10 +112,10 @@ async function felszabaditastMent() {
   try {
     await setDoc(doc(db, `felszabaditasok/${bankKod}`), ujak);
     felszabaditasok.set(bankKod, ujak);
-    const mit = ujak.mind ? 'az egesz bank'
+    const mit = ujak.mind ? 'az egész bank'
       : (fejezetek.length ? `${fejezetek.length} fejezet` : 'semmi');
     uzenet('fsz-uzenet',
-      `Mentve: ${mit} szabad gyakorlasra. A diakok azonnal latjak.`, 'siker');
+      `Mentve: ${mit} szabad gyakorlásra. A diákok azonnal látják.`, 'siker');
     await felszabaditastIndit();
   } catch (hiba) {
     uzenet('fsz-uzenet', magyarHiba(hiba));
@@ -180,7 +180,7 @@ function archivumotKirak() {
   const lefutott = kvizek.filter((k) => k.allapot === 'vege');
 
   if (!lefutott.length) {
-    lista.innerHTML = '<p class="alcim">Meg nem futott le kviz ebben az osztalyban.</p>';
+    lista.innerHTML = '<p class="alcim">Még nem futott le kvíz ebben az osztályban.</p>';
     return;
   }
 
@@ -190,7 +190,7 @@ function archivumotKirak() {
     gomb.className = 'osztalygomb';
     const mikor = kviz.indult?.toDate?.();
     gomb.textContent = `${mikor ? mikor.toLocaleDateString('hu') : ''} - ${kviz.cim}`
-      + ` (${kviz.osszegzes?.resztvevok ?? '?'} fo)`;
+      + ` (${kviz.osszegzes?.resztvevok ?? '?'} fő)`;
     gomb.onclick = () => kviztElemez(kviz);
     lista.append(gomb);
   }
@@ -204,8 +204,8 @@ async function kviztElemez(kviz) {
   const osszegzes = kviz.osszegzes || {};
   elem('elemzes-cim').textContent = kviz.cim;
   elem('elemzes-osszegzes').textContent =
-    `${osszegzes.resztvevok ?? 0} resztvevo - atlag ${szazalek(osszegzes.atlag_szazalek)}%`
-    + ` - ${osszegzes.kerdes_db ?? 0} kerdes`;
+    `${osszegzes.resztvevok ?? 0} résztvevő – átlag ${szazalek(osszegzes.atlag_szazalek)}%`
+    + ` – ${osszegzes.kerdes_db ?? 0} kérdés`;
 
   // Kerdesenkenti helyes arany: a legrosszabbak elol, mert azok a tanulsagosak.
   const kerdesek = [...(osszegzes.kerdesenkent || [])]
@@ -215,7 +215,7 @@ async function kviztElemez(kviz) {
   const doboz = elem('elemzes-kerdesek');
   doboz.innerHTML = '';
   if (!kerdesek.length) {
-    doboz.innerHTML = '<p class="alcim">Ehhez a kvizhez nincs osszegzes.</p>';
+    doboz.innerHTML = '<p class="alcim">Ehhez a kvízhez nincs összegzés.</p>';
   }
   for (const kerdes of kerdesek) {
     const arany = kerdes.jo / Math.max(1, kerdes.ossz);
@@ -234,7 +234,7 @@ async function kviztElemez(kviz) {
 
   // Diakonkenti sorok a jatekosok alkollekciobol.
   const jatekosDoboz = elem('elemzes-diakok');
-  jatekosDoboz.innerHTML = '<p class="alcim">Betoltes...</p>';
+  jatekosDoboz.innerHTML = '<p class="alcim">Betöltés…</p>';
   try {
     const pillanat = await getDocs(collection(db, `kvizek/${kviz.id}/jatekosok`));
     const jatekosok = pillanat.docs.map((d) => ({ uid: d.id, ...d.data() }))
@@ -269,7 +269,7 @@ function elemzesCsv() {
   ]);
   csvLetolt(
     `kviz_${fajlnevre(valasztottKviz.cim)}_${maiDatum()}`,
-    ['helyezes', 'azonosito', 'becenev', 'pont', 'jo valasz', 'kerdes', 'szazalek', 'csillag'],
+    ['helyezés', 'azonosító', 'becenév', 'pont', 'jó válasz', 'kérdés', 'százalék', 'csillag'],
     sorok
   );
 }
@@ -296,7 +296,7 @@ function osztalystatisztikatKirak() {
   const atlagok = temakorAtlagok();
 
   if (!atlagok.length) {
-    doboz.innerHTML = '<p class="alcim">Meg nincs adat - futtass le egy kvizt.</p>';
+    doboz.innerHTML = '<p class="alcim">Még nincs adat – futtass le egy kvízt.</p>';
   }
   for (const { temakor, arany, ossz } of atlagok) {
     const sor = document.createElement('div');
@@ -308,7 +308,7 @@ function osztalystatisztikatKirak() {
     rud.style.width = `${arany * 100}%`;
     if (arany < 0.5) rud.style.background = 'var(--rossz)';
     sor.querySelector('.ertek').textContent = `${Math.round(arany * 100)}%`;
-    sor.title = `${ossz} megvalaszolt kerdes`;
+    sor.title = `${ossz} megválaszolt kérdés`;
     doboz.append(sor);
   }
 
@@ -316,7 +316,7 @@ function osztalystatisztikatKirak() {
   csillagDoboz.innerHTML = '';
   const rendezett = [...tagok].sort((a, b) => (b.csillag_ossz || 0) - (a.csillag_ossz || 0));
   if (!rendezett.length) {
-    csillagDoboz.innerHTML = '<p class="alcim">Meg nincs tag.</p>';
+    csillagDoboz.innerHTML = '<p class="alcim">Még nincs tag.</p>';
   }
   for (const tag of rendezett) {
     const sor = document.createElement('div');
@@ -325,7 +325,7 @@ function osztalystatisztikatKirak() {
     sor.querySelector('.nev').textContent = `${tag.becenev || tag.azonosito}`;
     sor.querySelector('.pont').textContent =
       `${'★'.repeat(Math.min(tag.csillag_ossz || 0, 10))} ${tag.csillag_ossz || 0}`
-      + ` (valthato: ${tag.csillag_aktualis || 0}, jegy: ${tag.jegyek || 0})`;
+      + ` (beváltható: ${tag.csillag_aktualis || 0}, jegy: ${tag.jegyek || 0})`;
     csillagDoboz.append(sor);
   }
 }
@@ -333,12 +333,12 @@ function osztalystatisztikatKirak() {
 function osztalyCsv() {
   const atlagok = temakorAtlagok();
   const sorok = [
-    ...atlagok.map((t) => ['temakor', t.temakor, t.jo, t.ossz, szazalek(t.arany), '', '']),
-    ...tagok.map((t) => ['diak', t.azonosito, '', '', '', t.csillag_ossz || 0, t.jegyek || 0]),
+    ...atlagok.map((t) => ['témakör', t.temakor, t.jo, t.ossz, szazalek(t.arany), '', '']),
+    ...tagok.map((t) => ['diák', t.azonosito, '', '', '', t.csillag_ossz || 0, t.jegyek || 0]),
   ];
   csvLetolt(
     `osztaly_${fajlnevre(osztalyId)}_${maiDatum()}`,
-    ['sortipus', 'nev', 'jo', 'ossz', 'szazalek', 'csillag_ossz', 'jegyek'],
+    ['sortípus', 'név', 'jó', 'össz', 'százalék', 'csillag összesen', 'jegyek'],
     sorok
   );
 }
@@ -349,14 +349,14 @@ function diakokatKirak() {
   const lista = elem('diakok-lista');
   lista.innerHTML = '';
   if (!tagok.length) {
-    lista.innerHTML = '<p class="alcim">Meg senki nem regisztralt.</p>';
+    lista.innerHTML = '<p class="alcim">Még senki nem regisztrált.</p>';
     return;
   }
   for (const tag of tagok) {
     const gomb = document.createElement('button');
     gomb.type = 'button';
     gomb.className = 'osztalygomb';
-    gomb.textContent = `${tag.azonosito} - ${tag.becenev || ''} (${tag.csillag_ossz || 0} csillag)`;
+    gomb.textContent = `${tag.azonosito} – ${tag.becenev || ''} (${tag.csillag_ossz || 0} csillag)`;
     gomb.onclick = () => diakotMutat(tag);
     lista.append(gomb);
   }
@@ -370,9 +370,9 @@ function diakotMutat(tag) {
   const stat = statok.find((s) => s.uid === tag.uid);
   elem('diaklap-cim').textContent = `${tag.becenev || tag.azonosito} (${tag.azonosito})`;
   elem('diaklap-osszegzes').textContent =
-    `${stat?.kvizek_szama || 0} kviz - szemelyes csucs ${szazalek(stat?.szemelyes_csucs)}%`
-    + ` - ${tag.csillag_ossz || 0} csillag osszesen, ${tag.csillag_aktualis || 0} bevaltatlan`
-    + ` - ${tag.jegyek || 0} otos`;
+    `${stat?.kvizek_szama || 0} kvíz – személyes csúcs ${szazalek(stat?.szemelyes_csucs)}%`
+    + ` – ${tag.csillag_ossz || 0} csillag összesen, ${tag.csillag_aktualis || 0} beváltatlan`
+    + ` – ${tag.jegyek || 0} ötös`;
 
   const temakorDoboz = elem('diaklap-temakorok');
   temakorDoboz.innerHTML = '';
@@ -380,7 +380,7 @@ function diakotMutat(tag) {
     .map(([temakor, adat]) => ({ temakor, ...adat, arany: adat.jo / Math.max(1, adat.ossz) }))
     .sort((a, b) => a.arany - b.arany);
 
-  if (!temakorok.length) temakorDoboz.innerHTML = '<p class="alcim">Meg nincs adat.</p>';
+  if (!temakorok.length) temakorDoboz.innerHTML = '<p class="alcim">Még nincs adat.</p>';
   for (const t of temakorok) {
     const mester = (stat?.mesterfok || []).includes(t.temakor) ? ' ★' : '';
     const sor = document.createElement('div');
@@ -396,19 +396,19 @@ function diakotMutat(tag) {
   const csillagDoboz = elem('diaklap-csillagok');
   csillagDoboz.innerHTML = '';
   const naplo = [...(stat?.csillag_naplo || [])].reverse();
-  if (!naplo.length) csillagDoboz.innerHTML = '<p class="alcim">Meg nincs csillag.</p>';
+  if (!naplo.length) csillagDoboz.innerHTML = '<p class="alcim">Még nincs csillag.</p>';
   for (const bejegyzes of naplo) {
     const forrasok = [
-      bejegyzes.dobogo ? `dobogo ${bejegyzes.dobogo}` : null,
-      bejegyzes.csucs ? 'csucs 1' : null,
+      bejegyzes.dobogo ? `dobogó ${bejegyzes.dobogo}` : null,
+      bejegyzes.csucs ? 'csúcs 1' : null,
       bejegyzes.mesterfok ? `mesterfok ${bejegyzes.mesterfok}` : null,
-      bejegyzes.kitartas ? 'kitartas 1' : null,
+      bejegyzes.kitartas ? 'kitartás 1' : null,
     ].filter(Boolean).join(', ') || 'nem kapott';
     const sor = document.createElement('div');
     sor.className = 'jatekossor';
     sor.innerHTML = '<span class="nev"></span><span class="pont"></span>';
     sor.querySelector('.nev').textContent = `${bejegyzes.cim || ''} (${bejegyzes.helyezes}. hely)`;
-    sor.querySelector('.pont').textContent = `${bejegyzes.csillag} ★ - ${forrasok}`;
+    sor.querySelector('.pont').textContent = `${bejegyzes.csillag} ★ – ${forrasok}`;
     csillagDoboz.append(sor);
   }
 
@@ -435,7 +435,7 @@ async function csillagotBevalt() {
     diakokatKirak();
     osztalystatisztikatKirak();
     uzenet('diaklap-uzenet',
-      `Bevaltva: ${kuszob} csillag -> egy otos. Ird be az osztalynaploba!`, 'siker');
+      `Beváltva: ${kuszob} csillag → egy ötös. Írd be az osztálynaplóba!`, 'siker');
   } catch (hiba) {
     uzenet('diaklap-uzenet', magyarHiba(hiba));
   }
@@ -446,13 +446,13 @@ function diaklapCsv() {
   const stat = statok.find((s) => s.uid === valasztottDiak.uid);
   const sorok = [
     ...Object.entries(stat?.temakor_teljesitmeny || {}).map(([temakor, adat]) =>
-      ['temakor', temakor, adat.jo, adat.ossz, szazalek(adat.jo / Math.max(1, adat.ossz)), '']),
+      ['témakör', temakor, adat.jo, adat.ossz, szazalek(adat.jo / Math.max(1, adat.ossz)), '']),
     ...(stat?.csillag_naplo || []).map((b) =>
-      ['kviz', b.cim, b.helyezes, '', szazalek(b.szazalek), b.csillag]),
+      ['kvíz', b.cim, b.helyezes, '', szazalek(b.szazalek), b.csillag]),
   ];
   csvLetolt(
     `diak_${fajlnevre(valasztottDiak.azonosito)}_${maiDatum()}`,
-    ['sortipus', 'nev', 'jo/helyezes', 'ossz', 'szazalek', 'csillag'],
+    ['sortípus', 'név', 'jó / helyezés', 'össz', 'százalék', 'csillag'],
     sorok
   );
 }
@@ -491,19 +491,19 @@ async function beallitasokatMent() {
   if (!ujak.dobogo_ertekek.length
       || ujak.dobogo_ertekek.some((e) => !Number.isInteger(e) || e < 0)) {
     return uzenet('cs-uzenet',
-      'A dobogos csillagokat vesszovel elvalasztott egesz szamokkal add meg, pl. 3,2,1');
+      'A dobogós csillagokat vesszővel elválasztott egész számokkal add meg, pl. 3,2,1');
   }
   if (!(ujak.mesterfok_kuszob > 0 && ujak.mesterfok_kuszob <= 1)) {
-    return uzenet('cs-uzenet', 'A mesterfok kuszob 1 es 100 kozott legyen.');
+    return uzenet('cs-uzenet', 'A mesterfok küszöb 1 és 100 között legyen.');
   }
   if (!(ujak.jegy_kuszob >= 1)) {
-    return uzenet('cs-uzenet', 'Az otoshoz legalabb 1 csillag kelljen.');
+    return uzenet('cs-uzenet', 'Az ötöshöz legalább 1 csillag kelljen.');
   }
 
   try {
     await setDoc(doc(db, 'beallitasok/csillagok'), ujak);
     beallitasok = ujak;
-    uzenet('cs-uzenet', 'Mentve. A kovetkezo kviztol ervenyes.', 'siker');
+    uzenet('cs-uzenet', 'Mentve. A következő kvíztől érvényes.', 'siker');
   } catch (hiba) {
     uzenet('cs-uzenet', magyarHiba(hiba));
   }

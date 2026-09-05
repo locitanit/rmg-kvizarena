@@ -28,13 +28,13 @@ let visszateres = null;
 
 export async function csatlakozas(kvizIdParam, pinBeirt, tag, visszaHivas) {
   const dok = await getDoc(doc(db, `kvizek/${kvizIdParam}`));
-  if (!dok.exists()) throw new Error('Ez a kviz mar nem fut.');
+  if (!dok.exists()) throw new Error('Ez a kvíz már nem fut.');
 
   const adat = dok.data();
   if (pinBeirt && String(pinBeirt).trim() !== adat.pin) {
-    throw new Error('Nem jo a kod. Nezd meg a kivetiton!');
+    throw new Error('Nem jó a kód. Nézd meg a kivetítőn!');
   }
-  if (adat.allapot === ALLAPOTOK.VEGE) throw new Error('Ez a kviz mar veget ert.');
+  if (adat.allapot === ALLAPOTOK.VEGE) throw new Error('Ez a kvíz már véget ért.');
 
   // Ha mar bent van (pl. ujratoltotte az oldalt), nem irjuk felul a pontjait.
   const sajatUt = `kvizek/${kvizIdParam}/jatekosok/${auth.currentUser.uid}`;
@@ -111,7 +111,7 @@ function nezetetFrissit() {
 function lobbitFrissit() {
   elem('varakozas-becenev').textContent = sajatAdat?.becenev || '';
   elem('varakozas-letszam').textContent =
-    jatekosok.length === 1 ? '1 jatekos' : `${jatekosok.length} jatekos`;
+    jatekosok.length === 1 ? '1 játékos' : `${jatekosok.length} játékos`;
 }
 
 async function kerdestBetolt() {
@@ -186,7 +186,7 @@ function visszaszamlalotIndit() {
 async function valasztKuld() {
   if (elkuldottIndex === kviz.aktualis) return;
   if (valasztott === null || (Array.isArray(valasztott) && !valasztott.length)) {
-    return uzenet('jatek-uzenet', 'Valassz eloszor!');
+    return uzenet('jatek-uzenet', 'Válassz először!');
   }
 
   // Optimista kepernyovaltas: a diak azonnal lassa, hogy elment.
@@ -220,10 +220,10 @@ function eredmenytMutat() {
 
   elem('eredmeny-doboz').className = `lap kozepre ${helyes ? 'jolap' : 'rosszlap'}`;
   elem('eredmeny-jelzes').textContent = helyes === undefined
-    ? '...' : (helyes ? 'Jo valasz!' : 'Nem talalt');
+    ? '…' : (helyes ? 'Jó válasz!' : 'Nem talált');
   elem('eredmeny-pont').textContent = helyes
     ? `+${sajatAdat?.utolso_pont ?? 0} pont`
-    : (elkuldottIndex === kviz.aktualis ? '0 pont' : 'Nem valaszoltal');
+    : (elkuldottIndex === kviz.aktualis ? '0 pont' : 'Nem válaszoltál');
 
   elem('eredmeny-helyes-diak').textContent = eredmeny?.helyes_szoveg || '';
   elem('eredmeny-magyarazat-diak').textContent = eredmeny?.magyarazat || '';
@@ -255,10 +255,10 @@ function allastFrissit() {
 function vegeredmenytMutat() {
   clearInterval(visszaszamlaloOra);
   const helyezes = sajatAdat?.helyezes;
-  elem('vege-helyezes').textContent = helyezes ? `${helyezes}. helyezes` : 'Vege';
+  elem('vege-helyezes').textContent = helyezes ? `${helyezes}. helyezés` : 'Vége';
   elem('vege-pont').textContent = `${sajatAdat?.pont || 0} pont`;
   elem('vege-reszletek').textContent =
-    `${sajatAdat?.helyes_db || 0} jo valasz ${kviz.kerdesIdk.length} kerdesbol`;
+    `${sajatAdat?.helyes_db || 0} jó válasz ${kviz.kerdesIdk.length} kérdésből`;
   allastFrissit();
 }
 

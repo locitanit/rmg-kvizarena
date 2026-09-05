@@ -48,8 +48,8 @@ export async function kviztInditani({ osztalyId, cim, valogatas, kisorsolt, idoL
     const futoDok = await getDoc(doc(db, `kvizek/${futoId}`));
     if (futoDok.exists() && futoDok.data().allapot !== ALLAPOTOK.VEGE) {
       throw new KvizFutHiba(
-        `Ebben az osztalyban mar fut egy kviz ("${futoDok.data().cim}"). `
-        + 'Elobb zard le azt - a pult ujranyitasakor felajanlja a folytatast.'
+        `Ebben az osztályban már fut egy kvíz („${futoDok.data().cim}”). `
+        + 'Előbb zárd le azt – a pult újranyitásakor felajánlja a folytatást.'
       );
     }
   }
@@ -104,7 +104,7 @@ export async function jatekvezetestIndit(azonosito, visszaHivas) {
 
   try {
     const dok = await getDoc(doc(db, `kvizek/${kvizId}`));
-    if (!dok.exists()) throw new Error('nincs ilyen kviz');
+    if (!dok.exists()) throw new Error('nincs ilyen kvíz');
     kviz = { id: kvizId, ...dok.data() };
     await kerdeseketBetolt();
   } catch (hiba) {
@@ -164,7 +164,7 @@ function vegeredmenytCsvbe() {
     .sort((a, b) => (b.pont || 0) - (a.pont || 0));
   csvLetolt(
     `vegeredmeny_${fajlnevre(kviz.cim)}_${maiDatum()}`,
-    ['helyezes', 'azonosito', 'becenev', 'pont', 'jo valasz', 'kerdes', 'szazalek'],
+    ['helyezés', 'azonosító', 'becenév', 'pont', 'jó válasz', 'kérdés', 'százalék'],
     rendezett.map((j, i) => [
       j.helyezes || i + 1, j.azonosito, j.becenev, j.pont || 0, j.helyes_db || 0,
       kerdesek.length, szazalek((j.helyes_db || 0) / Math.max(1, kerdesek.length)),
@@ -179,12 +179,12 @@ function nezetetFrissit() {
     doboz.hidden = doboz.dataset.jatek !== kviz.allapot;
   });
 
-  const sorszam = `${kviz.aktualis + 1}. / ${kerdesek.length} kerdes`;
+  const sorszam = `${kviz.aktualis + 1}. / ${kerdesek.length} kérdés`;
   elem('jatek-allapot').textContent = {
-    [ALLAPOTOK.VARAKOZIK]: 'Varakozas a jatekosokra',
+    [ALLAPOTOK.VARAKOZIK]: 'Várakozás a játékosokra',
     [ALLAPOTOK.KERDES]: sorszam,
-    [ALLAPOTOK.EREDMENY]: `${sorszam} - lezarva`,
-    [ALLAPOTOK.VEGE]: 'Vege',
+    [ALLAPOTOK.EREDMENY]: `${sorszam} – lezárva`,
+    [ALLAPOTOK.VEGE]: 'Vége',
   }[kviz.allapot] || '';
 
   if (kviz.allapot === ALLAPOTOK.KERDES) kerdestMutat();
@@ -196,7 +196,7 @@ function nezetetFrissit() {
 
 function kerdestMutat() {
   const kerdes = kerdesek[kviz.aktualis];
-  elem('kerdes-sorszam').textContent = `${kviz.aktualis + 1}. kerdes`;
+  elem('kerdes-sorszam').textContent = `${kviz.aktualis + 1}. kérdés`;
   elem('kerdes-szoveg').textContent = kerdes.kerdes;
 
   const racs = elem('kerdes-valaszok');
@@ -249,7 +249,7 @@ function jatekosListakatFrissit() {
   elem('lobbi-db').textContent = jatekosok.size;
   elem('lobbi-lista').innerHTML = rendezett.length
     ? rendezett.map((j) => `<div class="jatekossor"><span></span></div>`).join('')
-    : '<p class="alcim">Meg senki nem csatlakozott.</p>';
+    : '<p class="alcim">Még senki nem csatlakozott.</p>';
   // A beceneveket szovegkent tesszuk be, hogy ne lehessen HTML-t becsempeszni.
   elem('lobbi-lista').querySelectorAll('.jatekossor span').forEach((cella, i) => {
     cella.textContent = rendezett[i].becenev || rendezett[i].azonosito;
@@ -279,7 +279,7 @@ function valaszSzamlalotFrissit() {
   if (kviz?.allapot !== ALLAPOTOK.KERDES) return;
   const beerkezett = aktualisValaszok().length;
   elem('kerdes-valaszoltak').textContent =
-    `${beerkezett} / ${jatekosok.size} valaszolt`;
+    `${beerkezett} / ${jatekosok.size} válaszolt`;
 
   // Ha mindenki valaszolt, nincs mire varni.
   if (jatekosok.size > 0 && beerkezett >= jatekosok.size) kerdestLezar();
@@ -370,7 +370,7 @@ function eredmenytMutat() {
   elem('eredmeny-helyes').textContent = kviz.utolso_eredmeny?.helyes_szoveg || '';
   elem('eredmeny-magyarazat').textContent = kviz.utolso_eredmeny?.magyarazat || '';
   elem('jatek-kovetkezo').textContent =
-    kviz.aktualis + 1 < kerdesek.length ? 'Kovetkezo kerdes' : 'Vegeredmeny';
+    kviz.aktualis + 1 < kerdesek.length ? 'Következő kérdés' : 'Végeredmény';
 
   const doboz = elem('eredmeny-eloszlas');
   doboz.innerHTML = '';
@@ -534,7 +534,7 @@ async function kviztBefejez() {
     // Ilyenkor a kepernyon lathato vegeredmeny meg ervenyes - ajanljuk fel a
     // CSV-letoltest, hogy semmi ne vesszen el.
     uzenet('jatek-uzenet', magyarHiba(hiba)
-      + ' A kepernyon lathato vegeredmeny ervenyes - mentsd le CSV-be!');
+      + ' A képernyőn látható végeredmény érvényes – mentsd le CSV-be!');
     elem('jatek-mentes-csv').hidden = false;
   } finally {
     elem('jatek-kovetkezo').disabled = false;
@@ -555,7 +555,7 @@ function vegeredmenytMutat() {
     sor.querySelector('.nev').textContent = jatekos.becenev || jatekos.azonosito;
     const csillag = jatekos.csillag ? ' ' + '★'.repeat(jatekos.csillag) : '';
     sor.querySelector('.pont').textContent =
-      `${jatekos.pont || 0} pont - ${jatekos.helyes_db || 0}/${kerdesek.length} jo${csillag}`;
+      `${jatekos.pont || 0} pont – ${jatekos.helyes_db || 0}/${kerdesek.length} jó${csillag}`;
     lista.append(sor);
   });
 }

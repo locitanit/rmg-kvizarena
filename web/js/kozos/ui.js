@@ -21,7 +21,7 @@ export function uzenet(azonosito, szoveg, tipus = 'hiba') {
 export async function gombbal(gomb, muvelet) {
   const eredetiSzoveg = gomb.textContent;
   gomb.disabled = true;
-  gomb.textContent = 'Egy pillanat...';
+  gomb.textContent = 'Egy pillanat…';
   try {
     return await muvelet();
   } finally {
@@ -54,7 +54,7 @@ export function halozatotFigyel() {
   }
   const frissit = () => {
     sav.hidden = navigator.onLine;
-    sav.textContent = 'Nincs internetkapcsolat. Amint visszajon, folytatodik.';
+    sav.textContent = 'Nincs internetkapcsolat. Amint visszajön, folytatódik.';
   };
   window.addEventListener('online', frissit);
   window.addEventListener('offline', frissit);

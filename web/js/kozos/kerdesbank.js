@@ -15,11 +15,11 @@ import { db } from '../firebase.js';
 export const ELO_KVIZ_TIPUSOK = ['feleletvalasztos', 'igaz_hamis', 'tobb_valasztos'];
 
 export const TIPUS_NEVE = {
-  feleletvalasztos: 'feleletvalasztos',
+  feleletvalasztos: 'feleletválasztós',
   igaz_hamis: 'igaz/hamis',
-  tobb_valasztos: 'tobbvalaszos',
-  parosito: 'parosito',
-  rovid_valasz: 'rovid valasz',
+  tobb_valasztos: 'többválaszos',
+  parosito: 'párosító',
+  rovid_valasz: 'rövid válasz',
 };
 
 const gyorsitotar = new Map();

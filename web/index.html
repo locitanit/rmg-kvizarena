@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>ICDL Gyakorlo</title>
+  <title>ICDL Gyakorló</title>
   <link rel="stylesheet" href="css/kozos.css">
 </head>
 <body>
@@ -12,69 +12,68 @@
 
   <!-- ------------------------------------------------------------ betoltes -->
   <section data-kepernyo="betoltes">
-    <p class="alcim">Betoltes...</p>
+    <p class="alcim">Betöltés…</p>
   </section>
 
   <!-- -------------------------------------------------------------- belepes -->
   <section data-kepernyo="belepes" hidden>
-    <h1>ICDL Gyakorlo</h1>
-    <p class="alcim">Lepj be a gepterem-azonositoddal.</p>
+    <h1>ICDL Gyakorló</h1>
+    <p class="alcim">Lépj be a gépterem-azonosítóddal.</p>
 
     <form class="lap" id="belepes-urlap">
-      <label for="belepes-osztaly">Osztaly</label>
+      <label for="belepes-osztaly">Osztály</label>
       <select id="belepes-osztaly"></select>
 
-      <label for="belepes-azonosito">Azonosito</label>
+      <label for="belepes-azonosito">Azonosító</label>
       <input id="belepes-azonosito" autocomplete="username" autocapitalize="none"
              spellcheck="false" placeholder="pl. kovacs_b12">
 
-      <label for="belepes-jelszo">Jelszo</label>
+      <label for="belepes-jelszo">Jelszó</label>
       <input id="belepes-jelszo" type="password" autocomplete="current-password">
 
-      <button type="submit">Belepes</button>
+      <button type="submit">Belépés</button>
       <div class="uzenet hiba" id="belepes-uzenet" hidden></div>
 
       <p class="sugosor">
-        Elfelejtetted a jelszavad? A tanarod tud ujat adni - itt nincs
-        &bdquo;elfelejtett jelszo&rdquo; e-mail, mert nem adtal meg e-mail cimet.
+        Elfelejtetted a jelszavad? A tanárod tud újat adni.
       </p>
     </form>
 
-    <p class="valto">Meg nincs fiokod? <a id="valto-regisztraciora">Regisztralj</a></p>
+    <p class="valto">Még nincs fiókod? <a id="valto-regisztraciora">Regisztrálj</a></p>
   </section>
 
   <!-- --------------------------------------------------------- regisztracio -->
   <section data-kepernyo="regisztracio" hidden>
-    <h1>Regisztracio</h1>
-    <p class="alcim">Az osztalykodot a tanarodtol kapod.</p>
+    <h1>Regisztráció</h1>
+    <p class="alcim">Az osztálykódot a tanárodtól kapod.</p>
 
     <form class="lap" id="regisztracio-urlap">
-      <label for="reg-kod">Osztalykod</label>
+      <label for="reg-kod">Osztálykód</label>
       <input id="reg-kod" autocapitalize="characters" spellcheck="false" placeholder="pl. 10T-K7QX">
 
-      <label for="reg-azonosito">Azonosito</label>
+      <label for="reg-azonosito">Azonosító</label>
       <input id="reg-azonosito" autocomplete="username" autocapitalize="none"
              spellcheck="false" placeholder="pl. kovacs_b12">
 
-      <label for="reg-jelszo">Jelszo (legalabb 6 karakter)</label>
+      <label for="reg-jelszo">Jelszó (legalább 6 karakter)</label>
       <input id="reg-jelszo" type="password" autocomplete="new-password">
 
-      <label for="reg-jelszo2">Jelszo megegyszer</label>
+      <label for="reg-jelszo2">Jelszó mégegyszer</label>
       <input id="reg-jelszo2" type="password" autocomplete="new-password">
 
-      <label for="reg-becenev">Becenev (ez latszik a ranglistan)</label>
+      <label for="reg-becenev">Becenév (ez látszik a ranglistán)</label>
       <input id="reg-becenev" maxlength="20" placeholder="pl. Bence">
 
-      <button type="submit">Regisztracio</button>
+      <button type="submit">Regisztráció</button>
       <div class="uzenet hiba" id="regisztracio-uzenet" hidden></div>
 
       <p class="sugosor">
-        A valodi neved es az e-mail cimed nem kerul fel sehova - csak az
-        azonositod es a becenev.
+        A valódi neved és az e-mail-címed nem kerül fel sehova – csak az
+        azonosítód és a becenév.
       </p>
     </form>
 
-    <p class="valto">Mar van fiokod? <a id="valto-belepesre">Lepj be</a></p>
+    <p class="valto">Már van fiókod? <a id="valto-belepesre">Lépj be</a></p>
   </section>
 
   <!-- -------------------------------------------------------------- fooldal -->
@@ -89,55 +88,55 @@
     </div>
 
     <div class="lap">
-      <h2>Becenev</h2>
+      <h2>Becenév</h2>
       <input id="fo-becenev-input" maxlength="20">
-      <button class="masodlagos" id="fo-becenev-mentes">Becenev mentese</button>
+      <button class="masodlagos" id="fo-becenev-mentes">Becenév mentése</button>
       <div class="uzenet" id="fo-uzenet" hidden></div>
     </div>
 
     <div class="lap" id="fo-kviz-doboz" hidden>
-      <h2>Kviz indul!</h2>
+      <h2>Kvíz indul!</h2>
       <p class="alcim" id="fo-kviz-cim">&nbsp;</p>
-      <label for="fo-pin">Csatlakozasi kod</label>
-      <input id="fo-pin" inputmode="numeric" maxlength="6" placeholder="6 szamjegy">
-      <button id="fo-csatlakozas">Csatlakozas</button>
+      <label for="fo-pin">Csatlakozási kód</label>
+      <input id="fo-pin" inputmode="numeric" maxlength="6" placeholder="6 számjegy">
+      <button id="fo-csatlakozas">Csatlakozás</button>
       <div class="uzenet hiba" id="fo-kviz-uzenet" hidden></div>
     </div>
 
     <div class="lap">
-      <h2>Honnan jottek a csillagok</h2>
+      <h2>Honnan jöttek a csillagok</h2>
       <div id="fo-csillagnaplo"></div>
-      <button class="masodlagos" id="fo-statisztika">Statisztikam</button>
+      <button class="masodlagos" id="fo-statisztika">Statisztikám</button>
     </div>
 
     <div class="lap">
-      <h2>Gyakorlas</h2>
+      <h2>Gyakorlás</h2>
       <p class="sugosor">
-        Egyedul is gyakorolhatsz abbol, amit a tanarod felszabaditott.
-        Csillagot nem er, de a helyes valaszt es a magyarazatot azonnal latod.
+        Egyedül is gyakorolhatsz abból, amit a tanárod felszabadított.
+        Csillagot nem ér, de a helyes választ és a magyarázatot azonnal látod.
       </p>
-      <button class="masodlagos" id="fo-gyakorlas">Gyakorlas inditasa</button>
-      <button class="masodlagos" id="fo-kilepes">Kilepes</button>
+      <button class="masodlagos" id="fo-gyakorlas">Gyakorlás indítása</button>
+      <button class="masodlagos" id="fo-kilepes">Kilépés</button>
     </div>
   </section>
 
   <!-- ------------------------------------------------------------ gyakorlas -->
   <section data-kepernyo="gyakorlas" hidden>
-    <h1>Gyakorlas</h1>
-    <p class="alcim">Ez nem er csillagot - nyugodtan hibazhatsz.</p>
+    <h1>Gyakorlás</h1>
+    <p class="alcim">Ez nem ér csillagot – nyugodtan hibázhatsz.</p>
 
     <div class="lap" id="gyak-valaszto">
-      <label for="gyak-bank">Mibol gyakorolsz?</label>
+      <label for="gyak-bank">Miből gyakorolsz?</label>
       <select id="gyak-bank"></select>
 
-      <label for="gyak-resz">Melyik resz?</label>
+      <label for="gyak-resz">Melyik rész?</label>
       <select id="gyak-resz"></select>
 
-      <label for="gyak-db">Hany kerdes?</label>
+      <label for="gyak-db">Hány kérdés?</label>
       <input type="number" id="gyak-db" value="10" min="1" max="50">
 
-      <button id="gyak-inditas">Kezdjuk</button>
-      <button class="masodlagos" id="gyak-vissza">Vissza a fooldalra</button>
+      <button id="gyak-inditas">Kezdjük</button>
+      <button class="masodlagos" id="gyak-vissza">Vissza a főoldalra</button>
       <div class="uzenet" id="gyak-uzenet" hidden></div>
     </div>
 
@@ -151,39 +150,39 @@
         <div id="gyak-beviteli-mezo"></div>
       </div>
       <div id="gyak-valaszok" class="valaszgombok"></div>
-      <button id="gyak-kuldes" hidden>Ellenorzes</button>
+      <button id="gyak-kuldes" hidden>Ellenőrzés</button>
 
       <div class="lap kozepre" id="gyak-visszajelzes" hidden>
         <div class="nagyjelzes" id="gyak-jelzes">&nbsp;</div>
-        <p class="alcim">A helyes valasz:</p>
+        <p class="alcim">A helyes válasz:</p>
         <p id="gyak-helyes"><b>&nbsp;</b></p>
         <p class="sugosor" id="gyak-magyarazat">&nbsp;</p>
-        <button id="gyak-kovetkezo">Kovetkezo</button>
+        <button id="gyak-kovetkezo">Következő</button>
       </div>
     </div>
 
     <div class="lap kozepre" id="gyak-vege" hidden>
-      <h2>Kesz!</h2>
+      <h2>Kész!</h2>
       <div class="pontok" id="gyak-eredmeny">&nbsp;</div>
       <p class="alcim" id="gyak-osszegzes">&nbsp;</p>
-      <button id="gyak-ujra">Meg egy kor</button>
-      <button class="masodlagos" id="gyak-vege-vissza">Vissza a fooldalra</button>
+      <button id="gyak-ujra">Még egy kör</button>
+      <button class="masodlagos" id="gyak-vege-vissza">Vissza a főoldalra</button>
     </div>
   </section>
 
   <!-- ---------------------------------------------------------- statisztika -->
   <section data-kepernyo="statisztika" hidden>
-    <h1>Statisztikam</h1>
+    <h1>Statisztikám</h1>
     <p class="alcim" id="stat-osszegzes">&nbsp;</p>
 
     <div class="lap">
-      <h2>Temakoronkent</h2>
-      <p class="sugosor">A csillag azt jelenti, hogy abbol a temakorbol mar mesterfokod van.</p>
+      <h2>Témakörönként</h2>
+      <p class="sugosor">A csillag azt jelenti, hogy abból a témakörből már mesterfokod van.</p>
       <div id="stat-temakorok"></div>
     </div>
 
     <div class="lap">
-      <h2>Kvizeim</h2>
+      <h2>Kvízeim</h2>
       <div id="stat-kvizek" class="jatekoslista"></div>
       <button class="masodlagos" id="stat-vissza">Vissza</button>
     </div>
@@ -196,7 +195,7 @@
       <div class="lap kozepre">
         <h1>Bent vagy!</h1>
         <p class="alcim" id="varakozas-becenev">&nbsp;</p>
-        <p class="alcim">Varjuk a tanart. Ne zard be az oldalt.</p>
+        <p class="alcim">Várjuk a tanárt. Ne zárd be az oldalt.</p>
         <div class="pontok" id="varakozas-letszam">&nbsp;</div>
       </div>
     </div>
@@ -210,10 +209,10 @@
         <div class="kerdesszoveg-diak" id="jatek-kerdes">&nbsp;</div>
       </div>
       <div id="jatek-valaszok" class="valaszgombok"></div>
-      <button id="jatek-kuldes" hidden>Valasz elkuldese</button>
+      <button id="jatek-kuldes" hidden>Válasz elküldése</button>
       <div class="lap kozepre" id="jatek-elkuldve" hidden>
-        <h2>Elkuldve</h2>
-        <p class="alcim">Varjuk a tobbieket...</p>
+        <h2>Elküldve</h2>
+        <p class="alcim">Várjuk a többieket…</p>
       </div>
     </div>
 
@@ -221,12 +220,12 @@
       <div class="lap kozepre" id="eredmeny-doboz">
         <div class="nagyjelzes" id="eredmeny-jelzes">&nbsp;</div>
         <div class="pontok" id="eredmeny-pont">&nbsp;</div>
-        <p class="alcim">A helyes valasz:</p>
+        <p class="alcim">A helyes válasz:</p>
         <p id="eredmeny-helyes-diak"><b>&nbsp;</b></p>
         <p class="sugosor" id="eredmeny-magyarazat-diak">&nbsp;</p>
       </div>
       <div class="lap">
-        <h2>Allas</h2>
+        <h2>Állás</h2>
         <div id="eredmeny-allas" class="jatekoslista"></div>
       </div>
     </div>
@@ -238,9 +237,9 @@
         <p class="alcim" id="vege-reszletek">&nbsp;</p>
       </div>
       <div class="lap">
-        <h2>Vegeredmeny</h2>
+        <h2>Végeredmény</h2>
         <div id="vege-lista-diak" class="jatekoslista"></div>
-        <button class="masodlagos" id="vege-vissza">Vissza a fooldalra</button>
+        <button class="masodlagos" id="vege-vissza">Vissza a főoldalra</button>
       </div>
     </div>
 
@@ -249,12 +248,12 @@
 
   <!-- ------------------------------------------------------ konfig hianyzik -->
   <section data-kepernyo="nincs-konfig" hidden>
-    <h1>Meg nincs beallitva</h1>
+    <h1>Még nincs beállítva</h1>
     <div class="lap">
-      <p>A <code>web/js/firebase-config.js</code> meg a minta ertekeket tartalmazza.</p>
+      <p>A <code>web/js/firebase-config.js</code> még a minta értékeket tartalmazza.</p>
       <p class="sugosor">
-        Firebase konzol &rarr; Projekt beallitasai &rarr; Altalanos &rarr;
-        Web-alkalmazas &rarr; Konfiguracio. Masold be az ertekeket, es toltsd ujra az oldalt.
+        Firebase konzol &rarr; Projekt beállításai &rarr; Általános &rarr;
+        Web-alkalmazás &rarr; Konfiguráció. Másold be az értékeket, és töltsd újra az oldalt.
       </p>
     </div>
   </section>
@@ -269,8 +268,8 @@
     if (!betoltes || betoltes.hidden) return;
     betoltes.innerHTML =
       '<h1>Nem indult el az oldal</h1>' +
-      '<div class="lap"><p>Toltsd ujra az oldalt. Ha igy sem megy, szolj a tanarodnak.</p>' +
-      '<p class="sugosor">A reszletek a bongeszo konzoljaban (F12) lathatok.</p></div>';
+      '<div class="lap"><p>Töltsd újra az oldalt. Ha így sem megy, szólj a tanárodnak.</p>' +
+      '<p class="sugosor">A részletek a böngésző konzoljában (F12) láthatók.</p></div>';
   }, 8000);
 </script>
 <script type="module" src="js/diak/fo.js"></script>

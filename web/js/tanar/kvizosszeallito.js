@@ -33,15 +33,15 @@ export async function kvizosszeallitotIndit(tanarOsztalyai, inditoFuggveny) {
   const legordulo = elem('kviz-bank');
   legordulo.innerHTML = '';
   if (!bankok.length) {
-    legordulo.innerHTML = '<option value="">(meg nincs publikalt bank)</option>';
+    legordulo.innerHTML = '<option value="">(még nincs publikált bank)</option>';
     uzenet('kviz-uzenet',
-      'Meg nincs publikalt kerdesbank. Futtasd: node admin/icdl-admin.js publikal', 'info');
+      'Még nincs publikált kérdésbank. Futtasd: node admin/icdl-admin.js publikal', 'info');
     return;
   }
   for (const bank of bankok) {
     const sor = document.createElement('option');
     sor.value = bank.kod;
-    sor.textContent = `${bank.cim} (${bank.kerdes_db} kerdes)`;
+    sor.textContent = `${bank.cim} (${bank.kerdes_db} kérdés)`;
     legordulo.append(sor);
   }
   await bankotValaszt(bankok[0].kod);
@@ -78,7 +78,7 @@ function osztalylegordulotKitolt() {
   const legordulo = elem('kviz-osztaly');
   legordulo.innerHTML = '';
   if (!osztalyok.length) {
-    legordulo.innerHTML = '<option value="">(nincs osztalyod)</option>';
+    legordulo.innerHTML = '<option value="">(nincs osztályod)</option>';
     return;
   }
   for (const osztaly of osztalyok) {
@@ -95,9 +95,9 @@ async function kviztInditaniGomb(esemeny) {
   uzenet('kviz-uzenet', '');
 
   const osztalyId = elem('kviz-osztaly').value;
-  if (!osztalyId) return uzenet('kviz-uzenet', 'Valassz osztalyt.');
+  if (!osztalyId) return uzenet('kviz-uzenet', 'Válassz osztályt.');
   if (!talalatok.length) {
-    return uzenet('kviz-uzenet', 'Nincs mibol sorsolni. Bovitsd a tartomanyt vagy a nehezseget.');
+    return uzenet('kviz-uzenet', 'Nincs miből sorsolni. Bővítsd a tartományt vagy a nehézséget.');
   }
 
   await gombbal(esemeny.target, async () => {
@@ -133,7 +133,7 @@ async function bankotValaszt(bankKod) {
   aktualisBank = bankok.find((b) => b.kod === bankKod);
   uzenet('kviz-uzenet', '');
   elem('kviz-elonezet-lap').hidden = true;
-  elem('kviz-szamlalo').textContent = 'Betoltes...';
+  elem('kviz-szamlalo').textContent = 'Betöltés…';
 
   try {
     [aktualisDiasor, kerdesek] = await Promise.all([
@@ -149,13 +149,13 @@ async function bankotValaszt(bankKod) {
   // kiolvashatna a megoldokulcsot.
   const szabadDb = kerdesek.filter((k) => felszabaditott(k, felszabaditasok)).length;
   elem('kviz-felszabaditott-info').textContent = szabadDb
-    ? `Ebbol a bankbol ${szabadDb} kerdes gyakorlasra fel van szabaditva - `
-      + 'azoknal a diak latja a megoldast, ezert elo kvizbe nem valok.'
-    : 'Ebbol a bankbol semmi nincs felszabaditva gyakorlasra.';
+    ? `Ebből a bankból ${szabadDb} kérdés gyakorlásra fel van szabadítva – `
+      + 'azoknál a diák látja a megoldást, ezért élő kvízbe nem valók.'
+    : 'Ebből a bankból semmi nincs felszabadítva gyakorlásra.';
 
   elem('kviz-bank-info').textContent = aktualisDiasor
-    ? `${aktualisDiasor.forras_pptx} - ${aktualisDiasor.szamozott_diaszam} szamozott dia`
-    : 'Ehhez a bankhoz nincs diasor - csak temakor szerint valogathato.';
+    ? `${aktualisDiasor.forras_pptx} – ${aktualisDiasor.szamozott_diaszam} számozott dia`
+    : 'Ehhez a bankhoz nincs diasor – csak témakör szerint válogatható.';
 
   diaCsuszkatBeallit();
   fejezeteketKirak();
@@ -261,13 +261,13 @@ function szamlalotFrissit() {
   if (!talalatok.length) {
     szamlalo.className = 'szamlalo ures';
     szamlalo.textContent = mod === 'dia'
-      ? 'Ebben a diatartomanyban nincs kerdes.'
-      : 'Nincs kivalasztva semmi, vagy nincs ra kerdes.';
+      ? 'Ebben a diatartományban nincs kérdés.'
+      : 'Nincs kiválasztva semmi, vagy nincs rá kérdés.';
   } else {
     szamlalo.className = kisorsolt < valogatas.db ? 'szamlalo keves' : 'szamlalo';
     szamlalo.textContent = kisorsolt < valogatas.db
-      ? `${talalatok.length} kerdes felel meg - ennyi lesz kisorsolva, mert kevesebb, mint ${valogatas.db}.`
-      : `${talalatok.length} kerdes felel meg, ebbol ${kisorsolt} lesz kisorsolva.`;
+      ? `${talalatok.length} kérdés felel meg – ennyi lesz kisorsolva, mert kevesebb, mint ${valogatas.db}.`
+      : `${talalatok.length} kérdés felel meg, ebből ${kisorsolt} lesz kisorsolva.`;
   }
   return { valogatas, talalatok };
 }
@@ -277,7 +277,7 @@ async function elonezet(esemeny) {
   uzenet('kviz-uzenet', '');
 
   if (!talalatok.length) {
-    return uzenet('kviz-uzenet', 'Nincs mibol sorsolni. Bovitsd a tartomanyt vagy a nehezseget.');
+    return uzenet('kviz-uzenet', 'Nincs miből sorsolni. Bővítsd a tartományt vagy a nehézséget.');
   }
 
   await gombbal(esemeny.target, async () => {
@@ -290,7 +290,7 @@ async function elonezet(esemeny) {
     }
 
     elem('kviz-elonezet-cim').textContent =
-      `Elonezet - ${kisorsolt.length} kerdes (${valogatas.ido_limit} mp / kerdes)`;
+      `Előnézet – ${kisorsolt.length} kérdés (${valogatas.ido_limit} mp / kérdés)`;
 
     const lista = elem('kviz-elonezet-lista');
     lista.innerHTML = '';
@@ -303,7 +303,7 @@ async function elonezet(esemeny) {
           `<div class="kerdesszoveg"></div>` +
           `<div class="cimkesor">` +
             `<span class="jelolo">${TIPUS_NEVE[kerdes.tipus] || kerdes.tipus}</span>` +
-            `<span class="jelolo">nehezseg ${kerdes.nehezseg}</span>` +
+            `<span class="jelolo">nehézség ${kerdes.nehezseg}</span>` +
             (Number.isInteger(kerdes.dia) ? `<span class="jelolo">${kerdes.dia}. dia</span>` : '') +
             `<span class="jelolo">${kerdes.temakor || ''}</span>` +
           `</div>` +

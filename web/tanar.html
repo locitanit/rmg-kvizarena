@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>ICDL Gyakorlo - tanari pult</title>
+  <title>ICDL Gyakorló – tanári pult</title>
   <link rel="stylesheet" href="css/kozos.css">
   <link rel="stylesheet" href="css/tanar.css">
 </head>
@@ -12,26 +12,26 @@
 <main class="burok szeles">
 
   <section data-kepernyo="betoltes">
-    <p class="alcim">Betoltes...</p>
+    <p class="alcim">Betöltés…</p>
   </section>
 
   <!-- -------------------------------------------------------------- belepes -->
   <section data-kepernyo="belepes" hidden>
-    <h1>Tanari pult</h1>
-    <p class="alcim">ICDL Gyakorlo</p>
+    <h1>Tanári pult</h1>
+    <p class="alcim">ICDL Gyakorló</p>
 
     <form class="lap keskeny" id="belepes-urlap">
       <label for="belepes-email">E-mail</label>
       <input id="belepes-email" type="email" autocomplete="username">
 
-      <label for="belepes-jelszo">Jelszo</label>
+      <label for="belepes-jelszo">Jelszó</label>
       <input id="belepes-jelszo" type="password" autocomplete="current-password">
 
-      <button type="submit">Belepes</button>
+      <button type="submit">Belépés</button>
       <div class="uzenet hiba" id="belepes-uzenet" hidden></div>
 
       <p class="sugosor">
-        Tanari jogot csak az admin parancssor adhat, a sajat gepeden:<br>
+        Tanári jogot csak az admin parancssor adhat, a saját gépeden:<br>
         <code>node admin/icdl-admin.js tanar hozzaad &lt;email&gt; &lt;nev&gt;</code>
       </p>
     </form>
@@ -44,23 +44,23 @@
         <h1 id="pult-nev">&nbsp;</h1>
         <p class="alcim" id="pult-email">&nbsp;</p>
       </div>
-      <button class="masodlagos keskeny-gomb" id="pult-kilepes">Kilepes</button>
+      <button class="masodlagos keskeny-gomb" id="pult-kilepes">Kilépés</button>
     </header>
 
     <nav class="fulek">
-      <button class="ful kivalasztott" data-ful="osztalyok">Osztalyok</button>
-      <button class="ful" data-ful="kviz">Kviz osszeallitasa</button>
-      <button class="ful" data-ful="eredmenyek">Eredmenyek</button>
+      <button class="ful kivalasztott" data-ful="osztalyok">Osztályok</button>
+      <button class="ful" data-ful="kviz">Kvíz összeállítása</button>
+      <button class="ful" data-ful="eredmenyek">Eredmények</button>
     </nav>
 
     <!-- ------------------------------------------------------- osztalyok ful -->
     <div data-panel="osztalyok">
       <div class="oszlopok">
         <div class="lap">
-          <h2>Osztalyaim</h2>
+          <h2>Osztályaim</h2>
           <div id="osztalylista"></div>
           <p class="sugosor">
-            Uj osztalyt az admin parancssor hoz letre:<br>
+            Új osztályt az admin parancssor hoz létre:<br>
             <code>node admin/icdl-admin.js osztaly letrehoz 10T</code>
           </p>
         </div>
@@ -68,7 +68,7 @@
         <div class="lap">
           <h2 id="tagok-cim">Tagok</h2>
           <p class="alcim" id="tagok-kod">&nbsp;</p>
-          <div id="tagoklista"><p class="alcim">Valassz osztalyt a bal oldalon.</p></div>
+          <div id="tagoklista"><p class="alcim">Válassz osztályt a bal oldalon.</p></div>
           <div class="uzenet" id="pult-uzenet" hidden></div>
         </div>
       </div>
@@ -79,21 +79,21 @@
       <div class="oszlopok">
 
         <div class="lap">
-          <h2>Mibol kerdezunk?</h2>
+          <h2>Miből kérdezünk?</h2>
 
-          <label for="kviz-bank">Kerdesbank</label>
+          <label for="kviz-bank">Kérdésbank</label>
           <select id="kviz-bank"></select>
           <p class="alcim" id="kviz-bank-info">&nbsp;</p>
 
-          <label>Valogatas modja</label>
+          <label>Válogatás módja</label>
           <div class="modvalaszto">
-            <button type="button" class="modgomb kivalasztott" data-mod="dia">Diatartomany</button>
+            <button type="button" class="modgomb kivalasztott" data-mod="dia">Diatartomány</button>
             <button type="button" class="modgomb" data-mod="fejezet">Fejezet</button>
-            <button type="button" class="modgomb" data-mod="temakor">Temakor</button>
+            <button type="button" class="modgomb" data-mod="temakor">Témakör</button>
           </div>
 
           <div data-mod-panel="dia">
-            <label for="kviz-dia-tol">Melyik diatol? <b id="kviz-dia-tol-ertek">1</b></label>
+            <label for="kviz-dia-tol">Melyik diától? <b id="kviz-dia-tol-ertek">1</b></label>
             <input type="range" id="kviz-dia-tol" min="1" max="1" value="1">
             <label for="kviz-dia-ig">Meddig jutottunk? <b id="kviz-dia-ig-ertek">1</b></label>
             <input type="range" id="kviz-dia-ig" min="1" max="1" value="1">
@@ -110,46 +110,46 @@
         </div>
 
         <div class="lap">
-          <h2>Beallitasok</h2>
+          <h2>Beállítások</h2>
 
-          <label for="kviz-nehezseg">Nehezseg legfeljebb</label>
+          <label for="kviz-nehezseg">Nehézség legfeljebb</label>
           <select id="kviz-nehezseg">
-            <option value="1">1 - konnyu</option>
-            <option value="2">2 - kozepes</option>
-            <option value="3" selected>3 - nehez (mind)</option>
+            <option value="1">1 – könnyű</option>
+            <option value="2">2 – közepes</option>
+            <option value="3" selected>3 – nehéz (mind)</option>
           </select>
 
           <label class="pipa">
             <input type="checkbox" id="kviz-elo-tipusok" checked>
-            <span>Csak elo kvizben hasznalhato tipusok</span>
+            <span>Csak élő kvízben használható típusok</span>
           </label>
 
           <label class="pipa">
             <input type="checkbox" id="kviz-kihagy-felszabaditott" checked>
-            <span>Felszabaditott kerdesek kihagyasa</span>
+            <span>Felszabadított kérdések kihagyása</span>
           </label>
           <p class="sugosor" id="kviz-felszabaditott-info">&nbsp;</p>
 
-          <label for="kviz-db">Hany kerdes legyen?</label>
+          <label for="kviz-db">Hány kérdés legyen?</label>
           <input type="number" id="kviz-db" value="12" min="1" max="50">
 
-          <label for="kviz-ido">Idolimit kerdesenkent (mp)</label>
+          <label for="kviz-ido">Időlimit kérdésenként (mp)</label>
           <input type="number" id="kviz-ido" value="25" min="5" max="120">
 
           <div class="szamlalo" id="kviz-szamlalo">&nbsp;</div>
 
-          <button type="button" id="kviz-elonezet">Elonezet</button>
+          <button type="button" id="kviz-elonezet">Előnézet</button>
 
-          <label for="kviz-osztaly">Melyik osztalynak?</label>
+          <label for="kviz-osztaly">Melyik osztálynak?</label>
           <select id="kviz-osztaly"></select>
-          <button type="button" class="masodlagos" id="kviz-inditas">Kviz inditasa</button>
+          <button type="button" class="masodlagos" id="kviz-inditas">Kvíz indítása</button>
 
           <div class="uzenet" id="kviz-uzenet" hidden></div>
         </div>
       </div>
 
       <div class="lap" id="kviz-elonezet-lap" hidden>
-        <h2 id="kviz-elonezet-cim">Elonezet</h2>
+        <h2 id="kviz-elonezet-cim">Előnézet</h2>
         <div id="kviz-elonezet-lista"></div>
       </div>
     </div>
@@ -157,32 +157,32 @@
     <!-- ------------------------------------------------------ eredmenyek ful -->
     <div data-panel="eredmenyek" hidden>
       <div class="valasztosor">
-        <label for="er-osztaly">Osztaly</label>
+        <label for="er-osztaly">Osztály</label>
         <select id="er-osztaly"></select>
       </div>
 
       <nav class="alfulek">
-        <button type="button" class="alful kivalasztott" data-alful="archivum">Kviz-archivum</button>
-        <button type="button" class="alful" data-alful="osztaly">Osztalystatisztika</button>
-        <button type="button" class="alful" data-alful="diakok">Diakok</button>
-        <button type="button" class="alful" data-alful="csillagok">Csillagbeallitas</button>
-        <button type="button" class="alful" data-alful="gyakorlas">Gyakorlasra szabaditas</button>
+        <button type="button" class="alful kivalasztott" data-alful="archivum">Kvíz-archívum</button>
+        <button type="button" class="alful" data-alful="osztaly">Osztálystatisztika</button>
+        <button type="button" class="alful" data-alful="diakok">Diákok</button>
+        <button type="button" class="alful" data-alful="csillagok">Csillagbeállítás</button>
+        <button type="button" class="alful" data-alful="gyakorlas">Gyakorlásra szabadítás</button>
       </nav>
 
       <!-- archivum -->
       <div data-alpanel="archivum">
         <div class="oszlopok">
           <div class="lap">
-            <h2>Lefuttatott kvizek</h2>
+            <h2>Lefuttatott kvízek</h2>
             <div id="archivum-lista"></div>
           </div>
           <div class="lap">
-            <h2 id="elemzes-cim">Egy kviz elemzese</h2>
-            <p class="alcim" id="elemzes-osszegzes">Valassz kvizt a bal oldalon.</p>
+            <h2 id="elemzes-cim">Egy kvíz elemzése</h2>
+            <p class="alcim" id="elemzes-osszegzes">Válassz kvízt a bal oldalon.</p>
             <div id="elemzes-kerdesek"></div>
-            <h2 style="margin-top:18px">Diakonkent</h2>
+            <h2 style="margin-top:18px">Diákonként</h2>
             <div id="elemzes-diakok"></div>
-            <button type="button" class="masodlagos" id="elemzes-csv" hidden>CSV letoltese</button>
+            <button type="button" class="masodlagos" id="elemzes-csv" hidden>CSV letöltése</button>
           </div>
         </div>
       </div>
@@ -191,17 +191,17 @@
       <div data-alpanel="osztaly" hidden>
         <div class="oszlopok">
           <div class="lap">
-            <h2>Temakoronkenti osztalyatlag</h2>
-            <p class="sugosor">Ez mondja meg, mit erdemes ujra elovenni.</p>
+            <h2>Témakörönkénti osztályátlag</h2>
+            <p class="sugosor">Ez mondja meg, mit érdemes újra elővenni.</p>
             <div id="osztaly-temakorok"></div>
           </div>
           <div class="lap">
-            <h2>Csillagok eloszlasa</h2>
+            <h2>Csillagok eloszlása</h2>
             <p class="sugosor">
-              Ha egy-ket diak visz mindent, a rendszer nem mukodik jol - ez a mutato szol erte.
+              Ha egy-két diák visz mindent, a rendszer nem működik jól – ez a mutató szól érte.
             </p>
             <div id="osztaly-csillagok"></div>
-            <button type="button" class="masodlagos" id="osztaly-csv">CSV letoltese</button>
+            <button type="button" class="masodlagos" id="osztaly-csv">CSV letöltése</button>
             <div class="uzenet" id="osztaly-uzenet" hidden></div>
           </div>
         </div>
@@ -211,19 +211,19 @@
       <div data-alpanel="diakok" hidden>
         <div class="oszlopok">
           <div class="lap">
-            <h2>Diakok</h2>
+            <h2>Diákok</h2>
             <div id="diakok-lista"></div>
           </div>
           <div class="lap">
-            <h2 id="diaklap-cim">Egy diak lapja</h2>
-            <p class="alcim" id="diaklap-osszegzes">Valassz diakot a bal oldalon.</p>
+            <h2 id="diaklap-cim">Egy diák lapja</h2>
+            <p class="alcim" id="diaklap-osszegzes">Válassz diákot a bal oldalon.</p>
             <div id="diaklap-temakorok"></div>
-            <h2 style="margin-top:18px">Csillagtortenet</h2>
+            <h2 style="margin-top:18px">Csillagtörténet</h2>
             <div id="diaklap-csillagok"></div>
             <button type="button" class="masodlagos" id="diaklap-bevaltas" hidden>
-              Csillagok bevaltasa otosre
+              Csillagok beváltása ötösre
             </button>
-            <button type="button" class="masodlagos" id="diaklap-csv" hidden>CSV letoltese</button>
+            <button type="button" class="masodlagos" id="diaklap-csv" hidden>CSV letöltése</button>
             <div class="uzenet" id="diaklap-uzenet" hidden></div>
           </div>
         </div>
@@ -233,31 +233,31 @@
       <div data-alpanel="gyakorlas" hidden>
         <div class="oszlopok">
           <div class="lap">
-            <h2>Mit gyakorolhatnak egyedul?</h2>
+            <h2>Mit gyakorolhatnak egyedül?</h2>
             <p class="sugosor">
-              A felszabaditott anyaghoz a diak <b>latja a helyes valaszt es a magyarazatot</b>,
-              es barmikor gyakorolhat vele - csillagot viszont nem er.
+              A felszabadított anyaghoz a diák <b>látja a helyes választ és a magyarázatot</b>,
+              és bármikor gyakorolhat vele – csillagot viszont nem ér.
             </p>
             <p class="sugosor" style="color:var(--csillag)">
-              Ezert felszabaditott anyagbol NE indits elo kvizt: a kulcs ott mar
-              elerheto a diaknak. A kvizosszeallito ezeket alapbol ki is hagyja.
+              Ezért felszabadított anyagból NE indíts élő kvízt: a kulcs ott már
+              elérhető a diáknak. A kvízösszeállító ezeket alapból ki is hagyja.
             </p>
 
-            <label for="fsz-bank">Kerdesbank</label>
+            <label for="fsz-bank">Kérdésbank</label>
             <select id="fsz-bank"></select>
 
             <label class="pipa">
               <input type="checkbox" id="fsz-mind">
-              <span>Az EGESZ bank felszabaditasa</span>
+              <span>Az EGÉSZ bank felszabadítása</span>
             </label>
 
-            <button type="button" id="fsz-mentes">Mentes</button>
+            <button type="button" id="fsz-mentes">Mentés</button>
             <div class="uzenet" id="fsz-uzenet" hidden></div>
           </div>
 
           <div class="lap">
-            <h2>Fejezetenkent</h2>
-            <p class="sugosor">Ha nem az egesz bank kell, pipald ki a fejezeteket.</p>
+            <h2>Fejezetenként</h2>
+            <p class="sugosor">Ha nem az egész bank kell, pipáld ki a fejezeteket.</p>
             <div id="fsz-fejezetek" class="pipalista"></div>
           </div>
         </div>
@@ -266,38 +266,41 @@
       <!-- csillagbeallitas -->
       <div data-alpanel="csillagok" hidden>
         <div class="lap keskeny">
-          <h2>Csillagbeallitas</h2>
+          <h2>Csillagbeállítás</h2>
           <p class="sugosor">
-            Mind a negy forras kulon kikapcsolhato, es az ertekek atirhatok -
-            kodot nem kell modositani.
+            Mind a négy forrás külön kikapcsolható, és az értékek átírhatók –
+            kódot nem kell módosítani.
           </p>
 
-          <label class="pipa"><input type="checkbox" id="cs-dobogo_be"> Dobogo</label>
-          <label for="cs-dobogo_ertekek">Dobogos csillagok (1./2./3.)</label>
+          <label class="pipa"><input type="checkbox" id="cs-dobogo_be"> <span>Dobogó</span></label>
+          <label for="cs-dobogo_ertekek">Dobogós csillagok (1./2./3.)</label>
           <input id="cs-dobogo_ertekek" placeholder="3,2,1">
 
-          <label class="pipa"><input type="checkbox" id="cs-csucs_be"> Szemelyes csucs</label>
+          <label class="pipa"><input type="checkbox" id="cs-csucs_be">
+            <span>Személyes csúcs</span></label>
           <label class="pipa"><input type="checkbox" id="cs-csucs_dontetlen_is">
-            A csucs elerese is er csillagot</label>
-          <label for="cs-csucs_min_kviz">Hany korabbi kviz utan szamit</label>
+            <span>A csúcs elérése is ér csillagot</span></label>
+          <label for="cs-csucs_min_kviz">Hány korábbi kvíz után számít</label>
           <input type="number" id="cs-csucs_min_kviz" min="0" max="20">
 
-          <label class="pipa"><input type="checkbox" id="cs-mesterfok_be"> Mesterfok</label>
-          <label for="cs-mesterfok_kuszob">Mesterfok kuszob (%)</label>
+          <label class="pipa"><input type="checkbox" id="cs-mesterfok_be">
+            <span>Mesterfok</span></label>
+          <label for="cs-mesterfok_kuszob">Mesterfok küszöb (%)</label>
           <input type="number" id="cs-mesterfok_kuszob" min="10" max="100">
-          <label for="cs-mesterfok_min_kerdes">Legalabb ennyi kerdes a temakorben</label>
+          <label for="cs-mesterfok_min_kerdes">Legalább ennyi kérdés a témakörben</label>
           <input type="number" id="cs-mesterfok_min_kerdes" min="1" max="50">
 
-          <label class="pipa"><input type="checkbox" id="cs-kitartas_be"> Kitartas</label>
-          <label for="cs-kitartas_gyakorisag">Minden hanyadik kvizert</label>
+          <label class="pipa"><input type="checkbox" id="cs-kitartas_be">
+            <span>Kitartás</span></label>
+          <label for="cs-kitartas_gyakorisag">Minden hányadik kvízért</label>
           <input type="number" id="cs-kitartas_gyakorisag" min="1" max="20">
 
-          <label for="cs-kviz_max_csillag">Legfeljebb ennyi csillag egy kvizert</label>
+          <label for="cs-kviz_max_csillag">Legfeljebb ennyi csillag egy kvízért</label>
           <input type="number" id="cs-kviz_max_csillag" min="1" max="20">
-          <label for="cs-jegy_kuszob">Ennyi csillag = egy otos</label>
+          <label for="cs-jegy_kuszob">Ennyi csillag = egy ötös</label>
           <input type="number" id="cs-jegy_kuszob" min="1" max="30">
 
-          <button type="button" id="cs-mentes">Mentes</button>
+          <button type="button" id="cs-mentes">Mentés</button>
           <div class="uzenet" id="cs-uzenet" hidden></div>
         </div>
       </div>
@@ -311,22 +314,22 @@
         <h1 id="jatek-cim">&nbsp;</h1>
         <p class="alcim" id="jatek-allapot">&nbsp;</p>
       </div>
-      <button class="masodlagos keskeny-gomb" id="jatek-megszakitas">Kviz lezarasa</button>
+      <button class="masodlagos keskeny-gomb" id="jatek-megszakitas">Kvíz lezárása</button>
     </header>
 
     <div data-jatek="varakozik">
       <div class="lap kozepre">
-        <p class="alcim">Csatlakozasi kod</p>
+        <p class="alcim">Csatlakozási kód</p>
         <div class="pinkijelzo" id="jatek-pin">&nbsp;</div>
         <p class="sugosor">
-          A diakok belepnek a sajat telefonjukon, es beirjak ezt a kodot.
-          Ha az osztalyukban fut kviz, egy gombbal is csatlakozhatnak.
+          A diákok belépnek a saját telefonjukon, és beírják ezt a kódot.
+          Ha az osztályukban fut kvíz, egy gombbal is csatlakozhatnak.
         </p>
       </div>
       <div class="lap">
         <h2>Csatlakozott: <span id="lobbi-db">0</span></h2>
         <div id="lobbi-lista" class="jatekoslista"></div>
-        <button type="button" id="jatek-inditas">Inditas</button>
+        <button type="button" id="jatek-inditas">Indítás</button>
       </div>
     </div>
 
@@ -341,30 +344,30 @@
       </div>
       <div class="lap">
         <div class="szamlalo" id="kerdes-valaszoltak">&nbsp;</div>
-        <button type="button" id="jatek-lezaras">Lezaras most</button>
+        <button type="button" id="jatek-lezaras">Lezárás most</button>
       </div>
     </div>
 
     <div data-jatek="eredmeny" hidden>
       <div class="oszlopok">
         <div class="lap">
-          <h2>A helyes valasz</h2>
+          <h2>A helyes válasz</h2>
           <div class="helyesvalasz" id="eredmeny-helyes">&nbsp;</div>
           <p class="alcim" id="eredmeny-magyarazat">&nbsp;</p>
-          <h2 style="margin-top:18px">Valaszeloszlas</h2>
+          <h2 style="margin-top:18px">Válaszeloszlás</h2>
           <div id="eredmeny-eloszlas"></div>
         </div>
         <div class="lap">
           <h2>Ranglista</h2>
           <div id="eredmeny-ranglista" class="jatekoslista"></div>
-          <button type="button" id="jatek-kovetkezo">Kovetkezo kerdes</button>
+          <button type="button" id="jatek-kovetkezo">Következő kérdés</button>
         </div>
       </div>
     </div>
 
     <div data-jatek="vege" hidden>
       <div class="lap">
-        <h2>Vegeredmeny</h2>
+        <h2>Végeredmény</h2>
         <div id="vege-lista" class="jatekoslista"></div>
         <button type="button" class="masodlagos" id="jatek-vissza">Vissza a pulthoz</button>
       </div>
@@ -372,34 +375,34 @@
 
     <div class="uzenet" id="jatek-uzenet" hidden></div>
     <button type="button" class="masodlagos" id="jatek-mentes-csv" hidden>
-      Vegeredmeny mentese CSV-be
+      Végeredmény mentése CSV-be
     </button>
   </section>
 
   <!-- ------------------------------------------------ folytatas felajanlasa -->
   <section data-kepernyo="folytatas" hidden>
-    <h1>Fut egy kvized</h1>
+    <h1>Fut egy kvízed</h1>
     <div class="lap keskeny">
       <p id="folytatas-szoveg">&nbsp;</p>
       <button type="button" id="folytatas-igen">Folytatom</button>
-      <button type="button" class="masodlagos" id="folytatas-nem">Lezarom es uj kvizt inditok</button>
+      <button type="button" class="masodlagos" id="folytatas-nem">Lezárom és új kvízt indítok</button>
     </div>
   </section>
 
   <section data-kepernyo="nincs-konfig" hidden>
-    <h1>Meg nincs beallitva</h1>
+    <h1>Még nincs beállítva</h1>
     <div class="lap keskeny">
-      <p>A <code>web/js/firebase-config.js</code> meg a minta ertekeket tartalmazza.</p>
+      <p>A <code>web/js/firebase-config.js</code> még a minta értékeket tartalmazza.</p>
       <p class="sugosor">
-        Firebase konzol &rarr; Projekt beallitasai &rarr; Altalanos &rarr;
-        Web-alkalmazas &rarr; Konfiguracio. Masold be az ertekeket, es toltsd ujra az oldalt.
+        Firebase konzol &rarr; Projekt beállításai &rarr; Általános &rarr;
+        Web-alkalmazás &rarr; Konfiguráció. Másold be az értékeket, és töltsd újra az oldalt.
       </p>
     </div>
   </section>
 
 </main>
 <script>
-  // Ha a modulok betoltese elszall (pl. elrontott firebase-config.js), a diak ne
+  // Ha a modulok betoltese elszall (pl. elrontott firebase-config.js), a tanar ne
   // egy orokke porgo "Betoltes..." feliratot lasson. Ez szandekosan NEM modul:
   // akkor is lefut, ha a modulok betoltese hibara futott.
   setTimeout(function () {
@@ -407,8 +410,8 @@
     if (!betoltes || betoltes.hidden) return;
     betoltes.innerHTML =
       '<h1>Nem indult el az oldal</h1>' +
-      '<div class="lap"><p>Toltsd ujra az oldalt. Ha igy sem megy, szolj a tanarodnak.</p>' +
-      '<p class="sugosor">A reszletek a bongeszo konzoljaban (F12) lathatok.</p></div>';
+      '<div class="lap"><p>Töltsd újra az oldalt. Ha így sem megy, nézd meg a konzolt.</p>' +
+      '<p class="sugosor">A részletek a böngésző konzoljában (F12) láthatók.</p></div>';
   }, 8000);
 </script>
 <script type="module" src="js/tanar/fo.js"></script>

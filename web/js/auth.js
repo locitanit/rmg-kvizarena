@@ -36,7 +36,7 @@ export async function nyilvanosOsztalyok() {
 async function engedelyezettFiok(osztalyId, azonosito) {
   const dok = await getDoc(doc(db, `osztalyok/${osztalyId}/engedelyezett/${azonosito}`));
   if (!dok.exists()) {
-    throw new BelepesHiba('Nincs ilyen azonosito ebben az osztalyban.');
+    throw new BelepesHiba('Nincs ilyen azonosító ebben az osztályban.');
   }
   return dok.data().email;
 }
@@ -44,8 +44,8 @@ async function engedelyezettFiok(osztalyId, azonosito) {
 // -------------------------------------------------------------------- diakok
 
 export async function diakBelepes(osztalyId, azonosito, jelszo) {
-  if (!osztalyId) throw new BelepesHiba('Valaszd ki az osztalyodat.');
-  if (!azonosito) throw new BelepesHiba('Ird be az azonositodat.');
+  if (!osztalyId) throw new BelepesHiba('Válaszd ki az osztályodat.');
+  if (!azonosito) throw new BelepesHiba('Írd be az azonosítódat.');
 
   const email = await engedelyezettFiok(osztalyId, azonosito.trim().toLowerCase());
   await signInWithEmailAndPassword(auth, email, jelszo);
@@ -56,16 +56,16 @@ export async function diakRegisztracio(belepokod, azonosito, jelszo, jelszoUjra,
   const tisztaAzonosito = (azonosito || '').trim().toLowerCase();
   const tisztaBecenev = (becenev || '').trim();
 
-  if (!kod) throw new BelepesHiba('Ird be az osztalykodot, amit a tanartol kaptal.');
-  if (!tisztaAzonosito) throw new BelepesHiba('Ird be az azonositodat.');
-  if (jelszo.length < 6) throw new BelepesHiba('A jelszo legalabb 6 karakter legyen.');
-  if (jelszo !== jelszoUjra) throw new BelepesHiba('A ket jelszo nem egyezik.');
-  if (!tisztaBecenev) throw new BelepesHiba('Adj meg egy becenevet - ez latszik a ranglistan.');
-  if (tisztaBecenev.length > 20) throw new BelepesHiba('A becenev legfeljebb 20 karakter lehet.');
+  if (!kod) throw new BelepesHiba('Írd be az osztálykódot, amit a tanártól kaptál.');
+  if (!tisztaAzonosito) throw new BelepesHiba('Írd be az azonosítódat.');
+  if (jelszo.length < 6) throw new BelepesHiba('A jelszó legalább 6 karakter legyen.');
+  if (jelszo !== jelszoUjra) throw new BelepesHiba('A két jelszó nem egyezik.');
+  if (!tisztaBecenev) throw new BelepesHiba('Adj meg egy becenevet – ez látszik a ranglistán.');
+  if (tisztaBecenev.length > 20) throw new BelepesHiba('A becenév legfeljebb 20 karakter lehet.');
 
   // 1. A kod feloldasa osztalyra.
   const kodDok = await getDoc(doc(db, `belepok/${kod}`));
-  if (!kodDok.exists()) throw new BelepesHiba('Ilyen osztalykod nincs. Ellenorizd a betuket.');
+  if (!kodDok.exists()) throw new BelepesHiba('Ilyen osztálykód nincs. Ellenőrizd a betűket.');
   const osztalyId = kodDok.data().osztalyId;
 
   // 2. Az azonosito szerepel-e az osztaly engedelyezett listajan.
@@ -111,14 +111,14 @@ export async function diakOsztalya(uid) {
 // -------------------------------------------------------------------- tanarok
 
 export async function tanarBelepes(email, jelszo) {
-  if (!email) throw new BelepesHiba('Ird be az e-mail cimedet.');
+  if (!email) throw new BelepesHiba('Írd be az e-mail-címedet.');
   await signInWithEmailAndPassword(auth, email.trim(), jelszo);
 
   const tanarDok = await getDoc(doc(db, `tanarok/${auth.currentUser.uid}`));
   if (!tanarDok.exists()) {
     await signOut(auth);
     throw new BelepesHiba(
-      'Ennek a fioknak nincs tanari joga. Tanari jogot csak az admin parancssor adhat: ' +
+      'Ennek a fióknak nincs tanári joga. Tanári jogot csak az admin parancssor adhat: ' +
       'icdl-admin tanar hozzaad <email> <nev>'
     );
   }
