@@ -95,14 +95,80 @@
       <div class="uzenet" id="fo-uzenet" hidden></div>
     </div>
 
+    <div class="lap" id="fo-kviz-doboz" hidden>
+      <h2>Kviz indul!</h2>
+      <p class="alcim" id="fo-kviz-cim">&nbsp;</p>
+      <label for="fo-pin">Csatlakozasi kod</label>
+      <input id="fo-pin" inputmode="numeric" maxlength="6" placeholder="6 szamjegy">
+      <button id="fo-csatlakozas">Csatlakozas</button>
+      <div class="uzenet hiba" id="fo-kviz-uzenet" hidden></div>
+    </div>
+
     <div class="lap">
       <h2>Kovetkezik</h2>
       <p class="sugosor">
-        Az elo kviz es a gyakorlo mod a kovetkezo fazisokban keszul el.
-        Most annyi a dolgod, hogy a belepes mukodjon.
+        A gyakorlo mod es a sajat statisztikad a kovetkezo fazisban keszul el.
       </p>
       <button class="masodlagos" id="fo-kilepes">Kilepes</button>
     </div>
+  </section>
+
+  <!-- ----------------------------------------------------------------- jatek -->
+  <section data-kepernyo="jatek" hidden>
+
+    <div data-jatek="varakozik">
+      <div class="lap kozepre">
+        <h1>Bent vagy!</h1>
+        <p class="alcim" id="varakozas-becenev">&nbsp;</p>
+        <p class="alcim">Varjuk a tanart. Ne zard be az oldalt.</p>
+        <div class="pontok" id="varakozas-letszam">&nbsp;</div>
+      </div>
+    </div>
+
+    <div data-jatek="kerdes" hidden>
+      <div class="jatekfej">
+        <span id="jatek-sorszam">&nbsp;</span>
+        <span class="visszaszamlalo" id="jatek-ido">&nbsp;</span>
+      </div>
+      <div class="lap">
+        <div class="kerdesszoveg-diak" id="jatek-kerdes">&nbsp;</div>
+      </div>
+      <div id="jatek-valaszok" class="valaszgombok"></div>
+      <button id="jatek-kuldes" hidden>Valasz elkuldese</button>
+      <div class="lap kozepre" id="jatek-elkuldve" hidden>
+        <h2>Elkuldve</h2>
+        <p class="alcim">Varjuk a tobbieket...</p>
+      </div>
+    </div>
+
+    <div data-jatek="eredmeny" hidden>
+      <div class="lap kozepre" id="eredmeny-doboz">
+        <div class="nagyjelzes" id="eredmeny-jelzes">&nbsp;</div>
+        <div class="pontok" id="eredmeny-pont">&nbsp;</div>
+        <p class="alcim">A helyes valasz:</p>
+        <p id="eredmeny-helyes-diak"><b>&nbsp;</b></p>
+        <p class="sugosor" id="eredmeny-magyarazat-diak">&nbsp;</p>
+      </div>
+      <div class="lap">
+        <h2>Allas</h2>
+        <div id="eredmeny-allas" class="jatekoslista"></div>
+      </div>
+    </div>
+
+    <div data-jatek="vege" hidden>
+      <div class="lap kozepre">
+        <h1 id="vege-helyezes">&nbsp;</h1>
+        <div class="pontok" id="vege-pont">&nbsp;</div>
+        <p class="alcim" id="vege-reszletek">&nbsp;</p>
+      </div>
+      <div class="lap">
+        <h2>Vegeredmeny</h2>
+        <div id="vege-lista-diak" class="jatekoslista"></div>
+        <button class="masodlagos" id="vege-vissza">Vissza a fooldalra</button>
+      </div>
+    </div>
+
+    <div class="uzenet" id="jatek-uzenet" hidden></div>
   </section>
 
   <!-- ------------------------------------------------------ konfig hianyzik -->

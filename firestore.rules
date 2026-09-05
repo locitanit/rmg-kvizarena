@@ -189,8 +189,13 @@ service cloud.firestore {
         allow read: if belepett()
           && (tanar() || tagja(kvizDok(kvizId).osztalyId));
 
-        // A diak felveszi magat a jatekba - nulla ponttal.
+        // A diak felveszi magat a jatekba - nulla ponttal, es csak a SAJAT
+        // osztalya kvizehez.
         allow create: if sajat(uid)
+          && tagja(kvizDok(kvizId).osztalyId)
+          && request.resource.data.keys().hasOnly(
+               ['becenev', 'azonosito', 'pont', 'helyes_db', 'utolso_valasz_ms',
+                'utolso_helyes', 'helyezes', 'csillag'])
           && request.resource.data.pont == 0
           && request.resource.data.helyes_db == 0;
 
@@ -207,7 +212,11 @@ service cloud.firestore {
         allow create: if sajat(request.resource.data.uid)
           && valaszId == request.auth.uid + '_' + string(request.resource.data.kerdesIndex)
           && kvizDok(kvizId).allapot == 'kerdes'
-          && request.resource.data.kerdesIndex == kvizDok(kvizId).aktualis;
+          && request.resource.data.kerdesIndex == kvizDok(kvizId).aktualis
+          // A reakcioidot a SZERVER orajabol szamoljuk (terv 6.3): a diak gepenek
+          // oraja atallithato, ezert a "kuldve" mezo csak szerveridobelyeg lehet.
+          && request.resource.data.kuldve == request.time
+          && request.resource.data.keys().hasOnly(['uid', 'kerdesIndex', 'valasz', 'kuldve']);
 
         // Lezaras utan nem lehet "javitani" a sajat valaszt.
         allow update, delete: if false;

@@ -158,3 +158,49 @@ label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric:
 }
 
 .elonezetsor .helyes { font-size: 0.88rem; color: var(--jo); }
+
+/* --------------------------------------------------- jatekvezetes (kivetito) */
+
+.kerdesfej {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--halvany);
+}
+
+.kerdesfej .visszaszamlalo { font-size: 2rem; }
+
+.nagykerdes {
+  font-size: 1.6rem;
+  line-height: 1.35;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.valaszracs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+@media (max-width: 640px) {
+  .valaszracs { grid-template-columns: 1fr; }
+}
+
+.valaszdoboz {
+  padding: 18px 16px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #fff;
+  border-radius: 12px;
+}
+
+.helyesvalasz {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--jo);
+  margin-bottom: 8px;
+}
+
+.eloszlassor { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+.eloszlassor .cimke { flex: 0 0 34%; font-size: 0.88rem; }
+.eloszlassor .rud { flex: 1; height: 20px; background: var(--hatter); border-radius: 4px; }
+.eloszlassor .rud i { display: block; height: 100%; background: var(--fo); border-radius: 4px; }
+.eloszlassor .ertek { min-width: 26px; text-align: right; font-variant-numeric: tabular-nums; }

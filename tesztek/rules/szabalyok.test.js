@@ -7,6 +7,7 @@ import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
 import { assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
 import {
   doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where,
+  serverTimestamp,
 } from 'firebase/firestore';
 import {
   kornyezetIndit, adatokatFeltolt, mint, mintKivulallo, OSZTALY, BELEPOKOD, KVIZ,
@@ -106,21 +107,21 @@ describe('A diak megprobalja - es elbukik', () => {
   it('13. nem valaszolhat mas nevaben', async () => {
     const db = mint(kornyezet, 'diak2');
     await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/valaszok/diak1_0`), {
-      uid: 'diak1', kerdesIndex: 0, valasz: [1], kuldve_ms: 100,
+      uid: 'diak1', kerdesIndex: 0, valasz: [1], kuldve: serverTimestamp(),
     }));
   });
 
   it('14. nem valaszolhat elore a kovetkezo kerdesre', async () => {
     const db = mint(kornyezet, 'diak2');
     await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/valaszok/diak2_3`), {
-      uid: 'diak2', kerdesIndex: 3, valasz: [1], kuldve_ms: 100,
+      uid: 'diak2', kerdesIndex: 3, valasz: [1], kuldve: serverTimestamp(),
     }));
   });
 
   it('15. nem valaszolhat mar lezart kerdesre', async () => {
     const db = mint(kornyezet, 'diak2');
     await assertFails(setDoc(doc(db, 'kvizek/kviz_lezart/valaszok/diak2_0'), {
-      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve_ms: 100,
+      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve: serverTimestamp(),
     }));
   });
 
@@ -182,6 +183,49 @@ describe('A diak megprobalja - es elbukik', () => {
     const db = mint(kornyezet, 'diak1');
     await assertFails(getDocs(collection(db, 'osztalyok')));
   });
+
+  it('27. nem hamisithatja a reakcioidot sajat idobelyeggel', async () => {
+    // A "kuldve" csak szerveridobelyeg lehet - kulonben a diak 0 ms-os
+    // reakcioidot irhatna be, es mindig megkapna a teljes gyorsasagi pontot.
+    const db = mint(kornyezet, 'diak2');
+    await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/valaszok/diak2_0`), {
+      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve: new Date(2000, 0, 1),
+    }));
+  });
+
+  it('28. nem csempeszhet extra mezot a valaszaba', async () => {
+    const db = mint(kornyezet, 'diak2');
+    await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/valaszok/diak2_0`), {
+      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve: serverTimestamp(), pont: 150,
+    }));
+  });
+
+  it('29. nem csatlakozhat masik osztaly kvizehez', async () => {
+    const db = mint(kornyezet, 'idegen');
+    await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/jatekosok/idegen`), {
+      becenev: 'Idegen', azonosito: 'idegen', pont: 0, helyes_db: 0,
+    }));
+  });
+
+  it('30. nem irhat extra mezot a jatekos-adatlapjara', async () => {
+    const db = mint(kornyezet, 'diak3');
+    await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak3`), {
+      becenev: 'Csongi', azonosito: 'szabo_c07', pont: 0, helyes_db: 0, csalas: true,
+    }));
+  });
+
+  it('31. nem indithat kvizt', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(setDoc(doc(db, 'kvizek/uj_kviz'), {
+      osztalyId: OSZTALY, tanarUid: 'diak1', allapot: 'varakozik', aktualis: 0,
+    }));
+  });
+
+  it('32. nem lephet tovabb a kvizben (allapotvaltas csak a tanare)', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}`), { allapot: 'eredmeny' }));
+    await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}`), { aktualis: 5 }));
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -234,6 +278,13 @@ describe('Amit a diaknak tudnia KELL', () => {
   });
 
   it('csatlakozhat a kvizhez nulla ponttal', async () => {
+    // diak3 elobb tag lesz, kulonben nem csatlakozhat (29. teszt).
+    await kornyezet.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc(`osztalyok/${OSZTALY}/tagok/diak3`).set({
+        azonosito: 'szabo_c07', becenev: 'Csongi',
+        csillag_ossz: 0, csillag_aktualis: 0, jegyek: 0, csatlakozott: new Date(),
+      });
+    });
     const db = mint(kornyezet, 'diak3');
     await assertSucceeds(setDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak3`), {
       becenev: 'Csongi', azonosito: 'szabo_c07', pont: 0, helyes_db: 0,
@@ -243,7 +294,7 @@ describe('Amit a diaknak tudnia KELL', () => {
   it('elkuldheti a valaszat az eppen futo kerdesre', async () => {
     const db = mint(kornyezet, 'diak2');
     await assertSucceeds(setDoc(doc(db, `kvizek/${KVIZ}/valaszok/diak2_0`), {
-      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve_ms: 2100,
+      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve: serverTimestamp(),
     }));
   });
 

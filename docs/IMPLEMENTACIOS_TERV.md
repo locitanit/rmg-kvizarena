@@ -423,6 +423,10 @@ kérdéspont    = alappont + gyorsasagi        (max 150)
 > kapkodásra tanít. Itt a tudás 100 pont, a sebesség maximum 50 — aki gondolkodik és jól
 > válaszol, mindig ver egy gyorsan hibázót.
 
+> **Pontosítás (3. fázis):** a gyorsasági pont **csak helyes válaszra** jár. A fenti
+> képlet szó szerint a rossz válaszra is adná (0 + gyorsasági), az viszont a gyors
+> találgatást jutalmazná — épp azt, amit el akarunk kerülni. Rossz válasz: 0 pont.
+
 Többválasztósnál részpont nincs (mindet el kell találni). Rövid válasznál ékezet- és
 kisbetű-független egyezés, a bankban felsorolt bármelyik elfogadott alakkal.
 
@@ -435,6 +439,18 @@ a másodikat használjuk:
 2. **A válaszdokumentumba `serverTimestamp()` kerül**, és a tanári kliens ehhez képest
    számol a `kerdes_indult` szerveridőhöz viszonyítva. Kicsit pontatlanabb (hálózati
    késés), de nem csalható.
+
+### 6.3.1 Amit a 3. fázis hozzátett
+
+- **A `kuldve` mezőt a biztonsági szabály kényszeríti szerveridőbélyegre**
+  (`request.resource.data.kuldve == request.time`). Enélkül a diák 0 ms reakcióidőt
+  írhatna be, és mindig megkapná a teljes gyorsasági pontot.
+- **A futó kvízt az osztály `aktiv_kviz` mezője jelzi**, nem lekérdezés. Így a diák
+  kliense egyetlen dokumentumot figyel (a saját osztályáét), és sem a diáknak, sem a
+  tanárnak nem kell összetett Firestore-indexet építeni.
+- **A tanári és a diákfelület egy böngészőben EGY Auth munkamenetet használ.** Ha a
+  tanár ugyanabban a böngészőben diákként is belép, az kilépteti a tanárt. A tanári
+  oldal ezt felismeri, és érthető üzenetet ad (nem „nincs jogosultságod" hibát).
 
 ### 6.4 Ha a tanári gép elszáll
 

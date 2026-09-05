@@ -1,6 +1,8 @@
 // A diak felulet vezerlese (1. fazis: belepes, regisztracio, fooldal).
 
-import { doc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+import {
+  doc, updateDoc, onSnapshot,
+} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { auth, db } from '../firebase.js';
 import { konfigKitoltve } from '../firebase-config.js';
 import {
@@ -9,6 +11,7 @@ import {
 } from '../auth.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, kepernyo, uzenet, gombbal } from '../kozos/ui.js';
+import { csatlakozas, visszateresHaBentVan, figyelesekLeall } from './jatek.js';
 
 // Hany csillag kell egy otoshoz (terv 7. pont). Kesobb a tanar allitja.
 const CSILLAG_AZ_OTOSIG = 5;
@@ -17,6 +20,9 @@ const CSILLAG_AZ_OTOSIG = 5;
 const TAROLO_KULCS = 'icdl_utolso_osztaly';
 
 let aktualisOsztalyId = null;
+let aktualisTag = null;
+let aktivKvizId = null;
+let osztalyFigyelo = null;
 
 if (!konfigKitoltve()) {
   kepernyo('nincs-konfig');
@@ -29,6 +35,9 @@ function indul() {
 
   onAuthStateChanged(auth, async (felhasznalo) => {
     if (!felhasznalo) {
+      osztalyFigyelo?.();
+      osztalyFigyelo = null;
+      figyelesekLeall();
       await osztalylistatTolt();
       kepernyo('belepes');
       return;
@@ -73,6 +82,7 @@ function kotesek() {
   };
 
   elem('fo-becenev-mentes').onclick = becenevMentes;
+  elem('fo-csatlakozas').onclick = csatlakozasGomb;
   elem('fo-kilepes').onclick = () => kilepes();
 }
 
@@ -113,6 +123,7 @@ async function fooldaltMutat(uid) {
   }
 
   aktualisOsztalyId = talalat.osztalyId;
+  aktualisTag = talalat.tag;
   const tag = talalat.tag;
   const hatralevo = Math.max(0, CSILLAG_AZ_OTOSIG - (tag.csillag_aktualis || 0));
 
@@ -128,6 +139,47 @@ async function fooldaltMutat(uid) {
 
   uzenet('fo-uzenet', '');
   kepernyo('fooldal');
+  futoKvizetFigyel();
+}
+
+// Az osztaly dokumentumanak "aktiv_kviz" mezojebol tudjuk meg, hogy fut-e kviz.
+// Egyetlen dokumentum figyelese - ez fer bele a napi ingyenes keretbe.
+function futoKvizetFigyel() {
+  osztalyFigyelo?.();
+  osztalyFigyelo = onSnapshot(doc(db, `osztalyok/${aktualisOsztalyId}`), async (pillanat) => {
+    aktivKvizId = pillanat.exists() ? (pillanat.data().aktiv_kviz || null) : null;
+    elem('fo-kviz-doboz').hidden = !aktivKvizId;
+    uzenet('fo-kviz-uzenet', '');
+
+    if (!aktivKvizId) return;
+    elem('fo-kviz-cim').textContent = 'Az osztalyodban most fut egy kviz.';
+
+    // Ha mar jatekos (pl. ujratoltotte az oldalt), tegyuk vissza a jatekba.
+    try {
+      await visszateresHaBentVan(aktivKvizId, fooldalraVissza);
+    } catch (hiba) {
+      console.error(hiba);
+    }
+  }, (hiba) => console.error(hiba));
+}
+
+function fooldalraVissza() {
+  kepernyo('fooldal');
+  if (auth.currentUser) fooldaltMutat(auth.currentUser.uid);
+}
+
+async function csatlakozasGomb(esemeny) {
+  uzenet('fo-kviz-uzenet', '');
+  if (!aktivKvizId) return uzenet('fo-kviz-uzenet', 'Most nem fut kviz.');
+
+  await gombbal(esemeny.target, async () => {
+    try {
+      await csatlakozas(aktivKvizId, elem('fo-pin').value, aktualisTag, fooldalraVissza);
+      elem('fo-pin').value = '';
+    } catch (hiba) {
+      uzenet('fo-kviz-uzenet', hiba.code ? magyarHiba(hiba) : hiba.message);
+    }
+  });
 }
 
 async function becenevMentes(esemeny) {

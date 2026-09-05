@@ -11,13 +11,18 @@ import { magyarHiba } from '../kozos/hibak.js';
 import { elem, uzenet, gombbal } from '../kozos/ui.js';
 
 let bankok = [];
+let osztalyok = [];
+let kviztIndit = null;      // a jatekvezetes inditasa (tanar/fo.js adja at)
 let aktualisBank = null;
 let aktualisDiasor = null;
 let kerdesek = [];
 let mod = 'dia';
 
-export async function kvizosszeallitotIndit() {
+export async function kvizosszeallitotIndit(tanarOsztalyai, inditoFuggveny) {
+  osztalyok = tanarOsztalyai;
+  kviztIndit = inditoFuggveny;
   kotesek();
+  osztalylegordulotKitolt();
   try {
     bankok = await bankokListaja();
   } catch (hiba) {
@@ -65,6 +70,61 @@ function kotesek() {
   }
 
   elem('kviz-elonezet').onclick = elonezet;
+  elem('kviz-inditas').onclick = kviztInditaniGomb;
+}
+
+function osztalylegordulotKitolt() {
+  const legordulo = elem('kviz-osztaly');
+  legordulo.innerHTML = '';
+  if (!osztalyok.length) {
+    legordulo.innerHTML = '<option value="">(nincs osztalyod)</option>';
+    return;
+  }
+  for (const osztaly of osztalyok) {
+    const sor = document.createElement('option');
+    sor.value = osztaly.id;
+    sor.textContent = osztaly.nev || osztaly.id;
+    legordulo.append(sor);
+  }
+}
+
+// A kviz elinditasa: kisorsoljuk a kerdeseket, es atadjuk a jatekvezetesnek.
+async function kviztInditaniGomb(esemeny) {
+  const { valogatas, talalatok } = szamlalotFrissit();
+  uzenet('kviz-uzenet', '');
+
+  const osztalyId = elem('kviz-osztaly').value;
+  if (!osztalyId) return uzenet('kviz-uzenet', 'Valassz osztalyt.');
+  if (!talalatok.length) {
+    return uzenet('kviz-uzenet', 'Nincs mibol sorsolni. Bovitsd a tartomanyt vagy a nehezseget.');
+  }
+
+  await gombbal(esemeny.target, async () => {
+    try {
+      await kviztIndit({
+        osztalyId,
+        cim: kvizCime(valogatas),
+        valogatas,
+        kisorsolt: sorsol(talalatok, valogatas.db),
+        idoLimit: valogatas.ido_limit,
+      });
+    } catch (hiba) {
+      uzenet('kviz-uzenet', magyarHiba(hiba));
+    }
+  });
+}
+
+// Beszedes cim, hogy az archivumban is vissza lehessen keresni.
+function kvizCime(valogatas) {
+  const alap = aktualisBank.cim;
+  if (valogatas.mod === 'dia') return `${alap} - ${valogatas.dia_tol}-${valogatas.dia_ig}. dia`;
+  if (valogatas.mod === 'fejezet') {
+    const cimek = valogatas.fejezetek
+      .map((i) => aktualisDiasor?.fejezetek?.[i]?.cim)
+      .filter(Boolean);
+    return `${alap} - ${cimek.join(', ') || 'fejezetek'}`;
+  }
+  return `${alap} - ${valogatas.temakorok.join(', ') || 'temakorok'}`;
 }
 
 async function bankotValaszt(bankKod) {
@@ -154,7 +214,10 @@ function pipa(csoport, ertek, cimke, db) {
   sor.className = 'pipa';
   sor.innerHTML =
     `<input type="checkbox" data-csoport="${csoport}" value="${ertek}">` +
-    `<span>${cimke}</span><span class="db">${db}</span>`;
+    '<span></span><span class="db"></span>';
+  // A fejezetcim a pptx-bol jon, es lehet benne < vagy & jel - ezert szovegkent.
+  sor.querySelectorAll('span')[0].textContent = cimke;
+  sor.querySelectorAll('span')[1].textContent = db;
   sor.querySelector('input').onchange = szamlalotFrissit;
   return sor;
 }

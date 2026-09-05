@@ -29,3 +29,13 @@ export async function gombbal(gomb, muvelet) {
     gomb.textContent = eredetiSzoveg;
   }
 }
+
+// Hatarozott nevelo szam ele: 1, 5 es a szazas/ezres alakjaik "az"-t kapnak
+// (az egy, az ot, az ezer). Minden mas "a".
+export function nevelo(szam) {
+  const elso = String(Math.abs(Math.trunc(szam)))[0];
+  const jegyek = String(Math.abs(Math.trunc(szam))).length;
+  const azOtos = elso === '5';
+  const azEgyes = elso === '1' && (jegyek === 1 || jegyek === 4 || jegyek === 7);
+  return azOtos || azEgyes ? 'az' : 'a';
+}

@@ -141,3 +141,87 @@ button.masodlagos {
 table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 th, td { padding: 9px 6px; text-align: left; border-bottom: 1px solid var(--keret); }
 th { color: var(--halvany); font-weight: 600; font-size: 0.8rem; }
+
+/* ------------------------------------------------------------- elo kviz */
+
+.kozepre { text-align: center; }
+
+.pinkijelzo {
+  font-size: 3.2rem;
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: var(--fo);
+  font-variant-numeric: tabular-nums;
+}
+
+.pontok { font-size: 1.8rem; font-weight: 700; color: var(--fo); margin: 6px 0; }
+.nagyjelzes { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+
+.jolap { border-color: var(--jo); }
+.jolap .nagyjelzes { color: var(--jo); }
+.rosszlap { border-color: var(--rossz); }
+.rosszlap .nagyjelzes { color: var(--rossz); }
+
+.jatekfej {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--halvany);
+  font-size: 0.9rem;
+}
+
+.visszaszamlalo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--fo);
+  font-variant-numeric: tabular-nums;
+}
+
+.visszaszamlalo.surgos { color: var(--rossz); }
+
+.kerdesszoveg-diak { font-size: 1.1rem; line-height: 1.45; }
+
+/* A negy valaszszin nem csak szin: a betujel is megkulonbozteti oket, hogy
+   szintevesztessel is hasznalhato legyen. */
+.valaszgombok { display: grid; gap: 10px; }
+
+.valaszgomb {
+  width: 100%;
+  margin: 0;
+  padding: 16px 14px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  border: 3px solid transparent;
+  border-radius: 12px;
+}
+
+.valaszgomb.bejelolt { border-color: var(--szoveg); }
+.valaszgomb.bejelolt::after { content: ' ✓'; font-weight: 700; }
+
+.szin0 { background: #c8323c; }
+.szin1 { background: #2f6bff; }
+.szin2 { background: #f0a500; }
+.szin3 { background: #17915c; }
+
+/* ranglista */
+.jatekoslista { display: flex; flex-direction: column; }
+
+.jatekossor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--keret);
+}
+
+.jatekossor:last-child { border-bottom: none; }
+.jatekossor .helyezes { color: var(--halvany); min-width: 30px; font-variant-numeric: tabular-nums; }
+.jatekossor .nev { flex: 1; }
+.jatekossor .pont { font-weight: 600; font-variant-numeric: tabular-nums; }
+.jatekossor.sajat { background: rgba(47, 107, 255, 0.12); border-radius: 8px; }
+.jatekossor.dobogo .helyezes { color: var(--csillag); font-weight: 700; }
+.jatekossor.jo .nev::after { content: ' ✓'; color: var(--jo); }
+.jatekossor.rossz .nev::after { content: ' ✗'; color: var(--rossz); }

@@ -132,6 +132,11 @@
           <div class="szamlalo" id="kviz-szamlalo">&nbsp;</div>
 
           <button type="button" id="kviz-elonezet">Elonezet</button>
+
+          <label for="kviz-osztaly">Melyik osztalynak?</label>
+          <select id="kviz-osztaly"></select>
+          <button type="button" class="masodlagos" id="kviz-inditas">Kviz inditasa</button>
+
           <div class="uzenet" id="kviz-uzenet" hidden></div>
         </div>
       </div>
@@ -140,6 +145,85 @@
         <h2 id="kviz-elonezet-cim">Elonezet</h2>
         <div id="kviz-elonezet-lista"></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- jatek -->
+  <section data-kepernyo="jatek" hidden>
+    <header class="fejlec">
+      <div>
+        <h1 id="jatek-cim">&nbsp;</h1>
+        <p class="alcim" id="jatek-allapot">&nbsp;</p>
+      </div>
+      <button class="masodlagos keskeny-gomb" id="jatek-megszakitas">Kviz lezarasa</button>
+    </header>
+
+    <div data-jatek="varakozik">
+      <div class="lap kozepre">
+        <p class="alcim">Csatlakozasi kod</p>
+        <div class="pinkijelzo" id="jatek-pin">&nbsp;</div>
+        <p class="sugosor">
+          A diakok belepnek a sajat telefonjukon, es beirjak ezt a kodot.
+          Ha az osztalyukban fut kviz, egy gombbal is csatlakozhatnak.
+        </p>
+      </div>
+      <div class="lap">
+        <h2>Csatlakozott: <span id="lobbi-db">0</span></h2>
+        <div id="lobbi-lista" class="jatekoslista"></div>
+        <button type="button" id="jatek-inditas">Inditas</button>
+      </div>
+    </div>
+
+    <div data-jatek="kerdes" hidden>
+      <div class="lap">
+        <div class="kerdesfej">
+          <span id="kerdes-sorszam">&nbsp;</span>
+          <span class="visszaszamlalo" id="kerdes-ido">&nbsp;</span>
+        </div>
+        <div class="nagykerdes" id="kerdes-szoveg">&nbsp;</div>
+        <div class="valaszracs" id="kerdes-valaszok"></div>
+      </div>
+      <div class="lap">
+        <div class="szamlalo" id="kerdes-valaszoltak">&nbsp;</div>
+        <button type="button" id="jatek-lezaras">Lezaras most</button>
+      </div>
+    </div>
+
+    <div data-jatek="eredmeny" hidden>
+      <div class="oszlopok">
+        <div class="lap">
+          <h2>A helyes valasz</h2>
+          <div class="helyesvalasz" id="eredmeny-helyes">&nbsp;</div>
+          <p class="alcim" id="eredmeny-magyarazat">&nbsp;</p>
+          <h2 style="margin-top:18px">Valaszeloszlas</h2>
+          <div id="eredmeny-eloszlas"></div>
+        </div>
+        <div class="lap">
+          <h2>Ranglista</h2>
+          <div id="eredmeny-ranglista" class="jatekoslista"></div>
+          <button type="button" id="jatek-kovetkezo">Kovetkezo kerdes</button>
+        </div>
+      </div>
+    </div>
+
+    <div data-jatek="vege" hidden>
+      <div class="lap">
+        <h2>Vegeredmeny</h2>
+        <div id="vege-lista" class="jatekoslista"></div>
+        <button type="button" class="masodlagos" id="jatek-vissza">Vissza a pulthoz</button>
+      </div>
+    </div>
+
+    <div class="uzenet" id="jatek-uzenet" hidden></div>
+  </section>
+
+  <!-- ------------------------------------------------ folytatas felajanlasa -->
+  <section data-kepernyo="folytatas" hidden>
+    <h1>Fut egy kvized</h1>
+    <div class="lap keskeny">
+      <p id="folytatas-szoveg">&nbsp;</p>
+      <button type="button" id="folytatas-igen">Folytatom</button>
+      <button type="button" class="masodlagos" id="folytatas-nem">Lezarom es uj kvizt inditok</button>
     </div>
   </section>
 
