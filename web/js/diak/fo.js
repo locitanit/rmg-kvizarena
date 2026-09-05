@@ -1,7 +1,7 @@
 // A diak felulet vezerlese (1. fazis: belepes, regisztracio, fooldal).
 
 import {
-  doc, updateDoc, onSnapshot,
+  doc, getDoc, updateDoc, onSnapshot,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { auth, db } from '../firebase.js';
 import { konfigKitoltve } from '../firebase-config.js';
@@ -10,11 +10,9 @@ import {
   diakOsztalya, kilepes, BelepesHiba,
 } from '../auth.js';
 import { magyarHiba } from '../kozos/hibak.js';
+import { ALAP_BEALLITASOK, otosigHatra } from '../kozos/csillag.js';
 import { elem, kepernyo, uzenet, gombbal } from '../kozos/ui.js';
 import { csatlakozas, visszateresHaBentVan, figyelesekLeall } from './jatek.js';
-
-// Hany csillag kell egy otoshoz (terv 7. pont). Kesobb a tanar allitja.
-const CSILLAG_AZ_OTOSIG = 5;
 
 // Az utoljara valasztott osztaly, hogy a diaknak ne kelljen ujra kikeresnie.
 const TAROLO_KULCS = 'icdl_utolso_osztaly';
@@ -23,6 +21,8 @@ let aktualisOsztalyId = null;
 let aktualisTag = null;
 let aktivKvizId = null;
 let osztalyFigyelo = null;
+let beallitasok = { ...ALAP_BEALLITASOK };
+let sajatStat = null;
 
 if (!konfigKitoltve()) {
   kepernyo('nincs-konfig');
@@ -83,6 +83,8 @@ function kotesek() {
 
   elem('fo-becenev-mentes').onclick = becenevMentes;
   elem('fo-csatlakozas').onclick = csatlakozasGomb;
+  elem('fo-statisztika').onclick = statisztikatMutat;
+  elem('stat-vissza').onclick = () => kepernyo('fooldal');
   elem('fo-kilepes').onclick = () => kilepes();
 }
 
@@ -125,7 +127,8 @@ async function fooldaltMutat(uid) {
   aktualisOsztalyId = talalat.osztalyId;
   aktualisTag = talalat.tag;
   const tag = talalat.tag;
-  const hatralevo = Math.max(0, CSILLAG_AZ_OTOSIG - (tag.csillag_aktualis || 0));
+  await sajatAdatokatBetolt(uid);
+  const hatralevo = otosigHatra(tag.csillag_aktualis, beallitasok);
 
   elem('fo-becenev').textContent = tag.becenev || tag.azonosito;
   elem('fo-osztaly').textContent = `${talalat.nev || talalat.osztalyId} - ${tag.azonosito}`;
@@ -136,6 +139,7 @@ async function fooldaltMutat(uid) {
     ? 'Megvan az otos! Szolj a tanarodnak.'
     : `Meg ${hatralevo} csillag az otosig.`;
   elem('fo-becenev-input').value = tag.becenev || '';
+  csillagnaplotKirak();
 
   uzenet('fo-uzenet', '');
   kepernyo('fooldal');
@@ -166,6 +170,100 @@ function futoKvizetFigyel() {
 function fooldalraVissza() {
   kepernyo('fooldal');
   if (auth.currentUser) fooldaltMutat(auth.currentUser.uid);
+}
+
+async function sajatAdatokatBetolt(uid) {
+  try {
+    const [beallitasDok, statDok] = await Promise.all([
+      getDoc(doc(db, 'beallitasok/csillagok')),
+      getDoc(doc(db, `statisztika/${aktualisOsztalyId}_${uid}`)),
+    ]);
+    beallitasok = { ...ALAP_BEALLITASOK, ...(beallitasDok.exists() ? beallitasDok.data() : {}) };
+    sajatStat = statDok.exists() ? statDok.data() : null;
+  } catch (hiba) {
+    // A statisztika hianya nem hiba: az elso kviz elott meg nincs.
+    console.error(hiba);
+  }
+}
+
+const FORRAS_NEVE = {
+  dobogo: 'dobogo', csucs: 'szemelyes csucs',
+  mesterfok: 'mesterfok', kitartas: 'kitartas',
+};
+
+function csillagnaplotKirak() {
+  const doboz = elem('fo-csillagnaplo');
+  doboz.innerHTML = '';
+  const naplo = [...(sajatStat?.csillag_naplo || [])].reverse().slice(0, 5);
+
+  if (!naplo.length) {
+    doboz.innerHTML = '<p class="sugosor">Meg nincs csillagod. Az elso kvizen mar szerezhetsz!</p>';
+    return;
+  }
+  for (const bejegyzes of naplo) {
+    const forrasok = Object.entries(FORRAS_NEVE)
+      .filter(([kulcs]) => bejegyzes[kulcs])
+      .map(([kulcs, nev]) => `${nev} ${bejegyzes[kulcs]}`)
+      .join(', ') || 'nem kaptal csillagot';
+    const sor = document.createElement('div');
+    sor.className = 'jatekossor';
+    sor.innerHTML = '<span class="nev"></span><span class="pont"></span>';
+    sor.querySelector('.nev').textContent = bejegyzes.cim || 'Kviz';
+    sor.querySelector('.pont').textContent =
+      bejegyzes.csillag ? `${'★'.repeat(bejegyzes.csillag)} ${forrasok}` : forrasok;
+    doboz.append(sor);
+  }
+}
+
+function savotRajzol(cimke, arany, ertek) {
+  const sor = document.createElement('div');
+  sor.className = 'temakorsor';
+  sor.innerHTML = '<span class="cimke"></span><span class="rud"><i></i></span>'
+                + '<span class="ertek"></span>';
+  sor.querySelector('.cimke').textContent = cimke;
+  const rud = sor.querySelector('.rud i');
+  rud.style.width = `${arany * 100}%`;
+  if (arany < 0.5) rud.style.background = 'var(--rossz)';
+  sor.querySelector('.ertek').textContent = ertek;
+  return sor;
+}
+
+function statisztikatMutat() {
+  const csucs = Math.round((sajatStat?.szemelyes_csucs || 0) * 100);
+  elem('stat-osszegzes').textContent =
+    `${sajatStat?.kvizek_szama || 0} kviz - szemelyes csucsod: ${csucs}%`;
+
+  const temakorDoboz = elem('stat-temakorok');
+  temakorDoboz.innerHTML = '';
+  const temakorok = Object.entries(sajatStat?.temakor_teljesitmeny || {})
+    .map(([temakor, adat]) => ({ temakor, ...adat, arany: adat.jo / Math.max(1, adat.ossz) }))
+    .sort((a, b) => a.arany - b.arany);
+
+  if (!temakorok.length) {
+    temakorDoboz.innerHTML = '<p class="sugosor">Meg nincs adat - jatssz egy kvizt!</p>';
+  }
+  for (const t of temakorok) {
+    const mester = (sajatStat?.mesterfok || []).includes(t.temakor) ? ' ★' : '';
+    temakorDoboz.append(
+      savotRajzol(t.temakor + mester, t.arany, `${Math.round(t.arany * 100)}%`));
+  }
+
+  const kvizDoboz = elem('stat-kvizek');
+  kvizDoboz.innerHTML = '';
+  const naplo = [...(sajatStat?.csillag_naplo || [])].reverse();
+  if (!naplo.length) kvizDoboz.innerHTML = '<p class="sugosor">Meg nem jatszottal kvizt.</p>';
+  for (const bejegyzes of naplo) {
+    const sor = document.createElement('div');
+    sor.className = 'jatekossor';
+    sor.innerHTML = '<span class="nev"></span><span class="pont"></span>';
+    sor.querySelector('.nev').textContent = bejegyzes.cim || 'Kviz';
+    sor.querySelector('.pont').textContent =
+      `${Math.round((bejegyzes.szazalek || 0) * 100)}% - ${bejegyzes.helyezes}. hely`
+      + (bejegyzes.csillag ? ` ${'★'.repeat(bejegyzes.csillag)}` : '');
+    kvizDoboz.append(sor);
+  }
+
+  kepernyo('statisztika');
 }
 
 async function csatlakozasGomb(esemeny) {

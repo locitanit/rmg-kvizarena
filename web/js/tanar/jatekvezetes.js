@@ -15,6 +15,9 @@ import { auth, db } from '../firebase.js';
 import { ALLAPOTOK, pontszam, valaszHelyes, helyesValaszSzovege, pintGeneral, hatralevoMasodperc }
   from '../kozos/kviz.js';
 import { kulcsokatBetolt } from '../kozos/kerdesbank.js';
+import {
+  csillagokatSzamol, temakoroketOsszead, ALAP_BEALLITASOK,
+} from '../kozos/csillag.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, kepernyo, uzenet } from '../kozos/ui.js';
 
@@ -25,13 +28,31 @@ let kulcsok = new Map();
 let jatekosok = new Map();
 let valaszok = new Map();   // valaszId -> adat
 
+let beallitasok = { ...ALAP_BEALLITASOK };
 let leiratkozok = [];
 let visszaszamlaloOra = null;
 let visszateres = null;     // mit hivjunk, ha a tanar visszamegy a pulthoz
 
 // ------------------------------------------------------------------ inditas
 
+export class KvizFutHiba extends Error {}
+
 export async function kviztInditani({ osztalyId, cim, valogatas, kisorsolt, idoLimit }) {
+  // Egy osztalyban egyszerre csak EGY kviz futhat. Enelkul egy vaeletlen masodik
+  // inditas elarvitana az elsot: a diakok ott maradnanak egy kvizben, amit mar
+  // senki nem vezet.
+  const osztalyDok = await getDoc(doc(db, `osztalyok/${osztalyId}`));
+  const futoId = osztalyDok.data()?.aktiv_kviz;
+  if (futoId) {
+    const futoDok = await getDoc(doc(db, `kvizek/${futoId}`));
+    if (futoDok.exists() && futoDok.data().allapot !== ALLAPOTOK.VEGE) {
+      throw new KvizFutHiba(
+        `Ebben az osztalyban mar fut egy kviz ("${futoDok.data().cim}"). `
+        + 'Elobb zard le azt - a pult ujranyitasakor felajanlja a folytatast.'
+      );
+    }
+  }
+
   const ujId = `${osztalyId}_${Date.now()}`;
   const kerdesIdk = kisorsolt.map((k) => k.id);
 
@@ -74,6 +95,7 @@ export async function futoKvizt(osztalyok) {
 
 export async function jatekvezetestIndit(azonosito, visszaHivas) {
   kvizId = azonosito;
+  befejezesFolyamatban = false;
   visszateres = visszaHivas;
   kotesek();
   figyelesekLeall();
@@ -117,6 +139,9 @@ async function kerdeseketBetolt() {
   }));
   // A megoldokulcs CSAK ide toltodik be - a diak kliense nem is olvashatja.
   kulcsok = await kulcsokatBetolt(kviz.kerdesIdk);
+
+  const beallitasDok = await getDoc(doc(db, 'beallitasok/csillagok'));
+  beallitasok = { ...ALAP_BEALLITASOK, ...(beallitasDok.exists() ? beallitasDok.data() : {}) };
 }
 
 function kotesek() {
@@ -246,6 +271,7 @@ function valaszSzamlalotFrissit() {
 // ------------------------------------------------------- kerdes kiosztasa
 
 let lezarasFolyamatban = false;
+let befejezesFolyamatban = false;
 
 async function kerdestKioszt(index) {
   clearInterval(visszaszamlaloOra);
@@ -349,7 +375,45 @@ function eredmenytMutat() {
 
 // --------------------------------------------------------------- befejezes
 
+// Ki mit valaszolt jol - kerdesenkent es diakonkent. Innen jon a temakoronkenti
+// teljesitmeny es a kerdesenkenti helyes arany is.
+function javitasiTerkep() {
+  const diakonkent = new Map();   // uid -> { temakorok, jo_db }
+  const kerdesenkent = kerdesek.map((kerdes) => ({
+    kerdesId: kerdes.id, kerdes: kerdes.kerdes, temakor: kerdes.temakor || '(nincs)',
+    nehezseg: kerdes.nehezseg || null, jo: 0, ossz: 0,
+  }));
+
+  for (const jatekos of jatekosok.values()) {
+    const sajat = { temakorok: {}, jo_db: 0 };
+    kerdesek.forEach((kerdes, index) => {
+      const valasz = valaszok.get(`${jatekos.uid}_${index}`);
+      const helyes = valasz ? valaszHelyes(kerdes, kulcsok.get(kerdes.id), valasz.valasz) : false;
+      const temakor = kerdes.temakor || '(nincs)';
+
+      if (!sajat.temakorok[temakor]) sajat.temakorok[temakor] = { jo: 0, ossz: 0 };
+      sajat.temakorok[temakor].ossz++;
+      kerdesenkent[index].ossz++;
+      if (helyes) {
+        sajat.temakorok[temakor].jo++;
+        sajat.jo_db++;
+        kerdesenkent[index].jo++;
+      }
+    });
+    diakonkent.set(jatekos.uid, sajat);
+  }
+  return { diakonkent, kerdesenkent };
+}
+
 async function kviztBefejez() {
+  // A befejezes NEM ismetelheto: minden lefutas csillagot ir es novel egy
+  // szamlalot. Ha a tanar ketszer kattint, vagy a pillanatkep meg nem frissult,
+  // a diak duplan kapna csillagot. Ezert ket zar: egy futas kozbeni, es egy
+  // allapot-alapu, ami az ujranyitast is kizarja.
+  if (befejezesFolyamatban || kviz.allapot === ALLAPOTOK.VEGE) return;
+  befejezesFolyamatban = true;
+  elem('jatek-kovetkezo').disabled = true;
+  elem('jatek-megszakitas').disabled = true;
   clearInterval(visszaszamlaloOra);
   const rendezett = [...jatekosok.values()].sort((a, b) => {
     if ((b.pont || 0) !== (a.pont || 0)) return (b.pont || 0) - (a.pont || 0);
@@ -357,18 +421,102 @@ async function kviztBefejez() {
     return (a.utolso_valasz_ms ?? 1e9) - (b.utolso_valasz_ms ?? 1e9);
   });
 
+  const { diakonkent, kerdesenkent } = javitasiTerkep();
+
+  // A korabbi statisztikakat egyben olvassuk be: diakonkent 1 olvasas.
+  const korabbiStatok = new Map();
+  await Promise.all(rendezett.map(async (jatekos) => {
+    const hivatkozas = doc(db, `statisztika/${kviz.osztalyId}_${jatekos.uid}`);
+    const dok = await getDoc(hivatkozas);
+    korabbiStatok.set(jatekos.uid, dok.exists() ? dok.data() : null);
+  }));
+
   const koteg = writeBatch(db);
+  const csillagSorok = [];
+
   rendezett.forEach((jatekos, index) => {
-    koteg.update(doc(db, `kvizek/${kvizId}/jatekosok/${jatekos.uid}`), { helyezes: index + 1 });
+    const helyezes = index + 1;
+    const sajat = diakonkent.get(jatekos.uid) || { temakorok: {}, jo_db: 0 };
+    const korabbi = korabbiStatok.get(jatekos.uid);
+    const ujTemakorAllas = temakoroketOsszead(korabbi?.temakor_teljesitmeny, sajat.temakorok);
+
+    const csillag = csillagokatSzamol({
+      jatekos: { helyezes, helyes_db: sajat.jo_db },
+      kerdesSzam: kerdesek.length,
+      korabbiStat: korabbi,
+      ujTemakorAllas,
+      beallitasok,
+    });
+
+    koteg.update(doc(db, `kvizek/${kvizId}/jatekosok/${jatekos.uid}`), {
+      helyezes,
+      csillag: csillag.ossz,
+      szazalek: csillag.szazalek,
+      csillag_reszletek: csillag.reszletek,
+    });
+
+    // A valthato csillag es az osszes valaha szerzett kulon szamolodik.
+    koteg.update(doc(db, `osztalyok/${kviz.osztalyId}/tagok/${jatekos.uid}`), {
+      csillag_ossz: increment(csillag.ossz),
+      csillag_aktualis: increment(csillag.ossz),
+    });
+
+    // A diak statisztikaja - a lapok megnyitasakor igy nem kell szaz
+    // dokumentumot vegigolvasni (terv 8.2).
+    koteg.set(doc(db, `statisztika/${kviz.osztalyId}_${jatekos.uid}`), {
+      osztalyId: kviz.osztalyId,
+      uid: jatekos.uid,
+      azonosito: jatekos.azonosito || '',
+      becenev: jatekos.becenev || '',
+      temakor_teljesitmeny: ujTemakorAllas,
+      szemelyes_csucs: csillag.ujCsucs,
+      kvizek_szama: csillag.kvizekSzama,
+      csillag_ossz: (korabbi?.csillag_ossz || 0) + csillag.ossz,
+      mesterfok: [...(korabbi?.mesterfok || []), ...csillag.ujMesterfokok],
+      csillag_naplo: [
+        ...(korabbi?.csillag_naplo || []),
+        {
+          kvizId, cim: kviz.cim, mikor: new Date(),
+          helyezes, szazalek: csillag.szazalek, csillag: csillag.ossz,
+          dobogo: csillag.dobogo, csucs: csillag.csucs,
+          mesterfok: csillag.mesterfok, kitartas: csillag.kitartas,
+        },
+      ],
+      frissitve: serverTimestamp(),
+    });
+
+    csillagSorok.push({ jatekos, csillag });
   });
-  koteg.update(doc(db, `kvizek/${kvizId}`), { allapot: ALLAPOTOK.VEGE, vege: serverTimestamp() });
+
+  const atlagSzazalek = rendezett.length
+    ? csillagSorok.reduce((sum, s) => sum + s.csillag.szazalek, 0) / rendezett.length
+    : 0;
+
+  koteg.update(doc(db, `kvizek/${kvizId}`), {
+    allapot: ALLAPOTOK.VEGE,
+    vege: serverTimestamp(),
+    osszegzes: {
+      resztvevok: rendezett.length,
+      kerdes_db: kerdesek.length,
+      atlag_szazalek: atlagSzazalek,
+      atlag_pont: rendezett.length
+        ? rendezett.reduce((sum, j) => sum + (j.pont || 0), 0) / rendezett.length : 0,
+      kerdesenkent,
+    },
+  });
+
   // A diakok innen tudjak meg, hogy nincs tobb futo kviz.
   koteg.update(doc(db, `osztalyok/${kviz.osztalyId}`), { aktiv_kviz: null });
 
   try {
     await koteg.commit();
   } catch (hiba) {
+    // Hibanal feloldjuk a zarat, hogy ujra lehessen probalni.
+    befejezesFolyamatban = false;
     uzenet('jatek-uzenet', magyarHiba(hiba));
+  } finally {
+    elem('jatek-kovetkezo').disabled = false;
+    elem('jatek-megszakitas').disabled = false;
   }
 }
 
@@ -383,8 +531,9 @@ function vegeredmenytMutat() {
                     '<span class="pont"></span>';
     sor.querySelector('.helyezes').textContent = `${jatekos.helyezes || '-'}.`;
     sor.querySelector('.nev').textContent = jatekos.becenev || jatekos.azonosito;
+    const csillag = jatekos.csillag ? ' ' + '★'.repeat(jatekos.csillag) : '';
     sor.querySelector('.pont').textContent =
-      `${jatekos.pont || 0} pont - ${jatekos.helyes_db || 0}/${kerdesek.length} jo`;
+      `${jatekos.pont || 0} pont - ${jatekos.helyes_db || 0}/${kerdesek.length} jo${csillag}`;
     lista.append(sor);
   });
 }

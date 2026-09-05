@@ -226,6 +226,12 @@ describe('A diak megprobalja - es elbukik', () => {
     await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}`), { allapot: 'eredmeny' }));
     await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}`), { aktualis: 5 }));
   });
+
+  it('33. nem allithatja at a csillagrendszer kapcsoloit', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(updateDoc(doc(db, 'beallitasok/csillagok'), { jegy_kuszob: 1 }));
+    await assertFails(setDoc(doc(db, 'beallitasok/sajat'), { jegy_kuszob: 1 }));
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -309,6 +315,11 @@ describe('Amit a diaknak tudnia KELL', () => {
       query(collection(db, 'kvizek'), where('osztalyId', '==', OSZTALY))));
   });
 
+  it('olvassa a csillagbeallitasokat (tudnia kell, mennyi kell az otoshoz)', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDoc(doc(db, 'beallitasok/csillagok')));
+  });
+
   it('olvassa a sajat statisztikajat', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertSucceeds(getDoc(doc(db, `statisztika/${OSZTALY}_diak1`)));
@@ -354,6 +365,17 @@ describe('Amit a tanarnak tudnia kell', () => {
   it('irhatja a diakok statisztikajat', async () => {
     const db = mint(kornyezet, 'tanar1');
     await assertSucceeds(setDoc(doc(db, `statisztika/${OSZTALY}_diak1`), { szemelyes_csucs: 0.9 }));
+  });
+
+  it('atallithatja a csillagrendszer kapcsoloit', async () => {
+    const db = mint(kornyezet, 'tanar1');
+    await assertSucceeds(updateDoc(doc(db, 'beallitasok/csillagok'), { jegy_kuszob: 6 }));
+  });
+
+  it('beirhatja a diak csillagait', async () => {
+    const db = mint(kornyezet, 'tanar1');
+    await assertSucceeds(updateDoc(doc(db, `osztalyok/${OSZTALY}/tagok/diak1`),
+      { csillag_ossz: 3, csillag_aktualis: 3 }));
   });
 
   it('DE masik tanar osztalyat nem modosithatja', async () => {

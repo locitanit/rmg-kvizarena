@@ -509,6 +509,17 @@ az a „hírnév", a beváltható a `csillag_aktualis`.
 A kulcsszám az utolsó sor: **a leggyengébb diák is összeszed egy ötöst egy félév alatt**,
 ha végig ott van és javul. A tiszta dobogós rendszerben ez a sor 0 lenne.
 
+### 7.4.1 Amit a 4. fázis kiderített
+
+- **A dobogós csillag a HELYEZÉSNEK jár, nem a teljesítménynek.** Kis létszámnál ez
+  furcsán jön ki: háromfős próbában a 0%-ot elért diák is kapott 1 csillagot, mert
+  harmadik lett. 15 fős csoportban ez nem gond (ott a 3. hely valódi teljesítmény),
+  de ha valaha kis csoportban indul kvíz, a tanár a `dobogo_ertekek` átírásával
+  (pl. `3,2` vagy `3`) szűkítheti a dobogót.
+- **A kvíz lezárása nem ismételhető művelet.** Minden lefutása csillagot ír és növeli
+  a kvízszámlálót, ezért kettős zár védi (futás közbeni + állapot-alapú). Enélkül egy
+  dupla kattintás duplán adná a csillagokat — ez a próbában meg is történt.
+
 ### 7.5 Amit állíthatóvá kell tenni a tanári felületen
 
 Mind a négy forrás **külön ki-be kapcsolható**, és a csillagértékek átírhatók. Az

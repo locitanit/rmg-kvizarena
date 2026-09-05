@@ -147,6 +147,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ----------------------------------------------------------- beallitasok
+    // A csillagrendszer kapcsoloi (terv 7.5). A diak is olvassa, mert tudnia kell,
+    // hany csillag kell az otoshoz - de csak tanar irhatja.
+
+    match /beallitasok/{kulcs} {
+      allow read: if belepett();
+      allow write: if tanar();
+    }
+
     // ------------------------------------------------- kerdesbank (csak olvas)
     // Ezeket az admin CLI publikalja, kliens sosem irja.
 

@@ -84,6 +84,7 @@ export async function adatokatFeltolt(kornyezet) {
       });
     }
 
+    await db.doc('beallitasok/csillagok').set({ jegy_kuszob: 5, kviz_max_csillag: 4 });
     await db.doc('diasorok/adatbaziskezeles_icdl').set({
       tema: 'adatbaziskezeles', szamozott_diaszam: 129, verzio: '2026-09-02',
     });

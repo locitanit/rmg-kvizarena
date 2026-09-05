@@ -225,3 +225,10 @@ th { color: var(--halvany); font-weight: 600; font-size: 0.8rem; }
 .jatekossor.dobogo .helyezes { color: var(--csillag); font-weight: 700; }
 .jatekossor.jo .nev::after { content: ' ✓'; color: var(--jo); }
 .jatekossor.rossz .nev::after { content: ' ✗'; color: var(--rossz); }
+
+/* temakor-sav a diak statisztikajaban */
+.temakorsor { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 0.88rem; }
+.temakorsor .cimke { flex: 0 0 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.temakorsor .rud { flex: 1; height: 16px; background: var(--hatter); border-radius: 4px; }
+.temakorsor .rud i { display: block; height: 100%; background: var(--fo); border-radius: 4px; }
+.temakorsor .ertek { min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }

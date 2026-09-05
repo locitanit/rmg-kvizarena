@@ -12,12 +12,13 @@
 //      node admin/icdl-admin.js osztaly letrehoz 10T --emulator
 //      node admin/icdl-admin.js diakok 10T --fiokok --emulator
 //      node admin/icdl-admin.js publikal --emulator
-//   3. cd admin && node ../tesztek/jatekszimulator.mjs <jelszo1> <jelszo2> <jelszo3>
-//      (az admin mappabol kell inditani, mert onnan latszik a firebase-admin)
+//   3. KVIZEK=3 node tesztek/jatekszimulator.mjs <jelszo1> <jelszo2> <jelszo3>
+//      (a KVIZEK azt mondja meg, hany kvizt jatsszanak vegig egymas utan)
 //   4. A tanari pulton allitsd ossze es inditsd el a kvizt.
 //
 // A szimulalt diakok a VALODI kliens-utat jarjak: belepes, regisztracio,
 // csatlakozas, valaszkuldes - mind a biztonsagi szabalyokon keresztul.
+import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, signInWithEmailAndPassword } from 'firebase/auth';
 import {
   getFirestore, connectFirestoreEmulator, doc, getDoc, setDoc, onSnapshot,
@@ -63,15 +64,27 @@ async function diakotIndit(diak, index) {
   }
   console.log(`[${diak.becenev}] belepett (${uid})`);
 
+  // Tobb kvizt is vegigjatszunk egymas utan (a csillagrendszer teszteleséhez).
+  const kvizekSzama = Number(process.env.KVIZEK || 1);
+  const marJatszott = new Set();
+
+  for (let kor = 0; kor < kvizekSzama; kor++) {
+    await egyKvizt(db, uid, diak, index, marJatszott);
+  }
+}
+
+async function egyKvizt(db, uid, diak, index, marJatszott) {
   // Varunk, amig a tanar elindit egy kvizt.
   let kvizId = null;
   for (let i = 0; i < 240 && !kvizId; i++) {
     const o = await getDoc(doc(db, `osztalyok/${OSZTALY}`));
-    kvizId = o.data()?.aktiv_kviz || null;
+    const jelolt = o.data()?.aktiv_kviz || null;
+    kvizId = jelolt && !marJatszott.has(jelolt) ? jelolt : null;
     if (!kvizId) await varj(1000);
   }
   if (!kvizId) return console.log(`[${diak.becenev}] nem indult kviz, kilepek`);
 
+  marJatszott.add(kvizId);
   const kvizDok = await getDoc(doc(db, `kvizek/${kvizId}`));
   await setDoc(doc(db, `kvizek/${kvizId}/jatekosok/${uid}`), {
     becenev: diak.becenev, azonosito: diak.azonosito, pont: 0, helyes_db: 0,
@@ -112,7 +125,7 @@ async function diakotIndit(diak, index) {
           ? [(jok[0] + 1) % (kerdes.valaszok?.length || 2)] : jok;
       }
 
-      if (diak.strategia === 'lassu_jo') await varj(3000);
+      if (diak.strategia === 'lassu_jo') await varj(2000);
       else await varj(300 + index * 200);
 
       try {
@@ -128,7 +141,8 @@ async function diakotIndit(diak, index) {
 
   const sajat = (await getDoc(doc(db, `kvizek/${kvizId}/jatekosok/${uid}`))).data();
   console.log(`[${diak.becenev}] VEGE: ${sajat.pont} pont, ${sajat.helyes_db} jo, ` +
-              `${sajat.helyezes}. helyezes`);
+              `${sajat.helyezes}. helyezes, ${sajat.csillag ?? '?'} csillag`);
+  await varj(2000);
 }
 
 await Promise.all(DIAKOK.map(diakotIndit));

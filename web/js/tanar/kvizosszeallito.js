@@ -109,7 +109,8 @@ async function kviztInditaniGomb(esemeny) {
         idoLimit: valogatas.ido_limit,
       });
     } catch (hiba) {
-      uzenet('kviz-uzenet', magyarHiba(hiba));
+      // A "mar fut egy kviz" a mi sajat, ertheto uzenetunk - azt ne forditsuk at.
+      uzenet('kviz-uzenet', hiba.code ? magyarHiba(hiba) : hiba.message);
     }
   });
 }

@@ -50,6 +50,7 @@
     <nav class="fulek">
       <button class="ful kivalasztott" data-ful="osztalyok">Osztalyok</button>
       <button class="ful" data-ful="kviz">Kviz osszeallitasa</button>
+      <button class="ful" data-ful="eredmenyek">Eredmenyek</button>
     </nav>
 
     <!-- ------------------------------------------------------- osztalyok ful -->
@@ -144,6 +145,120 @@
       <div class="lap" id="kviz-elonezet-lap" hidden>
         <h2 id="kviz-elonezet-cim">Elonezet</h2>
         <div id="kviz-elonezet-lista"></div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ eredmenyek ful -->
+    <div data-panel="eredmenyek" hidden>
+      <div class="valasztosor">
+        <label for="er-osztaly">Osztaly</label>
+        <select id="er-osztaly"></select>
+      </div>
+
+      <nav class="alfulek">
+        <button type="button" class="alful kivalasztott" data-alful="archivum">Kviz-archivum</button>
+        <button type="button" class="alful" data-alful="osztaly">Osztalystatisztika</button>
+        <button type="button" class="alful" data-alful="diakok">Diakok</button>
+        <button type="button" class="alful" data-alful="csillagok">Csillagbeallitas</button>
+      </nav>
+
+      <!-- archivum -->
+      <div data-alpanel="archivum">
+        <div class="oszlopok">
+          <div class="lap">
+            <h2>Lefuttatott kvizek</h2>
+            <div id="archivum-lista"></div>
+          </div>
+          <div class="lap">
+            <h2 id="elemzes-cim">Egy kviz elemzese</h2>
+            <p class="alcim" id="elemzes-osszegzes">Valassz kvizt a bal oldalon.</p>
+            <div id="elemzes-kerdesek"></div>
+            <h2 style="margin-top:18px">Diakonkent</h2>
+            <div id="elemzes-diakok"></div>
+            <button type="button" class="masodlagos" id="elemzes-csv" hidden>CSV letoltese</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- osztalystatisztika -->
+      <div data-alpanel="osztaly" hidden>
+        <div class="oszlopok">
+          <div class="lap">
+            <h2>Temakoronkenti osztalyatlag</h2>
+            <p class="sugosor">Ez mondja meg, mit erdemes ujra elovenni.</p>
+            <div id="osztaly-temakorok"></div>
+          </div>
+          <div class="lap">
+            <h2>Csillagok eloszlasa</h2>
+            <p class="sugosor">
+              Ha egy-ket diak visz mindent, a rendszer nem mukodik jol - ez a mutato szol erte.
+            </p>
+            <div id="osztaly-csillagok"></div>
+            <button type="button" class="masodlagos" id="osztaly-csv">CSV letoltese</button>
+            <div class="uzenet" id="osztaly-uzenet" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- diakok -->
+      <div data-alpanel="diakok" hidden>
+        <div class="oszlopok">
+          <div class="lap">
+            <h2>Diakok</h2>
+            <div id="diakok-lista"></div>
+          </div>
+          <div class="lap">
+            <h2 id="diaklap-cim">Egy diak lapja</h2>
+            <p class="alcim" id="diaklap-osszegzes">Valassz diakot a bal oldalon.</p>
+            <div id="diaklap-temakorok"></div>
+            <h2 style="margin-top:18px">Csillagtortenet</h2>
+            <div id="diaklap-csillagok"></div>
+            <button type="button" class="masodlagos" id="diaklap-bevaltas" hidden>
+              Csillagok bevaltasa otosre
+            </button>
+            <button type="button" class="masodlagos" id="diaklap-csv" hidden>CSV letoltese</button>
+            <div class="uzenet" id="diaklap-uzenet" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- csillagbeallitas -->
+      <div data-alpanel="csillagok" hidden>
+        <div class="lap keskeny">
+          <h2>Csillagbeallitas</h2>
+          <p class="sugosor">
+            Mind a negy forras kulon kikapcsolhato, es az ertekek atirhatok -
+            kodot nem kell modositani.
+          </p>
+
+          <label class="pipa"><input type="checkbox" id="cs-dobogo_be"> Dobogo</label>
+          <label for="cs-dobogo_ertekek">Dobogos csillagok (1./2./3.)</label>
+          <input id="cs-dobogo_ertekek" placeholder="3,2,1">
+
+          <label class="pipa"><input type="checkbox" id="cs-csucs_be"> Szemelyes csucs</label>
+          <label class="pipa"><input type="checkbox" id="cs-csucs_dontetlen_is">
+            A csucs elerese is er csillagot</label>
+          <label for="cs-csucs_min_kviz">Hany korabbi kviz utan szamit</label>
+          <input type="number" id="cs-csucs_min_kviz" min="0" max="20">
+
+          <label class="pipa"><input type="checkbox" id="cs-mesterfok_be"> Mesterfok</label>
+          <label for="cs-mesterfok_kuszob">Mesterfok kuszob (%)</label>
+          <input type="number" id="cs-mesterfok_kuszob" min="10" max="100">
+          <label for="cs-mesterfok_min_kerdes">Legalabb ennyi kerdes a temakorben</label>
+          <input type="number" id="cs-mesterfok_min_kerdes" min="1" max="50">
+
+          <label class="pipa"><input type="checkbox" id="cs-kitartas_be"> Kitartas</label>
+          <label for="cs-kitartas_gyakorisag">Minden hanyadik kvizert</label>
+          <input type="number" id="cs-kitartas_gyakorisag" min="1" max="20">
+
+          <label for="cs-kviz_max_csillag">Legfeljebb ennyi csillag egy kvizert</label>
+          <input type="number" id="cs-kviz_max_csillag" min="1" max="20">
+          <label for="cs-jegy_kuszob">Ennyi csillag = egy otos</label>
+          <input type="number" id="cs-jegy_kuszob" min="1" max="30">
+
+          <button type="button" id="cs-mentes">Mentes</button>
+          <div class="uzenet" id="cs-uzenet" hidden></div>
+        </div>
       </div>
     </div>
   </section>

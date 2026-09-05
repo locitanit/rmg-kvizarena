@@ -204,3 +204,25 @@ label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric:
 .eloszlassor .rud { flex: 1; height: 20px; background: var(--hatter); border-radius: 4px; }
 .eloszlassor .rud i { display: block; height: 100%; background: var(--fo); border-radius: 4px; }
 .eloszlassor .ertek { min-width: 26px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* --------------------------------------------------------------- alfulek */
+
+.valasztosor { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.valasztosor label { margin: 0; }
+.valasztosor select { width: auto; min-width: 160px; }
+
+.alfulek { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+
+.alful {
+  width: auto;
+  margin: 0;
+  padding: 7px 13px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--szoveg);
+  background: var(--hatter);
+  border: 1px solid var(--keret);
+  border-radius: 20px;
+}
+
+.alful.kivalasztott { color: var(--fo-szoveg); background: var(--fo); border-color: var(--fo); }

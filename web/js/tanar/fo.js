@@ -12,6 +12,7 @@ import { kvizosszeallitotIndit } from './kvizosszeallito.js';
 import {
   kviztInditani, futoKvizt, jatekvezetestIndit, figyelesekLeall,
 } from './jatekvezetes.js';
+import { eredmenyeketIndit } from './eredmenyek.js';
 
 let osztalyok = [];
 
@@ -62,6 +63,7 @@ function indul() {
 // A ket ful kozotti valtas. A kvizosszeallitot csak az elso megnyitaskor
 // toltjuk be, hogy a bejelentkezes ne varjon a kerdesbankra.
 let kvizFulKesz = false;
+let eredmenyFulKesz = false;
 
 function fuleketBeallit() {
   document.querySelectorAll('.ful').forEach((gomb) => {
@@ -74,6 +76,12 @@ function fuleketBeallit() {
       if (gomb.dataset.ful === 'kviz' && !kvizFulKesz) {
         kvizFulKesz = true;
         await kvizosszeallitotIndit(osztalyok, kviztInditaniEsVezetni);
+      }
+      // Az eredmenyeket mindig ujratoltjuk: egy frissen lefuttatott kviz utan
+      // itt mar az uj adatot kell latni.
+      if (gomb.dataset.ful === 'eredmenyek') {
+        eredmenyFulKesz = true;
+        await eredmenyeketIndit(osztalyok);
       }
     };
   });
