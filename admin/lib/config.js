@@ -30,7 +30,15 @@ export function konfigBetolt(megadottUt) {
   try {
     config = JSON.parse(readFileSync(ut, 'utf8'));
   } catch (hiba) {
-    throw new KonfigHiba(`A config.json nem ervenyes JSON:\n  ${hiba.message}`);
+    throw new KonfigHiba(
+      `A config.json nem ervenyes JSON:\n  ${hiba.message}\n\n` +
+      `  A ket leggyakoribb ok:\n` +
+      `    1. lemaradt egy idezojel az ertek elol vagy utan\n` +
+      `    2. az utvonalban egyszeres a visszaper - JSON-ban ketszeres kell:\n` +
+      `       "C:\\\\Loci\\\\titkok\\\\kulcs.json"\n` +
+      `       (vagy hasznalj sima pert: "C:/Loci/titkok/kulcs.json")\n\n` +
+      `  A fajl: ${ut}`
+    );
   }
 
   for (const kulcs of ['osztalyok_ut', 'firebase_projekt']) {

@@ -9,13 +9,13 @@
 //
 // A projektet europe-west regioban kell letrehozni (adatvedelem).
 
-export const FIREBASE_CONFIG = {
-  apiKey: 'IDE_JON_AZ_API_KEY',
-  authDomain: 'icdl-gyakorlo.firebaseapp.com',
-  projectId: 'icdl-gyakorlo',
-  storageBucket: 'icdl-gyakorlo.firebasestorage.app',
-  messagingSenderId: 'IDE_JON_A_SENDER_ID',
-  appId: 'IDE_JON_AZ_APP_ID',
+const firebaseConfig = {
+  apiKey: "AIzaSyDCWtJsE5AHn-ioLc8goUWKuDhAskiu1dc",
+  authDomain: "icdl-gyakorlo.firebaseapp.com",
+  projectId: "icdl-gyakorlo",
+  storageBucket: "icdl-gyakorlo.firebasestorage.app",
+  messagingSenderId: "1014593676873",
+  appId: "1:1014593676873:web:ed7a6533310456bc7b4198"
 };
 
 // Fejlesztes kozben a helyi emulator ellen dolgozunk. Ezt a cim donti el:
