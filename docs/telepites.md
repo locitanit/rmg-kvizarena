@@ -3,8 +3,9 @@
 Ez a lista egyszer kell vegigmenni. Utana a napi hasznalat mar csak az admin
 parancssor es a bongeszo.
 
-Amit a gepre elore fel kell tenni: **Node.js** (megvan) es **Java** (a Firebase
-emulator azon fut, csak a tesztekhez kell).
+Amit a gepre elore fel kell tenni: **Node.js** es **Java** (a Firebase emulator azon
+fut, csak a tesztekhez kell). Ezen a gepen mindketto megvan; a Java hordozhato
+valtozatban: `C:\Loci\eszkozok\jdk-21.0.12.1+1-jre\bin`, a felhasznaloi PATH-ban.
 
 ---
 
@@ -152,7 +153,7 @@ npx serve web
 
 | Tunet | Mit jelent |
 |---|---|
-| `Could not spawn 'java -version'` | Nincs Java. `winget install EclipseAdoptium.Temurin.21.JRE` |
+| `Could not spawn 'java -version'` | A `C:\Loci\eszkozok\jdk-21...\bin` nincs a PATH-ban. Uj parancssort nyiss, vagy tedd vissza a PATH-ba. |
 | `Meg nincs beallitva` a weboldalon | A `web/js/firebase-config.js` meg a minta ertekeket tartalmazza |
 | `Nincs ilyen azonosito ebben az osztalyban` | Az `azonositok.txt` nincs feltoltve: `icdl-admin diakok <osztaly>` |
 | `Ennek a fioknak nincs tanari joga` | `icdl-admin tanar hozzaad <email> <nev>` |

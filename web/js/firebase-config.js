@@ -23,6 +23,16 @@ export const FIREBASE_CONFIG = {
 export const EMULATOR =
   location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
+// Az emulatornak nem kell valodi kulcs, es sajat projektazonositot hasznal.
+// Igy a felulet a Firebase projekt letrehozasa ELOTT is kiprobalhato.
+const EMULATOR_CONFIG = {
+  apiKey: 'demo-kulcs',
+  authDomain: 'localhost',
+  projectId: 'demo-icdl',
+};
+
+export const HASZNALT_CONFIG = EMULATOR ? EMULATOR_CONFIG : FIREBASE_CONFIG;
+
 export function konfigKitoltve() {
-  return !FIREBASE_CONFIG.apiKey.startsWith('IDE_JON');
+  return EMULATOR || !FIREBASE_CONFIG.apiKey.startsWith('IDE_JON');
 }

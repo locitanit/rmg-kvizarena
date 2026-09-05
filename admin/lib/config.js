@@ -13,8 +13,10 @@ export const ADMIN_MAPPA = join(ittVagyunk, '..');
 
 export class KonfigHiba extends Error {}
 
-export function konfigBetolt() {
-  const ut = join(ADMIN_MAPPA, 'config.json');
+// A "--config <ut>" kapcsoloval mas konfiguraciot is meg lehet adni - igy
+// lehet peldaul emulator ellen, teszt-osztalyokkal dolgozni.
+export function konfigBetolt(megadottUt) {
+  const ut = megadottUt || join(ADMIN_MAPPA, 'config.json');
 
   if (!existsSync(ut)) {
     throw new KonfigHiba(

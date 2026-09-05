@@ -10,9 +10,9 @@ import {
 import {
   getFirestore, connectFirestoreEmulator,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
-import { FIREBASE_CONFIG, EMULATOR } from './firebase-config.js';
+import { HASZNALT_CONFIG, EMULATOR } from './firebase-config.js';
 
-const alkalmazas = initializeApp(FIREBASE_CONFIG);
+const alkalmazas = initializeApp(HASZNALT_CONFIG);
 
 export const auth = getAuth(alkalmazas);
 export const db = getFirestore(alkalmazas);

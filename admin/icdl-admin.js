@@ -13,7 +13,8 @@
 //   icdl-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
 //
 // Kozos kapcsolo:
-//   --emulator    a helyi emulator ellen dolgozik (offline, nem kell kulcs)
+//   --emulator     a helyi emulator ellen dolgozik (offline, nem kell kulcs)
+//   --config <ut>  masik config.json hasznalata
 
 import { konfigBetolt, KonfigHiba } from './lib/config.js';
 import { firebaseIndit } from './lib/firebase.js';
@@ -39,6 +40,7 @@ ICDL Gyakorlo - tanari admin
 
 Kapcsolok:
   --emulator          a helyi emulator ellen (offline, kulcs nelkul)
+  --config <ut>       masik config.json hasznalata
   --tanar <email>     osztaly letrehozasanal, ha nem a config.json tanara
 
 Elso indulas:
@@ -57,7 +59,7 @@ async function fut() {
     return;
   }
 
-  const config = konfigBetolt();
+  const config = konfigBetolt(typeof kapcsolo.config === 'string' ? kapcsolo.config : null);
   firebaseIndit(config, { emulator: Boolean(kapcsolo.emulator) });
 
   if (kapcsolo.emulator) {

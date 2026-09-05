@@ -87,8 +87,15 @@ service cloud.firestore {
     // -------------------------------------------------------------- osztalyok
 
     match /osztalyok/{osztalyId} {
-      allow read: if belepett()
-        && (tagja(osztalyId) || request.auth.uid in resource.data.tanarok);
+      // FIGYELEM: a "get" es a "list" itt szandekosan kulon van.
+      // Egy list (query) kiertekelesekor a Firestore NEM koti be a dokumentum
+      // sajat wildcardjat, ezert a tagja(osztalyId) - ami exists()-t hiv vele -
+      // hibara futna, es a lekerdezes megtagadva. Vegiglistazni amugy is csak a
+      // tanarnak kell; a diak egyetlen dokumentumot ker le, azt viszont get-tel.
+      allow get: if belepett()
+        && (request.auth.uid in resource.data.tanarok || tagja(osztalyId));
+      allow list: if belepett()
+        && request.auth.uid in resource.data.tanarok;
 
       allow create: if tanar()
         && request.auth.uid in request.resource.data.tanarok;

@@ -4,10 +4,10 @@
 // tartozik itt egy "a diak megprobalja, elbukik" teszt.
 
 import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
+import { assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
 import {
-  assertSucceeds, assertFails, setLogLevel,
-} from '@firebase/rules-unit-testing';
-import { doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+  doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where,
+} from 'firebase/firestore';
 import {
   kornyezetIndit, adatokatFeltolt, mint, mintKivulallo, OSZTALY, BELEPOKOD, KVIZ,
 } from './kozos.js';
@@ -15,8 +15,6 @@ import {
 let kornyezet;
 
 beforeAll(async () => {
-  // Az emulator zajos hibauzeneteit elnyomjuk, csak a teszteredmeny szamit.
-  setLogLevel('error');
   kornyezet = await kornyezetIndit();
 });
 
@@ -177,6 +175,11 @@ describe('A diak megprobalja - es elbukik', () => {
     const db = mintKivulallo(kornyezet);
     await assertFails(getDoc(doc(db, 'kerdesek/adatbaziskezeles_icdl_1')));
   });
+
+  it('26. nem listazhatja vegig az osztalyokat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(getDocs(collection(db, 'osztalyok')));
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -236,6 +239,17 @@ describe('Amit a diaknak tudnia KELL', () => {
     }));
   });
 
+  it('lekeri a sajat osztalyanak adatlapjat', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDoc(doc(db, `osztalyok/${OSZTALY}`)));
+  });
+
+  it('lekerdezi az osztalya kvizeit', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDocs(
+      query(collection(db, 'kvizek'), where('osztalyId', '==', OSZTALY))));
+  });
+
   it('olvassa a sajat statisztikajat', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertSucceeds(getDoc(doc(db, `statisztika/${OSZTALY}_diak1`)));
@@ -248,6 +262,14 @@ describe('Amit a tanarnak tudnia kell', () => {
   it('olvassa a megoldokulcsot', async () => {
     const db = mint(kornyezet, 'tanar1');
     await assertSucceeds(getDoc(doc(db, 'kulcsok/adatbaziskezeles_icdl_1')));
+  });
+
+  // Ez a lekerdezes fut a tanari pult betoltesekor - list muvelet, ezert kulon
+  // szabaly vonatkozik ra (lasd a firestore.rules megjegyzeset).
+  it('lekerdezi a sajat osztalyait', async () => {
+    const db = mint(kornyezet, 'tanar1');
+    await assertSucceeds(getDocs(
+      query(collection(db, 'osztalyok'), where('tanarok', 'array-contains', 'tanar1'))));
   });
 
   it('listazza a sajat osztalya tagjait', async () => {
