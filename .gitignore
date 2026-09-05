@@ -16,3 +16,6 @@ firestore-debug.log
 ui-debug.log
 .DS_Store
 Thumbs.db
+
+# admin CLI kimenetei
+admin/kiosztas_*.csv

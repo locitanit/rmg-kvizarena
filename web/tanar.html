@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>ICDL Gyakorlo - tanari pult</title>
+  <link rel="stylesheet" href="css/kozos.css">
+  <link rel="stylesheet" href="css/tanar.css">
+</head>
+<body>
+<main class="burok szeles">
+
+  <section data-kepernyo="betoltes">
+    <p class="alcim">Betoltes...</p>
+  </section>
+
+  <!-- -------------------------------------------------------------- belepes -->
+  <section data-kepernyo="belepes" hidden>
+    <h1>Tanari pult</h1>
+    <p class="alcim">ICDL Gyakorlo</p>
+
+    <form class="lap keskeny" id="belepes-urlap">
+      <label for="belepes-email">E-mail</label>
+      <input id="belepes-email" type="email" autocomplete="username">
+
+      <label for="belepes-jelszo">Jelszo</label>
+      <input id="belepes-jelszo" type="password" autocomplete="current-password">
+
+      <button type="submit">Belepes</button>
+      <div class="uzenet hiba" id="belepes-uzenet" hidden></div>
+
+      <p class="sugosor">
+        Tanari jogot csak az admin parancssor adhat, a sajat gepeden:<br>
+        <code>node admin/icdl-admin.js tanar hozzaad &lt;email&gt; &lt;nev&gt;</code>
+      </p>
+    </form>
+  </section>
+
+  <!-- ----------------------------------------------------------------- pult -->
+  <section data-kepernyo="pult" hidden>
+    <header class="fejlec">
+      <div>
+        <h1 id="pult-nev">&nbsp;</h1>
+        <p class="alcim" id="pult-email">&nbsp;</p>
+      </div>
+      <button class="masodlagos keskeny-gomb" id="pult-kilepes">Kilepes</button>
+    </header>
+
+    <div class="oszlopok">
+      <div class="lap">
+        <h2>Osztalyaim</h2>
+        <div id="osztalylista"></div>
+        <p class="sugosor">
+          Uj osztalyt az admin parancssor hoz letre:<br>
+          <code>node admin/icdl-admin.js osztaly letrehoz 10T</code>
+        </p>
+      </div>
+
+      <div class="lap">
+        <h2 id="tagok-cim">Tagok</h2>
+        <p class="alcim" id="tagok-kod">&nbsp;</p>
+        <div id="tagoklista"><p class="alcim">Valassz osztalyt a bal oldalon.</p></div>
+        <div class="uzenet" id="pult-uzenet" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <section data-kepernyo="nincs-konfig" hidden>
+    <h1>Meg nincs beallitva</h1>
+    <div class="lap keskeny">
+      <p>A <code>web/js/firebase-config.js</code> meg a minta ertekeket tartalmazza.</p>
+      <p class="sugosor">
+        Firebase konzol &rarr; Projekt beallitasai &rarr; Altalanos &rarr;
+        Web-alkalmazas &rarr; Konfiguracio. Masold be az ertekeket, es toltsd ujra az oldalt.
+      </p>
+    </div>
+  </section>
+
+</main>
+<script type="module" src="js/tanar/fo.js"></script>
+</body>
+</html>

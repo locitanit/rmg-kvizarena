@@ -1,0 +1,52 @@
+/* Tanari pult: asztali gepre es kivetitore. */
+
+.burok.szeles { max-width: 1000px; }
+.lap.keskeny { max-width: 420px; }
+
+.fejlec {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.keskeny-gomb { width: auto; margin-top: 0; padding: 9px 16px; }
+
+.oszlopok {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .oszlopok { grid-template-columns: 1fr; }
+}
+
+.osztalygomb {
+  display: block;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 11px 12px;
+  text-align: left;
+  font-weight: 500;
+  color: var(--szoveg);
+  background: var(--hatter);
+  border: 1px solid var(--keret);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.osztalygomb.kivalasztott {
+  color: var(--fo-szoveg);
+  background: var(--fo);
+  border-color: var(--fo);
+}
+
+.kod {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: var(--fo);
+}

@@ -4,9 +4,10 @@ Osztálytermi kvízverseny a Radnóti digitális kultúra óráihoz. A tanár ó
 az osztálynak a diasor aktuális állásához igazítva, a diákok telefonról versenyeznek, és
 csillagokat gyűjtenek órai munka jegyre.
 
-**Állapot:** tervezés kész, fejlesztés még nem kezdődött el.
+**Állapot:** 1. fázis (váz és belépés) — a kód kész, a Firebase projekt beüzemelése hátravan.
 
 - A teljes terv: [`docs/IMPLEMENTACIOS_TERV.md`](docs/IMPLEMENTACIOS_TERV.md)
+- Beüzemelés lépésről lépésre: [`docs/telepites.md`](docs/telepites.md)
 - A repó szabályai: [`CLAUDE.md`](CLAUDE.md)
 
 ## Röviden
@@ -19,14 +20,41 @@ csillagokat gyűjtenek órai munka jegyre.
 | Kérdésbank | a tanár munkamappájából, kb. 2900 kérdés 21 bankban |
 | Belépés | a diák meglévő azonosítója — se név, se e-mail nem kerül a felhőbe |
 
-## Első lépések
+## Mi van a repóban
 
-```powershell
-cd C:\Loci\prog                 # a Claude Code innen indul
-copy icdl-gyakorlo\admin\config.pelda.json icdl-gyakorlo\admin\config.json
-# majd a config.json-ban ellenőrizd a kvízbázis útvonalát
+```
+web/          a GitHub Pages-re menő felület (index.html = diák, tanar.html = tanári pult)
+admin/        a tanár gépén futó parancssor (icdl-admin)
+firestore.rules   az EGYETLEN védelmi vonal — nincs mögötte szerver
+tesztek/rules/    emulátoros bizonyíték, hogy a szabályok tényleg tiltanak
+docs/         a terv és a beüzemelési útmutató
 ```
 
-A megvalósítás hat fázisra van bontva (terv, 10. pont). A 0. fázis — a kérdésbank
-diahivatkozásainak rendbetétele — **elkészült**, az eszközei a tanári munkamappában
-vannak: `radnoti\oraanyagok\kvizbazis\_diarend\`.
+## Első lépések
+
+Részletesen: [`docs/telepites.md`](docs/telepites.md). Röviden:
+
+```powershell
+cd C:\Loci\prog\icdl-gyakorlo
+npm install
+copy admin\config.pelda.json admin\config.json
+```
+
+Aztán a Firebase projekt (**europe-west régió!**), a `web/js/firebase-config.js`
+kitöltése, és:
+
+```powershell
+npm run teszt
+node admin\icdl-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
+```
+
+## Fázisok
+
+| | |
+|---|---|
+| 0. Kérdésbank felkészítése | ✅ kész (a tanári munkamappában: `kvizbazis\_diarend\`) |
+| 1. Váz és belépés | 🔨 folyamatban |
+| 2. Kérdésbank publikálása, kvízösszeállítás | |
+| 3. Az élő kvíz | |
+| 4. Csillagok és statisztika | |
+| 5. Gyakorlás és csiszolás | |
