@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>ICDL Gyakorlo</title>
+  <link rel="stylesheet" href="css/kozos.css">
+</head>
+<body>
+<main class="burok">
+
+  <!-- ------------------------------------------------------------ betoltes -->
+  <section data-kepernyo="betoltes">
+    <p class="alcim">Betoltes...</p>
+  </section>
+
+  <!-- -------------------------------------------------------------- belepes -->
+  <section data-kepernyo="belepes" hidden>
+    <h1>ICDL Gyakorlo</h1>
+    <p class="alcim">Lepj be a gepterem-azonositoddal.</p>
+
+    <form class="lap" id="belepes-urlap">
+      <label for="belepes-osztaly">Osztaly</label>
+      <select id="belepes-osztaly"></select>
+
+      <label for="belepes-azonosito">Azonosito</label>
+      <input id="belepes-azonosito" autocomplete="username" autocapitalize="none"
+             spellcheck="false" placeholder="pl. kovacs_b12">
+
+      <label for="belepes-jelszo">Jelszo</label>
+      <input id="belepes-jelszo" type="password" autocomplete="current-password">
+
+      <button type="submit">Belepes</button>
+      <div class="uzenet hiba" id="belepes-uzenet" hidden></div>
+
+      <p class="sugosor">
+        Elfelejtetted a jelszavad? A tanarod tud ujat adni - itt nincs
+        &bdquo;elfelejtett jelszo&rdquo; e-mail, mert nem adtal meg e-mail cimet.
+      </p>
+    </form>
+
+    <p class="valto">Meg nincs fiokod? <a id="valto-regisztraciora">Regisztralj</a></p>
+  </section>
+
+  <!-- --------------------------------------------------------- regisztracio -->
+  <section data-kepernyo="regisztracio" hidden>
+    <h1>Regisztracio</h1>
+    <p class="alcim">Az osztalykodot a tanarodtol kapod.</p>
+
+    <form class="lap" id="regisztracio-urlap">
+      <label for="reg-kod">Osztalykod</label>
+      <input id="reg-kod" autocapitalize="characters" spellcheck="false" placeholder="pl. 10T-K7QX">
+
+      <label for="reg-azonosito">Azonosito</label>
+      <input id="reg-azonosito" autocomplete="username" autocapitalize="none"
+             spellcheck="false" placeholder="pl. kovacs_b12">
+
+      <label for="reg-jelszo">Jelszo (legalabb 6 karakter)</label>
+      <input id="reg-jelszo" type="password" autocomplete="new-password">
+
+      <label for="reg-jelszo2">Jelszo megegyszer</label>
+      <input id="reg-jelszo2" type="password" autocomplete="new-password">
+
+      <label for="reg-becenev">Becenev (ez latszik a ranglistan)</label>
+      <input id="reg-becenev" maxlength="20" placeholder="pl. Bence">
+
+      <button type="submit">Regisztracio</button>
+      <div class="uzenet hiba" id="regisztracio-uzenet" hidden></div>
+
+      <p class="sugosor">
+        A valodi neved es az e-mail cimed nem kerul fel sehova - csak az
+        azonositod es a becenev.
+      </p>
+    </form>
+
+    <p class="valto">Mar van fiokod? <a id="valto-belepesre">Lepj be</a></p>
+  </section>
+
+  <!-- -------------------------------------------------------------- fooldal -->
+  <section data-kepernyo="fooldal" hidden>
+    <h1 id="fo-becenev">&nbsp;</h1>
+    <p class="alcim" id="fo-osztaly">&nbsp;</p>
+
+    <div class="lap" style="text-align:center">
+      <div class="csillagsor" id="fo-csillagsor">&nbsp;</div>
+      <div class="csillagszam" id="fo-csillagszam">0</div>
+      <p class="alcim" id="fo-hatralevo" style="margin:6px 0 0">&nbsp;</p>
+    </div>
+
+    <div class="lap">
+      <h2>Becenev</h2>
+      <input id="fo-becenev-input" maxlength="20">
+      <button class="masodlagos" id="fo-becenev-mentes">Becenev mentese</button>
+      <div class="uzenet" id="fo-uzenet" hidden></div>
+    </div>
+
+    <div class="lap">
+      <h2>Kovetkezik</h2>
+      <p class="sugosor">
+        Az elo kviz es a gyakorlo mod a kovetkezo fazisokban keszul el.
+        Most annyi a dolgod, hogy a belepes mukodjon.
+      </p>
+      <button class="masodlagos" id="fo-kilepes">Kilepes</button>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ konfig hianyzik -->
+  <section data-kepernyo="nincs-konfig" hidden>
+    <h1>Meg nincs beallitva</h1>
+    <div class="lap">
+      <p>A <code>web/js/firebase-config.js</code> meg a minta ertekeket tartalmazza.</p>
+      <p class="sugosor">
+        Firebase konzol &rarr; Projekt beallitasai &rarr; Altalanos &rarr;
+        Web-alkalmazas &rarr; Konfiguracio. Masold be az ertekeket, es toltsd ujra az oldalt.
+      </p>
+    </div>
+  </section>
+
+</main>
+<script type="module" src="js/diak/fo.js"></script>
+</body>
+</html>

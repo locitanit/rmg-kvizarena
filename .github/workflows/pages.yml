@@ -1,0 +1,43 @@
+# A web/ mappa kikuldese GitHub Pages-re.
+#
+# Nincs build lepes: a web/ mappa tartalma megy fel ugy, ahogy van (sima HTML +
+# CSS + ESM modulok, a Firebase SDK a CDN-rol jon).
+#
+# Egyszer be kell kapcsolni: GitHub > Settings > Pages > Source: "GitHub Actions".
+
+name: Pages kikuldes
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  kikuldes:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.telepites.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pages elokeszitese
+        uses: actions/configure-pages@v5
+
+      - name: A web mappa becsomagolasa
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - name: Kikuldes
+        id: telepites
+        uses: actions/deploy-pages@v4

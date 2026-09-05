@@ -1,0 +1,143 @@
+/* ICDL Gyakorlo - kozos stilus.
+   Mobilelso: a diak telefonon van. Vilagos/sotet a rendszerbeallitas szerint. */
+
+:root {
+  --hatter: #f6f7fb;
+  --lap: #ffffff;
+  --szoveg: #1c2033;
+  --halvany: #5c6480;
+  --keret: #dfe3ee;
+  --fo: #2f6bff;
+  --fo-szoveg: #ffffff;
+  --jo: #17915c;
+  --rossz: #c8323c;
+  --csillag: #f0a500;
+  --arnyek: 0 1px 3px rgba(20, 25, 50, 0.08);
+  --lekerekites: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hatter: #12141c;
+    --lap: #1b1e2a;
+    --szoveg: #e9ebf3;
+    --halvany: #969db8;
+    --keret: #2c3143;
+    --fo: #5b8cff;
+    --jo: #3fbd84;
+    --rossz: #ef6b73;
+    --arnyek: none;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--hatter);
+  color: var(--szoveg);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.burok {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+h1 { font-size: 1.4rem; margin: 0 0 4px; }
+h2 { font-size: 1.1rem; margin: 0 0 12px; }
+p  { margin: 0 0 12px; }
+
+.alcim { color: var(--halvany); margin: 0 0 24px; font-size: 0.9rem; }
+
+.lap {
+  background: var(--lap);
+  border: 1px solid var(--keret);
+  border-radius: var(--lekerekites);
+  box-shadow: var(--arnyek);
+  padding: 20px 18px;
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--halvany);
+  margin: 14px 0 4px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--szoveg);
+  background: var(--hatter);
+  border: 1px solid var(--keret);
+  border-radius: 8px;
+}
+
+input:focus, select:focus {
+  outline: 2px solid var(--fo);
+  outline-offset: 1px;
+}
+
+button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--fo-szoveg);
+  background: var(--fo);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:disabled { opacity: 0.55; cursor: progress; }
+
+button.masodlagos {
+  color: var(--fo);
+  background: transparent;
+  border: 1px solid var(--keret);
+  font-weight: 500;
+}
+
+.uzenet {
+  margin-top: 14px;
+  padding: 11px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.uzenet.hiba { background: rgba(200, 50, 60, 0.12); color: var(--rossz); }
+.uzenet.siker { background: rgba(23, 145, 92, 0.12); color: var(--jo); }
+.uzenet.info { background: rgba(47, 107, 255, 0.1); color: var(--fo); }
+
+.valto {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--halvany);
+}
+
+.valto a { color: var(--fo); cursor: pointer; }
+
+.sugosor {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--halvany);
+  line-height: 1.45;
+}
+
+/* csillagok */
+.csillagsor { font-size: 2.6rem; letter-spacing: 4px; color: var(--csillag); }
+.csillagszam { font-size: 2.2rem; font-weight: 700; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { padding: 9px 6px; text-align: left; border-bottom: 1px solid var(--keret); }
+th { color: var(--halvany); font-weight: 600; font-size: 0.8rem; }

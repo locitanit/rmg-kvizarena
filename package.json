@@ -1,0 +1,19 @@
+{
+  "name": "icdl-gyakorlo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Osztalytermi kvizverseny - biztonsagi szabalyok es emulatoros tesztek",
+  "type": "module",
+  "scripts": {
+    "emulator": "firebase emulators:start --only auth,firestore --project demo-icdl",
+    "teszt": "firebase emulators:exec --only firestore --project demo-icdl \"vitest run\"",
+    "teszt:figyel": "vitest",
+    "szabalyok:kikuld": "firebase deploy --only firestore:rules"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.0.0",
+    "firebase-tools": "^14.0.0",
+    "vitest": "^3.0.0"
+  }
+}

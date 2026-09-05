@@ -1,0 +1,214 @@
+rules_version = '2';
+
+// ICDL Gyakorlo - Firestore biztonsagi szabalyok
+//
+// FIGYELEM: nincs mogotte szerver. Nincs Cloud Functions (Spark csomag), ezert
+// EZ AZ EGYETLEN vedelmi vonal. Minden tiltashoz tartozik emulatoros teszt a
+// tesztek/rules/ alatt. Ha itt modositasz, ott is boviteni kell a teszteket.
+//
+// A ket legfontosabb szabaly:
+//   1. A "kulcsok" kollekciot diak SOHA nem olvashatja (megoldokulcs).
+//   2. A "valaszok" dokumentum letrehozhato, de nem irhato felul.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------- segedek
+
+    function belepett() {
+      return request.auth != null;
+    }
+
+    function sajat(uid) {
+      return belepett() && request.auth.uid == uid;
+    }
+
+    // Tanari jogot KIZAROLAG az admin CLI adhat (Admin SDK, ami megkeruli a
+    // szabalyokat). A "tanarok" kollekciot kliens nem irhatja - lasd lentebb.
+    function tanar() {
+      return belepett()
+        && exists(/databases/$(database)/documents/tanarok/$(request.auth.uid));
+    }
+
+    function tagja(osztalyId) {
+      return belepett()
+        && exists(/databases/$(database)/documents/osztalyok/$(osztalyId)/tagok/$(request.auth.uid));
+    }
+
+    function osztalyDok(osztalyId) {
+      return get(/databases/$(database)/documents/osztalyok/$(osztalyId)).data;
+    }
+
+    function osztalyTanara(osztalyId) {
+      return tanar()
+        && exists(/databases/$(database)/documents/osztalyok/$(osztalyId))
+        && request.auth.uid in osztalyDok(osztalyId).tanarok;
+    }
+
+    function kvizDok(kvizId) {
+      return get(/databases/$(database)/documents/kvizek/$(kvizId)).data;
+    }
+
+    // Az "engedelyezett" dokumentum tartalmazza a szintetikus e-mail cimet, amit
+    // az admin CLI szamolt ki (<azonosito>@<osztaly>.rmg.local, csupa kisbetuvel).
+    // Itt NEM szoveget fuzunk ossze: a Firebase Auth kisbetusiti a cimeket, es
+    // egy "10D_human"-fele osztalynevbol nem trivialis a helyes domain. Az egyetlen
+    // igazsag a feltoltott dokumentum - igy a szabaly nem tud "elcsuszni" a CLI-tol.
+    function engedelyezettFiok(osztalyId, azonosito) {
+      return belepett()
+        && exists(/databases/$(database)/documents/osztalyok/$(osztalyId)/engedelyezett/$(azonosito))
+        && get(/databases/$(database)/documents/osztalyok/$(osztalyId)/engedelyezett/$(azonosito)).data.email
+             == request.auth.token.email;
+    }
+
+    function csakEzekAKulcsok(engedett) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(engedett);
+    }
+
+    // ------------------------------------------------- nyilvanos osztalylista
+    // Csak a megjelenitendo nev, hogy a belepokepernyo legorduloje kitoltheto
+    // legyen belepes ELOTT. Belepokod NINCS benne.
+
+    match /osztalyok_nyilvanos/{osztalyId} {
+      allow read: if true;
+      allow write: if osztalyTanara(osztalyId);
+    }
+
+    // ----------------------------------------------------- belepokod feloldas
+    // A dokumentum azonositoja MAGA a belepokod, es csak "get" engedett (list nem).
+    // Igy csak az tudja feloldani, aki a kodot mar ismeri; vegiglistazni nem lehet.
+
+    match /belepok/{belepokod} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if tanar();
+    }
+
+    // -------------------------------------------------------------- osztalyok
+
+    match /osztalyok/{osztalyId} {
+      allow read: if belepett()
+        && (tagja(osztalyId) || request.auth.uid in resource.data.tanarok);
+
+      allow create: if tanar()
+        && request.auth.uid in request.resource.data.tanarok;
+      allow update, delete: if tanar()
+        && request.auth.uid in resource.data.tanarok;
+
+      // Az adott osztalyba beengedett azonositok listaja (az azonositok.txt-bol,
+      // az admin CLI tolti fel). "get" nyilvanos, hogy a regisztracio ellenorizni
+      // tudjon; "list" tiltva, hogy a nevsort ne lehessen egyben letolteni.
+      match /engedelyezett/{azonosito} {
+        allow get: if true;
+        allow list: if osztalyTanara(osztalyId);
+        allow write: if osztalyTanara(osztalyId);
+      }
+
+      match /tagok/{uid} {
+        allow get: if sajat(uid) || osztalyTanara(osztalyId);
+        allow list: if osztalyTanara(osztalyId);
+
+        // A diak sajat magat veszi fel, es csak nulla csillaggal indulhat.
+        allow create: if sajat(uid)
+          && engedelyezettFiok(osztalyId, request.resource.data.azonosito)
+          && request.resource.data.keys().hasOnly(
+               ['azonosito', 'becenev', 'csillag_ossz', 'csillag_aktualis', 'jegyek', 'csatlakozott'])
+          && request.resource.data.csillag_ossz == 0
+          && request.resource.data.csillag_aktualis == 0
+          && request.resource.data.jegyek == 0
+          && request.resource.data.becenev is string
+          && request.resource.data.becenev.size() <= 20;
+
+        // A diak CSAK a becenevet valtoztathatja. Csillagot, jegyet nem.
+        allow update: if osztalyTanara(osztalyId)
+          || (sajat(uid)
+              && csakEzekAKulcsok(['becenev'])
+              && request.resource.data.becenev is string
+              && request.resource.data.becenev.size() <= 20);
+
+        allow delete: if osztalyTanara(osztalyId);
+      }
+    }
+
+    // ---------------------------------------------------------------- tanarok
+    // Kliensbol SEMMIKEPP nem irhato: nincs olyan ut, ahol valaki tanarra teheti
+    // magat. Kizarolag az admin CLI (Admin SDK) hozza letre.
+
+    match /tanarok/{uid} {
+      allow get: if sajat(uid) || tanar();
+      allow list: if tanar();
+      allow write: if false;
+    }
+
+    // ------------------------------------------------- kerdesbank (csak olvas)
+    // Ezeket az admin CLI publikalja, kliens sosem irja.
+
+    match /diasorok/{tema} {
+      allow read: if belepett();
+      allow write: if false;
+    }
+
+    match /kerdesek/{kerdesId} {
+      allow read: if belepett();
+      allow write: if false;
+    }
+
+    // A MEGOLDOKULCS. Diak semmit nem lat belole - ez a csalasvedelem gerince.
+    match /kulcsok/{kerdesId} {
+      allow read: if tanar();
+      allow write: if false;
+    }
+
+    // ------------------------------------------------------------------ kvizek
+
+    match /kvizek/{kvizId} {
+      allow read: if belepett()
+        && (tanar() || tagja(resource.data.osztalyId));
+
+      allow create: if tanar()
+        && request.resource.data.tanarUid == request.auth.uid
+        && osztalyTanara(request.resource.data.osztalyId);
+      allow update, delete: if tanar()
+        && resource.data.tanarUid == request.auth.uid;
+
+      // A ranglista: minden jatekos latja a tobbiek pontjat.
+      match /jatekosok/{uid} {
+        allow read: if belepett()
+          && (tanar() || tagja(kvizDok(kvizId).osztalyId));
+
+        // A diak felveszi magat a jatekba - nulla ponttal.
+        allow create: if sajat(uid)
+          && request.resource.data.pont == 0
+          && request.resource.data.helyes_db == 0;
+
+        // Pontot es csillagot KIZAROLAG a kvizt inditott tanar irhat.
+        allow update, delete: if tanar()
+          && kvizDok(kvizId).tanarUid == request.auth.uid;
+      }
+
+      // A diak ide CSAK IRNI tud, olvasni nem: nem lathatja masok valaszat.
+      match /valaszok/{valaszId} {
+        allow read: if tanar()
+          && kvizDok(kvizId).tanarUid == request.auth.uid;
+
+        allow create: if sajat(request.resource.data.uid)
+          && valaszId == request.auth.uid + '_' + string(request.resource.data.kerdesIndex)
+          && kvizDok(kvizId).allapot == 'kerdes'
+          && request.resource.data.kerdesIndex == kvizDok(kvizId).aktualis;
+
+        // Lezaras utan nem lehet "javitani" a sajat valaszt.
+        allow update, delete: if false;
+      }
+    }
+
+    // ------------------------------------------------------------ statisztika
+    // A dokumentum azonositoja: <osztalyId>_<uid>
+
+    match /statisztika/{statId} {
+      allow get: if tanar()
+        || (belepett() && statId.matches('^.*_' + request.auth.uid + '$'));
+      allow list: if tanar();
+      allow write: if tanar();
+    }
+  }
+}
