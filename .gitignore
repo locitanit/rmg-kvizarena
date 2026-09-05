@@ -1,0 +1,18 @@
+# titkok – SOHA ne kerüljenek be
+admin/config.json
+admin/*serviceaccount*.json
+admin/*.key.json
+.env
+.env.*
+
+# diákadat
+*nevsor*.xlsx
+azonositok.txt
+
+node_modules/
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.DS_Store
+Thumbs.db
