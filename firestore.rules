@@ -155,6 +155,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Egy YAML-bank metaadata: cim, temakorok, es a valtozasfigyelo hash-tabla.
+    match /bankok/{bankKod} {
+      allow read: if belepett();
+      allow write: if false;
+    }
+
     match /kerdesek/{kerdesId} {
       allow read: if belepett();
       allow write: if false;

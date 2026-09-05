@@ -139,6 +139,8 @@ describe('A diak megprobalja - es elbukik', () => {
   it('18. nem irhatja at a kerdesbankot', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertFails(updateDoc(doc(db, 'kerdesek/adatbaziskezeles_icdl_1'), { kerdes: 'atirva' }));
+    await assertFails(updateDoc(doc(db, 'bankok/adatbaziskezeles_2026_icdl'), { kerdes_db: 0 }));
+    await assertFails(updateDoc(doc(db, 'diasorok/adatbaziskezeles_icdl'), { verzio: 'hamis' }));
   });
 
   it('19. nem lathatja masik osztaly kvizet', async () => {
@@ -217,6 +219,12 @@ describe('Amit a diaknak tudnia KELL', () => {
   it('olvassa a kerdeseket - kulcs nelkul', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertSucceeds(getDoc(doc(db, 'kerdesek/adatbaziskezeles_icdl_1')));
+  });
+
+  it('olvassa a bankok es a diasorok leirasat (a gyakorlo modhoz kell)', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertSucceeds(getDocs(collection(db, 'bankok')));
+    await assertSucceeds(getDoc(doc(db, 'diasorok/adatbaziskezeles_icdl')));
   });
 
   it('latja az osztalya kvizet es a ranglistat', async () => {

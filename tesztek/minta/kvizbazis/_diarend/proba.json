@@ -1,0 +1,25 @@
+{
+  "kod": "proba",
+  "tema": "proba",
+  "forras_pptx": "Proba_2026.pptx",
+  "verzio": "2026-09-05",
+  "fizikai_diaszam": 26,
+  "szamozott_diaszam": 22,
+  "fejezetek": [
+    { "cim": "BEVEZETES", "szam": 1, "elso_dia": 1, "utolso_dia": 3, "elso_fizikai": 2, "utolso_fizikai": 4 },
+    { "cim": "1. ALAPOK", "szam": 1, "elso_dia": 4, "utolso_dia": 12, "elso_fizikai": 5, "utolso_fizikai": 14 },
+    { "cim": "2. MASODIK FEJEZET", "szam": 2, "elso_dia": 13, "utolso_dia": 22, "elso_fizikai": 15, "utolso_fizikai": 26 }
+  ],
+  "diak": [
+    { "fizikai": 1, "szamozott": null, "fejezet": "", "cimke": "", "cim": "CIMLAP" },
+    { "fizikai": 5, "szamozott": 4, "fejezet": "1. ALAPOK", "cimke": "NAT", "cim": "Az alapok" },
+    { "fizikai": 6, "szamozott": 5, "fejezet": "1. ALAPOK", "cimke": "NAT", "cim": "Elso allitas" },
+    { "fizikai": 13, "szamozott": 12, "fejezet": "1. ALAPOK", "cimke": "NAT", "cim": "Osszefoglalas" },
+    { "fizikai": 15, "szamozott": 13, "fejezet": "2. MASODIK FEJEZET", "cimke": "ICDL", "cim": "A masodik fejezet" },
+    { "fizikai": 16, "szamozott": 14, "fejezet": "2. MASODIK FEJEZET", "cimke": "ICDL", "cim": "Hibas kerdes diaja" },
+    { "fizikai": 17, "szamozott": 15, "fejezet": "2. MASODIK FEJEZET", "cimke": "ICDL", "cim": "Kifejtos diaja" },
+    { "fizikai": 18, "szamozott": 16, "fejezet": "2. MASODIK FEJEZET", "cimke": "ICDL", "cim": "Abras dia" },
+    { "fizikai": 22, "szamozott": 20, "fejezet": "2. MASODIK FEJEZET", "cimke": "ICDL", "cim": "Parositas" },
+    { "fizikai": 24, "szamozott": 22, "fejezet": "2. MASODIK FEJEZET", "cimke": "ICDL", "cim": "Zaras" }
+  ]
+}

@@ -84,7 +84,12 @@ export async function adatokatFeltolt(kornyezet) {
       });
     }
 
-    await db.doc('diasorok/adatbaziskezeles_icdl').set({ cim: 'Adatbazis-kezeles', diaszam: 145 });
+    await db.doc('diasorok/adatbaziskezeles_icdl').set({
+      tema: 'adatbaziskezeles', szamozott_diaszam: 129, verzio: '2026-09-02',
+    });
+    await db.doc('bankok/adatbaziskezeles_2026_icdl').set({
+      cim: 'Adatbazis-kezeles (ICDL)', diasor: 'adatbaziskezeles_icdl', kerdes_db: 178,
+    });
     await db.doc('kerdesek/adatbaziskezeles_icdl_1').set({
       tema: 'adatbaziskezeles_icdl', dia: 105, tipus: 'feleletvalasztos',
       kerdes: 'Mi az elsodleges kulcs?', valaszok: ['a', 'b', 'c'],

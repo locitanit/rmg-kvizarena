@@ -8,6 +8,7 @@
     "icdl-admin": "./icdl-admin.js"
   },
   "dependencies": {
-    "firebase-admin": "^13.0.0"
+    "firebase-admin": "^13.0.0",
+    "yaml": "^2.9.0"
   }
 }

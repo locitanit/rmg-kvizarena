@@ -135,25 +135,40 @@ osztalyok/{osztalyId}/tagok/{uid}
   csatlakozott: <ts>
 
 # ---- a kérdésbank publikált másolata (az admin CLI tölti fel) ----
-diasorok/{tema}                   # pl. "adatbaziskezeles_icdl"
-  cim: "Adatbázis-kezelés (ICDL)"
+diasorok/{diasorKod}              # pl. "adatbaziskezeles_icdl" — a _diarend/<kod>.json
+  tema: "adatbaziskezeles"
   forras_pptx: "Adatbaziskezeles_2026_ICDL.pptx"
-  verzio: "2026-09-05"            # a pptx építésének dátuma
-  diaszam: 145
+  verzio: "2026-09-02"            # a pptx építésének dátuma
+  szamozott_diaszam: 129          # a csúszka felső határa
+  fizikai_diaszam: 145
   fejezetek: [ {szam: 12, cim: "Űrlapok", elso_dia: 104, utolso_dia: 111}, ... ]
+  diak: [ {szamozott: 43, cim: "Űrlap varázslóval"}, ... ]   # csak a számozott diák
 
-kerdesek/{kerdesId}               # kerdesId = tema + "_" + sorszám (stabil, újrapublikálásnál is)
-  tema: "adatbaziskezeles_icdl"
+bankok/{bankKod}                  # pl. "adatbaziskezeles_2026_icdl" — egy YAML = egy bank
+  cim: "Adatbázis-kezelés (ICDL)"
+  tema: "adatbaziskezeles"
+  diasor: "adatbaziskezeles_icdl" # null, ha a banknak nincs diasora (it_alapismeretek)
+  kerdes_db: 178
+  temakorok: [ {kod: "urlapok_es_jelentesek", db: 21}, ... ]
+  hashok: { <kerdesId>: <hash> }  # a változásfigyeléshez, hogy 1 olvasás elég legyen
+  publikalva: <ts>
+
+kerdesek/{kerdesId}               # kerdesId = bankKod + "_" + a kérdésszöveg hash-e
+  bank: "adatbaziskezeles_2026_icdl"
+  diasor: "adatbaziskezeles_icdl"
+  tema: "adatbaziskezeles"
   temakor: "urlapok_es_jelentesek"
-  fejezet: 12                     # SZÁMÍTOTT: a publikáló tölti ki a dia + diasorok alapján
+  fejezet: 11                     # SZÁMÍTOTT: a fejezetek tömb INDEXE (0-tól), nem a
+                                  # fejezet „szam" mezője — az nem egyedi, lásd 4.4/4.
   dia: 105                        # a kérdés SZÁMOZOTT diaszáma (ami a dia sarkában ki van írva)
-  dia_verzio: "2026-09-05"
+  dia_verzio: "2026-09-02"
   tipus: "feleletvalasztos" | "igaz_hamis" | "tobb_valasztos" | "parosito" | "rovid_valasz"
   kerdes: "…"
   valaszok: [...]                 # feleletválasztósnál/többválasztósnál
   parok_bal: [...]                # párosítónál csak a bal oldal + a kevert jobb oldal
   parok_jobb_kevert: [...]
   nehezseg: 1..3
+  cimkek: [...]
   # FIGYELEM: a helyes válasz NINCS ebben a dokumentumban
 
 kulcsok/{kerdesId}                # csak tanár olvashatja (lásd 3. pont)
@@ -307,6 +322,42 @@ Az `icdl-admin publikal` parancs:
 
 **Fokozatos bővülés:** a bank egésze felkerül, a *tanár* dönti el kvízenként, meddig
 kérdez. Nem kell részletekben publikálni.
+
+### 4.4 Amit a 2. fázis kiderített, és amiatt módosult a 2. pont adatmodellje
+
+A kvízbázis felmérése (17 bank, 2782 kérdés) két ponton cáfolta az eredeti tervet.
+Mindkettőt az adatmodellben javítottuk, nem a kódban kerültük meg.
+
+**1. A bank és a diasor nem 1:1.** Két diasorhoz két-két bank tartozik
+(`ai_tamogatott_kodolas_2026` + `..._frissitendo` → `AI_kodolas`;
+`programozas_2026_erettsegi` + `..._oramucsarnok` → `programozas_erettsegi`), az
+`it_alapismeretek_2026`-nak pedig **nincs** diasora (minden kérdése `dia: 0`, csak
+témakör szerint válogatható). Ezért a `kerdesId` nem lehet a diasor kódjára építve —
+külön `bankok/` kollekció kell, és a kérdés `bank` + `diasor` mezőt is kap.
+A bank ↔ diasor összekötése a **pptx fájlnevén** keresztül megy: a bank
+`forras_ppt`-jének fájlneve = a diarend `forras_pptx` mezője.
+
+**2. A sorszám nem stabil azonosító.** A bankokat szkriptek állítják elő
+(`merge.py`, `merge_icdl.py`), így a kérdések sorrendje bármikor eltolódhat, és egy
+sorszám alapú `kerdesId`-nél újrapublikáláskor gyakorlatilag minden kérdés kicserélődne.
+Ezért a `kerdesId` a **kérdésszöveg hash-e**: sorrendcserétől és beszúrástól nem változik.
+Cserébe egy átfogalmazott kérdés új azonosítót kap (a régi törlődik) — ez vállalt
+kompromisszum: az átfogalmazott kérdés statisztikailag amúgy is új kérdés.
+
+**4. A fejezet azonosítója a tömbindex, nem a fejezet száma.** A diarend
+`fejezetek` listájában a `szam` mező **nem egyedi**: a számozatlan nyitószakasz
+(pl. „BEVEZETÉS") is `szam: 1`-et kap, így ütközik az 1. fejezettel, ráadásul a
+számozás ugrik is (11 után 13 jön). Ezért a kérdés `fejezet` mezője a `fejezetek`
+tömbben elfoglalt **helyet** tárolja; a megjelenítendő címet a felület ugyanezzel az
+indexszel olvassa ki a diasor dokumentumából.
+
+**3. Válogatás: a szűrés a tanár böngészőjében fut, nem lekérdezésben.** A Firestore
+összetett lekérdezés lenne (diatartomány + nehézség + témakör), ami indexeket és
+korlátokat hozna. Egy bank viszont csak 120–240 kérdés: a tanári pult egyetlen
+`where('bank','==',…)` lekérdezéssel behúzza az egészet, és utána memóriában szűr.
+Így a találatszámláló **azonnal** frissül a csúszka mozgatására, és nincs szükség
+egyetlen összetett indexre sem. Egy kvízösszeállítás ára kb. 200 olvasás — a napi
+50 000-es keretbe bőven belefér.
 
 ---
 

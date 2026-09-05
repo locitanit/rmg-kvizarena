@@ -1,0 +1,92 @@
+# Teszt-fixture a publikalohoz. NEM tananyag: kitalalt kerdesek, a valodi
+# kvizbazis sose kerul a repoba. A diaszamok a _diarend/proba.json-hoz igazodnak.
+tananyag: Probatananyag
+tantargy: digitalis_kultura
+tema: proba
+forras_ppt: oraanyagok/proba/Proba_2026.pptx
+keszult: '2026-09-05'
+kerdesek:
+  # 1. fejezet (index 1): dia 4-12
+  - tipus: feleletvalasztos
+    kerdes: Melyik allitas igaz a probara?
+    valaszok: ["Elso", "Masodik", "Harmadik", "Negyedik"]
+    helyes: 2
+    magyarazat: A harmadik a jo.
+    nehezseg: 1
+    dia: 5
+    temakor: alapok
+    cimkek: [proba]
+
+  - tipus: igaz_hamis
+    kerdes: A proba mindig sikerul.
+    helyes: hamis
+    magyarazat: Nem mindig.
+    nehezseg: 1
+    dia: 12
+    temakor: alapok
+
+  # 2. fejezet (index 2): dia 13-22
+  - tipus: tobb_valasztos
+    kerdes: Melyek tartoznak a masodik fejezethez?
+    valaszok: ["A", "B", "C", "D"]
+    helyes: [0, 2]
+    magyarazat: A es C.
+    nehezseg: 2
+    dia: 13
+    temakor: masodik
+
+  - tipus: rovid_valasz
+    kerdes: Hogy hivjak a probafejezetet?
+    helyes: ["masodik", "kettes"]
+    nehezseg: 2
+    dia: 22
+    temakor: masodik
+
+  - tipus: parosito
+    kerdes: Parositsd a betuket a szamokkal!
+    parok:
+      - {bal: "A", jobb: "1"}
+      - {bal: "B", jobb: "2"}
+      - {bal: "C", jobb: "3"}
+      - {bal: "D", jobb: "4"}
+    nehezseg: 3
+    dia: 20
+    temakor: masodik
+
+  # Kihagyando: kifejtos (gepileg nem javithato)
+  - tipus: kifejtos
+    kerdes: Fejtsd ki, mi a proba lenyege!
+    mintavalasz: A proba az proba.
+    pontszam: 3
+    nehezseg: 3
+    dia: 15
+    temakor: masodik
+
+  # Kihagyando: kepes (a kep az elso verzioban nem jelenik meg)
+  - tipus: feleletvalasztos
+    kerdes: Mit latsz az abran?
+    valaszok: ["Kort", "Negyzetet", "Haromszoget", "Semmit"]
+    helyes: 0
+    nehezseg: 1
+    dia: 16
+    temakor: masodik
+    kep:
+      fajl: kepek/proba.png
+      felirat: Egy alakzat
+
+  # Hibas: a helyes index tullog a valaszokon
+  - tipus: feleletvalasztos
+    kerdes: Ez a kerdes hibas, mert a helyes index tullog.
+    valaszok: ["Egy", "Ketto"]
+    helyes: 7
+    nehezseg: 1
+    dia: 14
+    temakor: masodik
+
+  # Dia nelkuli kerdes: fejezet nem szamolhato
+  - tipus: igaz_hamis
+    kerdes: Ennek a kerdesnek nincs diaszama.
+    helyes: igaz
+    nehezseg: 1
+    dia: 0
+    temakor: alapok

@@ -11,6 +11,7 @@
 //   icdl-admin osztaly kod <osztaly> [--uj]    belepokod mutatasa/csereje
 //   icdl-admin diakok <osztaly> [--fiokok]     azonositok.txt feltoltese
 //   icdl-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
+//   icdl-admin publikal [bank] [--proba]       kerdesbank feltoltese
 //
 // Kozos kapcsolo:
 //   --emulator     a helyi emulator ellen dolgozik (offline, nem kell kulcs)
@@ -23,6 +24,7 @@ import { tanarParancs } from './parancsok/tanar.js';
 import { osztalyParancs } from './parancsok/osztaly.js';
 import { diakokParancs } from './parancsok/diakok.js';
 import { jelszoParancs } from './parancsok/jelszo.js';
+import { publikalParancs } from './parancsok/publikal.js';
 
 const SUGO = `
 ICDL Gyakorlo - tanari admin
@@ -37,6 +39,9 @@ ICDL Gyakorlo - tanari admin
 
   icdl-admin diakok <osztaly> [--fiokok]     azonositok.txt -> engedelyezett lista
   icdl-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
+
+  icdl-admin publikal [bank] [--proba]       kerdesbank feltoltese a kvizbazisbol
+                                             (bank nelkul: mind; --proba: nem ir)
 
 Kapcsolok:
   --emulator          a helyi emulator ellen (offline, kulcs nelkul)
@@ -76,6 +81,8 @@ async function fut() {
       return diakokParancs(argumentumok, kapcsolo, config);
     case 'jelszo':
       return jelszoParancs(argumentumok);
+    case 'publikal':
+      return publikalParancs(argumentumok, kapcsolo, config);
     default:
       throw new Error(`Ismeretlen parancs: ${parancs}\n${SUGO}`);
   }
