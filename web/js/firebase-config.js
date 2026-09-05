@@ -8,8 +8,13 @@
 //   Web-alkalmazas > SDK beallitasa es konfiguralas > "Konfiguracio"
 //
 // A projektet europe-west regioban kell letrehozni (adatvedelem).
+//
+// FIGYELEM: a Firebase konzol "const firebaseConfig = {...}" alakban adja oda.
+// CSAK A KAPCSOS ZAROJELEK KOZTI ERTEKEKET ird at! Az alabbi sor elejet
+// ("export const FIREBASE_CONFIG =") hagyd valtozatlanul, kulonben a tobbi modul
+// nem talalja meg a konfiguraciot, es az oldal ures marad.
 
-const firebaseConfig = {
+export const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDCWtJsE5AHn-ioLc8goUWKuDhAskiu1dc",
   authDomain: "icdl-gyakorlo.firebaseapp.com",
   projectId: "icdl-gyakorlo",

@@ -78,6 +78,19 @@
   </section>
 
 </main>
+<script>
+  // Ha a modulok betoltese elszall (pl. elrontott firebase-config.js), a diak ne
+  // egy orokke porgo "Betoltes..." feliratot lasson. Ez szandekosan NEM modul:
+  // akkor is lefut, ha a modulok betoltese hibara futott.
+  setTimeout(function () {
+    var betoltes = document.querySelector('[data-kepernyo="betoltes"]');
+    if (!betoltes || betoltes.hidden) return;
+    betoltes.innerHTML =
+      '<h1>Nem indult el az oldal</h1>' +
+      '<div class="lap"><p>Toltsd ujra az oldalt. Ha igy sem megy, szolj a tanarodnak.</p>' +
+      '<p class="sugosor">A reszletek a bongeszo konzoljaban (F12) lathatok.</p></div>';
+  }, 8000);
+</script>
 <script type="module" src="js/tanar/fo.js"></script>
 </body>
 </html>
