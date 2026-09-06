@@ -11,8 +11,15 @@ versenyeznek, és csillagokat gyűjtenek órai munka jegyre. A kérdések a tan�
 kb. 2900 kérdéses kvízbázisából jönnek, a diasor aktuális állásához igazítva
 („1-től a 43. diáig").
 
-A repó neve `rmg-kvizarena`, mert az első éles használat két ICDL-vizsgás csoport
-felkészítése — de a kérdésbank mind a 14 témát lefedi, nem csak az ICDL-t.
+A kérdésbank mind a 14 témát lefedi, nem csak az ICDL-t — az első éles használat
+viszont két ICDL-vizsgás csoport felkészítése lesz.
+
+> **A projekt korábbi neve „ICDL Gyakorló" volt** (repó és mappa: `icdl-gyakorlo`).
+> Egy dolog nem követte az átnevezést: a **Firebase projektazonosító továbbra is
+> `icdl-gyakorlo`**, és így is marad — a Firebase létrehozás után nem engedi
+> átnevezni. Ha a `.firebaserc`-ben, a `web/js/firebase-config.js`-ben vagy a
+> `config.json` `firebase_projekt` mezőjében látod, az **nem elfelejtett átnevezés**,
+> hanem szándékos. Ne írd át: attól a rendszer egy nem létező projektre mutatna.
 
 ## A munka szabályai
 
