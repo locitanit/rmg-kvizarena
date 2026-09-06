@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-// ICDL Gyakorlo - tanari admin parancssor.
+// RMG Kvizarena - tanari admin parancssor.
 //
 // A tanar Windows-gepen fut, a Firebase Admin SDK-val. Ez az EGYETLEN hely,
 // ahol tanari jog adhato, es ahol a kerdesbank a felhobe kerul.
 //
-//   icdl-admin tanar hozzaad <email> <nev>     tanari jog megadasa
-//   icdl-admin tanar lista|torol
-//   icdl-admin osztaly letrehoz <osztaly>      uj osztaly + belepokod
-//   icdl-admin osztaly lista
-//   icdl-admin osztaly kod <osztaly> [--uj]    belepokod mutatasa/csereje
-//   icdl-admin diakok <osztaly> [--fiokok]     azonositok.txt feltoltese
-//   icdl-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
-//   icdl-admin publikal [bank] [--proba]       kerdesbank feltoltese
+//   rmg-admin tanar hozzaad <email> <nev>     tanari jog megadasa
+//   rmg-admin tanar lista|torol
+//   rmg-admin osztaly letrehoz <osztaly>      uj osztaly + belepokod
+//   rmg-admin osztaly lista
+//   rmg-admin osztaly kod <osztaly> [--uj]    belepokod mutatasa/csereje
+//   rmg-admin diakok <osztaly> [--fiokok]     azonositok.txt feltoltese
+//   rmg-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
+//   rmg-admin publikal [bank] [--proba]       kerdesbank feltoltese
 //
 // Kozos kapcsolo:
 //   --emulator     a helyi emulator ellen dolgozik (offline, nem kell kulcs)
@@ -27,31 +27,31 @@ import { jelszoParancs } from './parancsok/jelszo.js';
 import { publikalParancs } from './parancsok/publikal.js';
 
 const SUGO = `
-ICDL Gyakorlo - tanari admin
+RMG Kvízaréna – tanári admin
 
-  icdl-admin tanar hozzaad <email> <nev>     tanari jog megadasa (csak itt lehet!)
-  icdl-admin tanar lista
-  icdl-admin tanar torol <email>
+  rmg-admin tanar hozzaad <email> <nev>     tanári jog megadása (csak itt lehet!)
+  rmg-admin tanar lista
+  rmg-admin tanar torol <email>
 
-  icdl-admin osztaly letrehoz <osztaly>      uj osztaly + belepokod
-  icdl-admin osztaly lista
-  icdl-admin osztaly kod <osztaly> [--uj]    belepokod mutatasa vagy csereje
+  rmg-admin osztaly letrehoz <osztaly>      új osztály + belépőkód
+  rmg-admin osztaly lista
+  rmg-admin osztaly kod <osztaly> [--uj]    belépőkód mutatása vagy cseréje
 
-  icdl-admin diakok <osztaly> [--fiokok]     azonositok.txt -> engedelyezett lista
-  icdl-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
+  rmg-admin diakok <osztaly> [--fiokok]     azonositok.txt -> engedélyezett lista
+  rmg-admin jelszo <osztaly> <azonosito>    jelszó visszaállítása
 
-  icdl-admin publikal [bank] [--proba]       kerdesbank feltoltese a kvizbazisbol
-                                             (bank nelkul: mind; --proba: nem ir)
+  rmg-admin publikal [bank] [--proba]       kérdésbank feltöltése a kvízbázisból
+                                            (bank nélkül: mind; --proba: nem ír)
 
-Kapcsolok:
-  --emulator          a helyi emulator ellen (offline, kulcs nelkul)
-  --config <ut>       masik config.json hasznalata
-  --tanar <email>     osztaly letrehozasanal, ha nem a config.json tanara
+Kapcsolók:
+  --emulator          a helyi emulátor ellen (offline, kulcs nélkül)
+  --config <ut>       másik config.json használata
+  --tanar <email>     osztály létrehozásánál, ha nem a config.json tanára
 
-Elso indulas:
-  1. copy admin\\config.pelda.json admin\\config.json   (es igazitsd az utakat)
+Első indulás:
+  1. copy admin\\config.pelda.json admin\\config.json   (és igazítsd az utakat)
   2. cd admin && npm install
-  3. node icdl-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
+  3. node rmg-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
 `;
 
 async function fut() {
@@ -68,8 +68,8 @@ async function fut() {
   firebaseIndit(config, { emulator: Boolean(kapcsolo.emulator) });
 
   if (kapcsolo.emulator) {
-    fejlec('EMULATOR MOD');
-    info('A helyi emulator ellen dolgozom, az eles adatbazis nem valtozik.');
+    fejlec('EMULÁTOR MÓD');
+    info('A helyi emulátor ellen dolgozom, az éles adatbázis nem változik.');
   }
 
   switch (parancs) {

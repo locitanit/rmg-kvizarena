@@ -1,4 +1,4 @@
-# ICDL Gyakorló – adatvédelmi tájékoztató
+# RMG Kvízaréna – adatvédelmi tájékoztató
 
 *Szülőknek, diákoknak és az iskolának. Egy oldal.*
 
@@ -33,7 +33,7 @@ táblázatban, amely soha nem kerül fel az internetre. A felhőben tárolt adat
 Google **Cloud Firestore**, a Firebase ingyenes csomagján, az **európai unióban**
 (`europe-west1`, Belgium). A tárolás a Google adatfeldolgozói feltételei szerint
 történik. Az alkalmazás kódja nyilvános:
-<https://github.com/locitanit/icdl-gyakorlo>
+<https://github.com/locitanit/rmg-kvizarena>
 
 ## Meddig
 

@@ -8,10 +8,10 @@
 //
 // Hasznalat (kulon ablakban, mig fut az emulator):
 //   1. npm run emulator
-//   2. node admin/icdl-admin.js tanar hozzaad ... --emulator
-//      node admin/icdl-admin.js osztaly letrehoz 10T --emulator
-//      node admin/icdl-admin.js diakok 10T --fiokok --emulator
-//      node admin/icdl-admin.js publikal --emulator
+//   2. node admin/rmg-admin.js tanar hozzaad ... --emulator
+//      node admin/rmg-admin.js osztaly letrehoz 10T --emulator
+//      node admin/rmg-admin.js diakok 10T --fiokok --emulator
+//      node admin/rmg-admin.js publikal --emulator
 //   3. KVIZEK=3 node tesztek/jatekszimulator.mjs <jelszo1> <jelszo2> <jelszo3>
 //      (a KVIZEK azt mondja meg, hany kvizt jatsszanak vegig egymas utan)
 //   4. A tanari pulton allitsd ossze es inditsd el a kvizt.

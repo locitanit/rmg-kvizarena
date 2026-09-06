@@ -1,4 +1,4 @@
-// Egyseges kepernyore iras. Minden uzenet magyar.
+// Egyseges kepernyore iras. Minden uzenet magyar, ekezetesen.
 
 export const ok = (uzenet) => console.log(`  OK   ${uzenet}`);
 export const info = (uzenet) => console.log(`       ${uzenet}`);

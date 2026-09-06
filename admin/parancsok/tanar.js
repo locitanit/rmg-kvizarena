@@ -1,4 +1,4 @@
-// icdl-admin tanar hozzaad|lista|torol
+// rmg-admin tanar hozzaad|lista|torol
 //
 // Tanari jogot KIZAROLAG ez a parancs adhat. A biztonsagi szabalyok szerint a
 // "tanarok" kollekcio kliensbol nem irhato - nincs olyan ut, ahol valaki
@@ -15,44 +15,44 @@ export async function tanarParancs(argumentumok, kapcsolo) {
   if (alparancs === 'lista') return lista();
   if (alparancs === 'torol') return torol(argumentumok.slice(1));
 
-  throw new Error('Hasznalat: icdl-admin tanar hozzaad|lista|torol');
+  throw new Error('Használat: rmg-admin tanar hozzaad|lista|torol');
 }
 
 async function hozzaad([email, ...nevReszek], kapcsolo) {
-  if (!email) throw new Error('Hasznalat: icdl-admin tanar hozzaad <email> <nev>');
+  if (!email) throw new Error('Használat: rmg-admin tanar hozzaad <email> <nev>');
   const nev = nevReszek.join(' ') || email;
   const jelszo = kapcsolo.jelszo === true || !kapcsolo.jelszo ? jelszotGeneral() : kapcsolo.jelszo;
 
   let felhasznalo;
   try {
     felhasznalo = await auth().getUserByEmail(email);
-    info(`A fiok mar letezik: ${email}`);
+    info(`A fiók már létezik: ${email}`);
   } catch {
     felhasznalo = await auth().createUser({ email, password: jelszo, displayName: nev });
-    ok(`Uj tanari fiok: ${email}`);
-    info(`Jelszo: ${jelszo}   <-- ird fel, tobbszor nem lesz kiirva`);
+    ok(`Új tanári fiók: ${email}`);
+    info(`Jelszó: ${jelszo}   <-- írd fel, többször nem lesz kiírva`);
   }
 
   await db().doc(`tanarok/${felhasznalo.uid}`).set({
     nev, email, letrehozva: new Date(),
   }, { merge: true });
 
-  ok(`Tanari jog megadva. uid: ${felhasznalo.uid}`);
+  ok(`Tanári jog megadva. uid: ${felhasznalo.uid}`);
 }
 
 async function lista() {
   const pillanat = await db().collection('tanarok').get();
-  fejlec('Tanarok');
+  fejlec('Tanárok');
   tablazat(
     pillanat.docs.map((d) => [d.data().nev, d.data().email, d.id]),
-    ['nev', 'email', 'uid']
+    ['név', 'email', 'uid']
   );
 }
 
 async function torol([email]) {
-  if (!email) throw new Error('Hasznalat: icdl-admin tanar torol <email>');
+  if (!email) throw new Error('Használat: rmg-admin tanar torol <email>');
   const felhasznalo = await auth().getUserByEmail(email);
   await db().doc(`tanarok/${felhasznalo.uid}`).delete();
-  figyelem(`Tanari jog visszavonva: ${email}`);
-  info('A belepesi fiok megmaradt. Torolni a Firebase konzolban lehet.');
+  figyelem(`Tanári jog visszavonva: ${email}`);
+  info('A belépési fiók megmaradt. Törölni a Firebase konzolban lehet.');
 }

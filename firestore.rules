@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// ICDL Gyakorlo - Firestore biztonsagi szabalyok
+// RMG Kvizarena - Firestore biztonsagi szabalyok
 //
 // FIGYELEM: nincs mogotte szerver. Nincs Cloud Functions (Spark csomag), ezert
 // EZ AZ EGYETLEN vedelmi vonal. Minden tiltashoz tartozik emulatoros teszt a

@@ -20,8 +20,8 @@ export function azonositokBeolvas(osztalyokUt, osztaly) {
 
   if (!existsSync(ut)) {
     throw new KonfigHiba(
-      `Nem talalom az azonositok.txt-t:\n  ${ut}\n\n` +
-      `  Ellenorizd az osztaly nevet es a config.json "osztalyok_ut" mezojet.`
+      `Nem találom az azonositok.txt-t:\n  ${ut}\n\n` +
+      `  Ellenőrizd az osztály nevét és a config.json "osztalyok_ut" mezőjét.`
     );
   }
 
@@ -43,16 +43,16 @@ export function azonositokBeolvas(osztalyokUt, osztaly) {
 
   if (hibasak.length) {
     throw new KonfigHiba(
-      `Ervenytelen azonositok a(z) ${ut} fajlban.\n` +
-      `Csak angol kisbetu, szam, pont, kotojel es alahuzas lehet bennuk\n` +
-      `(ekezet nem, mert e-mail cim keszul beloluk):\n\n${hibasak.join('\n')}`
+      `Érvénytelen azonosítók a(z) ${ut} fájlban.\n` +
+      `Csak angol kisbetű, szám, pont, kötőjel és aláhúzás lehet bennük\n` +
+      `(ékezet nem, mert e-mail-cím készül belőlük):\n\n${hibasak.join('\n')}`
     );
   }
 
   if (!azonositok.length) {
     throw new KonfigHiba(
-      `A(z) ${ut} fajl ures.\n\n` +
-      `  Ird bele a gepterem-azonositokat, soronkent egyet.`
+      `A(z) ${ut} fájl üres.\n\n` +
+      `  Írd bele a gépterem-azonosítókat, soronként egyet.`
     );
   }
 
@@ -82,7 +82,7 @@ export function jelszotGeneral() {
   return jelszo + String(Math.floor(Math.random() * 90) + 10);
 }
 
-// Belepokod: <OSZTALY>-XXXX, osszekeverheto betuk nelkul.
+// Belépőkód: <OSZTALY>-XXXX, osszekeverheto betuk nelkul.
 const KOD_KARAKTEREK = 'ACDEFGHJKLMNPQRTUVWXY34679';
 
 export function belepokodotGeneral(osztalyId) {

@@ -1,4 +1,4 @@
-// icdl-admin publikal [bank] [--proba]
+// rmg-admin publikal [bank] [--proba]
 //
 // A kvizbazis YAML-bankjait felviszi a Firestore-ba, kettevagva:
 //   kerdesek/  - publikus resz, a diak is olvashatja
@@ -7,9 +7,9 @@
 // Csak a VALTOZOTT kerdeseket irja: minden bankhoz tartozik egy hash-tabla a
 // bankok/<kod> dokumentumban, igy egy olvasasbol kiderul, mi valtozott.
 //
-//   icdl-admin publikal                  minden bank
-//   icdl-admin publikal adatbaziskezeles_2026_icdl
-//   icdl-admin publikal --proba          megmutatja, mi tortenne, de nem ir
+//   rmg-admin publikal                  minden bank
+//   rmg-admin publikal adatbaziskezeles_2026_icdl
+//   rmg-admin publikal --proba          megmutatja, mi tortenne, de nem ir
 
 import { db } from '../lib/firebase.js';
 import { mappatEllenoriz } from '../lib/config.js';
@@ -35,11 +35,11 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
   if (!bankok.length) {
     throw new Error(
       `Nincs ilyen bank: ${szurt}\n` +
-      `  A bank azonositoja a YAML fajl neve kiterjesztes nelkul, pl. adatbaziskezeles_2026_icdl.`
+      `  A bank azonosítója a YAML-fájl neve kiterjesztés nélkül, pl. adatbaziskezeles_2026_icdl.`
     );
   }
 
-  fejlec(proba ? 'PUBLIKALAS - PROBA (semmit nem irok)' : 'PUBLIKALAS');
+  fejlec(proba ? 'PUBLIKÁLÁS – PRÓBA (semmit nem írok)' : 'PUBLIKÁLÁS');
   info(`kvizbazis: ${config.kvizbazis_ut}`);
   info(`${bankok.length} bank, ${diarendek.kodSzerint.size} diasor`);
 
@@ -51,7 +51,7 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
     }
     await koteg.commit();
   }
-  ok(`${diarendek.kodSzerint.size} diasor ${proba ? '(felmenne)' : 'feltoltve'}.`);
+  ok(`${diarendek.kodSzerint.size} diasor ${proba ? '(felmenne)' : 'feltöltve'}.`);
 
   // 2. Bankonkent.
   const sorok = [];
@@ -92,8 +92,8 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
     ]);
   }
 
-  fejlec('Eredmeny');
-  tablazat(sorok, ['bank', 'diasor', 'kerdes', 'uj', 'modosult', 'torolt', 'kihagyva']);
+  fejlec('Eredmény');
+  tablazat(sorok, ['bank', 'diasor', 'kérdés', 'új', 'módosult', 'törölt', 'kihagyva']);
 
   const osszesen = sorok.reduce((sum, s) => sum + s[2], 0);
   const ujOssz = sorok.reduce((sum, s) => sum + s[3], 0);
@@ -101,25 +101,25 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
   const torOssz = sorok.reduce((sum, s) => sum + s[5], 0);
 
   console.log('');
-  ok(`${osszesen} kerdes a bankokban. ${ujOssz} uj, ${modOssz} modosult, ${torOssz} torolt.`);
-  info('A "kihagyva" a kifejtos es a kepes kerdes - ezek az elso verzioban nem mennek fel.');
+  ok(`${osszesen} kérdés a bankokban. ${ujOssz} új, ${modOssz} módosult, ${torOssz} törölt.`);
+  info('A "kihagyva" a kifejtős és a képes kérdés – ezek az első verzióban nem mennek fel.');
 
   if (nincsDiasor) {
-    figyelem(`${nincsDiasor} banknak nincs diasora - ezek csak temakor szerint valogathatok.`);
+    figyelem(`${nincsDiasor} banknak nincs diasora – ezek csak témakör szerint válogathatók.`);
   }
   if (osszesIsmetlodo.length) {
-    figyelem(`${osszesIsmetlodo.length} ismetlodo kerdesszoveg (csak az elso ment fel):`);
+    figyelem(`${osszesIsmetlodo.length} ismétlődő kérdésszöveg (csak az első ment fel):`);
     osszesIsmetlodo.slice(0, 10).forEach((s) => info(`  ${s}`));
-    if (osszesIsmetlodo.length > 10) info(`  ... es meg ${osszesIsmetlodo.length - 10}`);
+    if (osszesIsmetlodo.length > 10) info(`  … és még ${osszesIsmetlodo.length - 10}`);
   }
   if (osszesHiba.length) {
-    figyelem(`${osszesHiba.length} kerdes hibas, ezek NEM mentek fel:`);
+    figyelem(`${osszesHiba.length} kérdés hibás, ezek NEM mentek fel:`);
     osszesHiba.slice(0, 20).forEach((s) => info(`  ${s}`));
-    if (osszesHiba.length > 20) info(`  ... es meg ${osszesHiba.length - 20}`);
+    if (osszesHiba.length > 20) info(`  … és még ${osszesHiba.length - 20}`);
   }
   if (proba) {
     console.log('');
-    figyelem('Proba volt: semmi nem irodott ki. Futtasd ujra --proba nelkul.');
+    figyelem('Próba volt: semmi nem íródott ki. Futtasd újra --proba nélkül.');
   }
 }
 

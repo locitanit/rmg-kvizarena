@@ -94,7 +94,7 @@ describe('Amit kihagyunk vagy hibanak jelzunk', () => {
   it('a hibas kerdes nem megy fel, es jelentve van', () => {
     expect(kerdesSzerint('Ez a kerdes hibas')).toBeUndefined();
     expect(feldolgozott.hibak).toHaveLength(1);
-    expect(feldolgozott.hibak[0]).toContain('nincs a valaszok kozott');
+    expect(feldolgozott.hibak[0]).toContain('nincs a válaszok között');
   });
 
   it('a jo kerdesek felmennek', () => {

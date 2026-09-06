@@ -1,156 +1,171 @@
-# Beuzemeles (1. fazis)
+# Beüzemelés
 
-Ez a lista egyszer kell vegigmenni. Utana a napi hasznalat mar csak az admin
-parancssor es a bongeszo.
+Ez a lista egyszer kell végigmenni. Utána a napi használat már csak az admin
+parancssor és a böngésző.
 
-Amit a gepre elore fel kell tenni: **Node.js** es **Java** (a Firebase emulator azon
-fut, csak a tesztekhez kell). Ezen a gepen mindketto megvan; a Java hordozhato
-valtozatban: `C:\Loci\eszkozok\jdk-21.0.12.1+1-jre\bin`, a felhasznaloi PATH-ban.
+Amit a gépre elő kell készíteni: **Node.js** és **Java** (a Firebase emulátor azon
+fut, csak a tesztekhez kell). Ezen a gépen mindkettő megvan; a Java hordozható
+változatban: `C:\Loci\eszkozok\jdk-21.0.12.1+1-jre\bin`, a felhasználói PATH-ban.
 
 ---
 
-## 1. Firebase projekt letrehozasa
+## 1. Firebase projekt
 
-1. <https://console.firebase.google.com> &rarr; **Projekt hozzaadasa**
-2. Nev: `icdl-gyakorlo` (ha foglalt, a Firebase ad egy utotagot - jegyezd fel!)
-3. Google Analytics: **nem kell**, kapcsold ki.
-4. A projekt elkeszulte utan: **Build &rarr; Firestore Database &rarr; Adatbazis letrehozasa**
-   - **Regio: `europe-west1` (Belgium)** vagy `europe-west3` (Frankfurt).
-     Ez adatvedelmi dontes, es **utolag nem valtoztathato**.
-   - Inditas: **production mode** (a sajat szabalyainkat toltjuk fel).
-5. **Build &rarr; Authentication &rarr; Kezdes &rarr; E-mail/jelszo &rarr; Engedelyezes**
-   (a "jelszo nelkuli belepes" maradjon kikapcsolva).
+**Ez megvan.** A projekt azonosítója **`icdl-gyakorlo`**, és ez **így is marad**:
 
-> A projekt a Spark (ingyenes) csomagon marad. Bankkartyat **ne** adj meg.
+> A Firebase projektazonosító létrehozás után **nem nevezhető át**. A megjelenő
+> nevet a konzolban át lehet írni „RMG Kvízaréná"-ra, de az azonosító (és vele a
+> `icdl-gyakorlo.firebaseapp.com` cím) állandó. Új azonosítóhoz új projekt kellene:
+> újra kellene publikálni a 2809 kérdést, és **minden diáknak újra regisztrálnia**.
+> Nem éri meg – az azonosítót amúgy sem látja senki a felületen.
 
-## 2. A webes konfiguracio bemasolasa
+Ha valaha mégis nulláról indulna egy projekt:
 
-Firebase konzol &rarr; **Projekt beallitasai** (fogaskerek) &rarr; **Altalanos** &rarr;
-**Sajat alkalmazasok** &rarr; **`</>` Web** &rarr; nev: `icdl-gyakorlo-web`
-(a Hosting nem kell, GitHub Pages-t hasznalunk).
+1. <https://console.firebase.google.com> &rarr; **Projekt hozzáadása**
+2. Google Analytics: **nem kell**, kapcsold ki.
+3. **Build &rarr; Firestore Database &rarr; Adatbázis létrehozása**
+   - **Régió: `europe-west1` (Belgium)** vagy `europe-west3` (Frankfurt).
+     Ez adatvédelmi döntés, és **utólag nem változtatható**.
+   - Indítás: **production mode** (a saját szabályainkat töltjük fel).
+4. **Build &rarr; Authentication &rarr; Kezdés &rarr; E-mail/jelszó &rarr; Engedélyezés**
+   (a „jelszó nélküli belépés" maradjon kikapcsolva).
 
-A kapott `firebaseConfig` ertekeit ird at itt:
+> A projekt a Spark (ingyenes) csomagon marad. Bankkártyát **ne** adj meg.
+
+## 2. A webes konfiguráció bemásolása
+
+Firebase konzol &rarr; **Projekt beállításai** (fogaskerék) &rarr; **Általános** &rarr;
+**Saját alkalmazások** &rarr; **`</>` Web**
+(a Hosting nem kell, GitHub Pages-t használunk).
+
+A kapott `firebaseConfig` értékeit írd át itt:
 
 ```
 web/js/firebase-config.js
 ```
 
-Ez az adat **nyugodtan publikus lehet** - nem ez vedi a rendszert, hanem a
+Ez az adat **nyugodtan publikus lehet** – nem ez védi a rendszert, hanem a
 `firestore.rules`.
 
-## 3. Szolgaltatasfiok-kulcs az admin parancssorhoz
+> **Buktató, ami már egyszer megtörtént:** a Firebase konzol
+> `const firebaseConfig = {...}` alakban adja a konfigurációt. **Csak az értékeket**
+> írd át – az `export const FIREBASE_CONFIG =` sorkezdetet hagyd változatlanul,
+> különben a többi modul nem találja meg, és az oldal üres marad. A localhoston ez
+> nem látszik, mert ott az emulátor-konfig fut!
 
-Firebase konzol &rarr; **Projekt beallitasai &rarr; Szolgaltatasfiokok &rarr;
-Uj privat kulcs letrehozasa**. A letoltott JSON-t tedd a **repon kivulre**, pl.:
+## 3. Szolgáltatásfiók-kulcs az admin parancssorhoz
+
+Firebase konzol &rarr; **Projekt beállításai &rarr; Szolgáltatásfiókok &rarr;
+Új privát kulcs létrehozása**. A letöltött JSON-t tedd a **repón kívülre**, pl.:
 
 ```
-C:\Loci\titkok\icdl-gyakorlo-serviceaccount.json
+C:\Loci\titkok\icdl-gyakorlo-firebase-adminsdk.json
 ```
 
-> Ez a kulcs teljes hozzaferest ad az adatbazishoz. Soha ne keruljon a repoba,
-> ne kuldd el, es ne masold a `prog` mappa ala.
+> Ez a kulcs teljes hozzáférést ad az adatbázishoz. Soha ne kerüljön a repóba,
+> ne küldd el, és ne másold a `prog` mappa alá.
 
 ## 4. A config.json
 
 ```powershell
-cd C:\Loci\prog\icdl-gyakorlo
+cd C:\Loci\prog\rmg-kvizarena
 copy admin\config.pelda.json admin\config.json
 ```
 
-Amit at kell irni benne:
+Amit át kell írni benne:
 
-| mezo | mi legyen |
+| mező | mi legyen |
 |---|---|
-| `firebase_projekt` | a valodi projektazonosito (ha kapott utotagot, azzal egyutt) |
-| `szolgaltatasfiok_ut` | a 3. lepesben letoltott kulcs utja |
-| `tanar_email` | a sajat e-mail cimed - ehhez kerulnek az osztalyok |
-| `osztalyok_ut` | ahol az osztalymappak vannak (`azonositok.txt`-vel) |
+| `firebase_projekt` | `icdl-gyakorlo` (a Firebase projektazonosító, nem a projekt neve) |
+| `szolgaltatasfiok_ut` | a 3. lépésben letöltött kulcs útja |
+| `tanar_email` | a saját e-mail-címed – ehhez kerülnek az osztályok |
+| `osztalyok_ut` | ahol az osztálymappák vannak (`azonositok.txt`-vel) |
 
-## 5. Csomagok telepitese
+## 5. Csomagok telepítése
 
 ```powershell
-cd C:\Loci\prog\icdl-gyakorlo
+cd C:\Loci\prog\rmg-kvizarena
 npm install
 cd admin
 npm install
 cd ..
 ```
 
-## 6. A biztonsagi szabalyok kikuldese
+## 6. A biztonsági szabályok kiküldése
 
-Eloszor teszteld (ehhez kell a Java):
+Először teszteld (ehhez kell a Java):
 
 ```powershell
 npm run teszt
 ```
 
-Ha zold, mehet fel:
+Ha zöld, mehet fel:
 
 ```powershell
 npx firebase login
 npx firebase deploy --only firestore:rules
 ```
 
-> **Ez a legfontosabb lepes.** Nincs mogotte szerver, ami ujraellenorizne: amit a
-> szabalyok nem tiltanak meg, azt egy diak meg tudja csinalni.
+> **Ez a legfontosabb lépés.** Nincs mögötte szerver, ami újraellenőrizne: amit a
+> szabályok nem tiltanak meg, azt egy diák meg tudja csinálni.
 
-## 7. Tanari fiok es az elso osztaly
-
-```powershell
-node admin\icdl-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
-node admin\icdl-admin.js osztaly letrehoz 10T
-node admin\icdl-admin.js diakok 10T
-```
-
-- A `tanar hozzaad` kiirja a generalt jelszot - **ird fel**, tobbszor nem lesz kiirva.
-- Az `osztaly letrehoz` kiirja a **belepokodot** (pl. `10T-K7QX`). Ezt kapjak a diakok.
-- A `diakok` az `azonositok.txt`-t tolti fel. Ha az meg ures, elobb ird bele az
-  azonositokat, soronkent egyet.
-
-Ha inkabb kesz fiokokat osztanal ki (a diak nem regisztral, csak belep):
+## 7. Tanári fiók és az első osztály
 
 ```powershell
-node admin\icdl-admin.js diakok 10T --fiokok
+node admin\rmg-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
+node admin\rmg-admin.js osztaly letrehoz 10T
+node admin\rmg-admin.js diakok 10T
 ```
 
-Ez `admin\kiosztas_10T.csv` neven kiirja az azonosito-jelszo parokat.
-**Kiosztas utan torold a fajlt.**
+- A `tanar hozzaad` kiírja a generált jelszót – **írd fel**, többször nem lesz kiírva.
+- Az `osztaly letrehoz` kiírja a **belépőkódot** (pl. `10T-K7QX`). Ezt kapják a diákok.
+- A `diakok` az `azonositok.txt`-t tölti fel. Ha az még üres, előbb írd bele az
+  azonosítókat, soronként egyet.
 
-## 8. GitHub Pages
+Ha inkább kész fiókokat osztanál ki (a diák nem regisztrál, csak belép):
 
-**Ez megvan** (2026-09-05): a repo publikus, a Pages forrasa `GitHub Actions`.
-A `main` agra puskolva a `.github/workflows/pages.yml` felteszi a `web/` mappat.
+```powershell
+node admin\rmg-admin.js diakok 10T --fiokok
+```
+
+Ez `admin\kiosztas_10T.csv` néven kiírja az azonosító-jelszó párokat.
+**Kiosztás után töröld a fájlt.**
+
+## 8. Kérdésbank publikálása
+
+```powershell
+node admin\rmg-admin.js publikal --proba     # megmutatja, mi változna
+node admin\rmg-admin.js publikal             # és most tényleg
+```
+
+## 9. GitHub Pages
+
+**Ez megvan:** a repó publikus, a Pages forrása `GitHub Actions`.
+A `main` ágra puskolva a `.github/workflows/pages.yml` felteszi a `web/` mappát.
 
 | | |
 |---|---|
-| repo | <https://github.com/locitanit/icdl-gyakorlo> |
-| diak | <https://locitanit.github.io/icdl-gyakorlo/> |
-| tanar | <https://locitanit.github.io/icdl-gyakorlo/tanar.html> |
-
-> **Buktato, ami mar egyszer megtortent:** a Firebase konzol
-> `const firebaseConfig = {...}` alakban adja a konfiguraciot. A
-> `web/js/firebase-config.js`-ben **csak az ertekeket** ird at - az
-> `export const FIREBASE_CONFIG =` sorkezdetet hagyd valtozatlanul, kulonben a tobbi
-> modul nem talalja meg, es az oldal ures marad. A localhoston ez nem latszik,
-> mert ott az emulator-konfig fut!
+| repó | <https://github.com/locitanit/rmg-kvizarena> |
+| diák | <https://locitanit.github.io/rmg-kvizarena/> |
+| tanár | <https://locitanit.github.io/rmg-kvizarena/tanar.html> |
 
 ---
 
-## Fejlesztes emulator ellen (nem kell hozza eles projekt)
+## Fejlesztés emulátor ellen (nem kell hozzá éles projekt)
 
 ```powershell
 npm run emulator
 ```
 
-Kulon ablakban:
+Külön ablakban:
 
 ```powershell
-node admin\icdl-admin.js tanar hozzaad teszt@radnoti.hu "Teszt Tanar" --emulator
-node admin\icdl-admin.js osztaly letrehoz 10T --tanar teszt@radnoti.hu --emulator
+node admin\rmg-admin.js tanar hozzaad teszt@radnoti.hu "Teszt Tanar" --emulator
+node admin\rmg-admin.js osztaly letrehoz 10T --tanar teszt@radnoti.hu --emulator
 ```
 
-A webes felulet **`localhost`-on automatikusan** az emulatorhoz csatlakozik
-(lasd `web/js/firebase-config.js`), tehat eleg egy statikus kiszolgalo:
+A webes felület **`localhost`-on automatikusan** az emulátorhoz csatlakozik
+(lásd `web/js/firebase-config.js`), tehát elég egy statikus kiszolgáló:
 
 ```powershell
 npx serve web
@@ -158,10 +173,10 @@ npx serve web
 
 ## Ha valami nem megy
 
-| Tunet | Mit jelent |
+| Tünet | Mit jelent |
 |---|---|
-| `Could not spawn 'java -version'` | A `C:\Loci\eszkozok\jdk-21...\bin` nincs a PATH-ban. Uj parancssort nyiss, vagy tedd vissza a PATH-ba. |
-| `Meg nincs beallitva` a weboldalon | A `web/js/firebase-config.js` meg a minta ertekeket tartalmazza |
-| `Nincs ilyen azonosito ebben az osztalyban` | Az `azonositok.txt` nincs feltoltve: `icdl-admin diakok <osztaly>` |
-| `Ennek a fioknak nincs tanari joga` | `icdl-admin tanar hozzaad <email> <nev>` |
-| `Missing or insufficient permissions` | A szabalyok nincsenek kikuldve (6. lepes) |
+| `Could not spawn 'java -version'` | A `C:\Loci\eszkozok\jdk-21...\bin` nincs a PATH-ban. Új parancssort nyiss, vagy tedd vissza a PATH-ba. |
+| `Még nincs beállítva` a weboldalon | A `web/js/firebase-config.js` még a minta értékeket tartalmazza |
+| `Nincs ilyen azonosító ebben az osztályban` | Az `azonositok.txt` nincs feltöltve: `rmg-admin diakok <osztaly>` |
+| `Ennek a fióknak nincs tanári joga` | `rmg-admin tanar hozzaad <email> <nev>` |
+| `Missing or insufficient permissions` | A szabályok nincsenek kiküldve (6. lépés) |

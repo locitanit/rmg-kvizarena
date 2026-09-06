@@ -25,10 +25,10 @@ export function firebaseIndit(config, { emulator = false } = {}) {
   const kulcsUt = config.szolgaltatasfiok_ut;
   if (!kulcsUt || !existsSync(kulcsUt)) {
     throw new KonfigHiba(
-      `Nem talalom a szolgaltatasfiok-kulcsot:\n  ${kulcsUt || '(nincs megadva)'}\n\n` +
-      `  Firebase konzol > Projekt beallitasai > Szolgaltatasfiokok >\n` +
-      `  "Uj privat kulcs letrehozasa". A letoltott JSON-t tedd a repon KIVULRE,\n` +
-      `  es az utjat ird be a config.json "szolgaltatasfiok_ut" mezojebe.`
+      `Nem találom a szolgáltatásfiók-kulcsot:\n  ${kulcsUt || '(nincs megadva)'}\n\n` +
+      `  Firebase konzol > Projekt beállításai > Szolgáltatásfiókok >\n` +
+      `  "Új privát kulcs létrehozása". A letöltött JSON-t tedd a repón KÍVÜLRE,\n` +
+      `  és az útját írd be a config.json "szolgaltatasfiok_ut" mezőjébe.`
     );
   }
 

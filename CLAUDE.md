@@ -1,4 +1,4 @@
-# CLAUDE.md — ICDL Gyakorló
+# CLAUDE.md — RMG Kvízaréna
 
 Ezt olvasd elsőként. A teljes terv: **`docs/IMPLEMENTACIOS_TERV.md`** — az az egyetlen
 igazság, minden döntés indoklásával együtt. Ez a fájl csak a napi szabályokat sűríti.
@@ -11,12 +11,12 @@ versenyeznek, és csillagokat gyűjtenek órai munka jegyre. A kérdések a tan�
 kb. 2900 kérdéses kvízbázisából jönnek, a diasor aktuális állásához igazítva
 („1-től a 43. diáig").
 
-A repó neve `icdl-gyakorlo`, mert az első éles használat két ICDL-vizsgás csoport
+A repó neve `rmg-kvizarena`, mert az első éles használat két ICDL-vizsgás csoport
 felkészítése — de a kérdésbank mind a 14 témát lefedi, nem csak az ICDL-t.
 
 ## A munka szabályai
 
-- **A Claude Code a `C:\Loci\prog` mappában indul.** Csak az `icdl-gyakorlo/` alá dolgozz.
+- **A Claude Code a `C:\Loci\prog` mappában indul.** Csak az `rmg-kvizarena/` alá dolgozz.
   A `prog/` többi projektje (`rmg_tools`, `rmg_defenders`, …) nem tartozik ide.
 - **Minden kimenet magyar**: a felület, a kódkommentek, a commit üzenetek, a dokumentáció.
   Az azonosítók (mappa-, fájl- és változónevek) is magyarul, ékezet nélkül, aláhúzással —

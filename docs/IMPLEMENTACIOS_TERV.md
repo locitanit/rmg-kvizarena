@@ -1,4 +1,4 @@
-# ICDL Gyakorló – implementációs terv
+# RMG Kvízaréna – implementációs terv
 
 **Mi ez?** Egy osztálytermi kvízverseny-alkalmazás (Kahoot-szerű), ami a Radnóti
 digitális kultúra óráihoz készül. A kérdések a meglévő `radnoti\oraanyagok\kvizbazis\`
@@ -8,18 +8,18 @@ telefonról versenyeznek, és csillagokat gyűjtenek órai munka jegyre.
 **Kinek szól ez a dokumentum?** Claude Code-nak, aki megvalósítja. Minden fázis végén
 van egy „Kész, ha…" szakasz — az a definíciója annak, hogy a fázis elkészült.
 
-**Készült:** 2026-09-05 · **Repó:** `icdl-gyakorlo/` a `C:\Loci\prog` mappában
+**Készült:** 2026-09-05 · **Repó:** `rmg-kvizarena/` a `C:\Loci\prog` mappában
 
 ---
 
 ## Hogyan indulj
 
-**Claude Code-ot a `C:\Loci\prog` mappában indítsd.** Onnan a repó az `icdl-gyakorlo/`
+**Claude Code-ot a `C:\Loci\prog` mappában indítsd.** Onnan a repó az `rmg-kvizarena/`
 alkönyvtár, és a dokumentumban minden repóbeli útvonal ehhez képest értendő
-(pl. `icdl-gyakorlo/web/index.html`).
+(pl. `rmg-kvizarena/web/index.html`).
 
 A `prog/` mappában más projektek is vannak (`rmg_tools`, `rmg_defenders`, …) —
-**ezekhez ne nyúlj**, kizárólag az `icdl-gyakorlo/` alá dolgozz.
+**ezekhez ne nyúlj**, kizárólag az `rmg-kvizarena/` alá dolgozz.
 
 ### A tananyag máshol van
 
@@ -33,13 +33,13 @@ C:\Loci\munka\radnoti\oraanyagok\kvizbazis\_diarend\  ← <diasor>.json, 21 dias
 Ez **szándékos**: a tananyag a tanár munkamappájában változik, a repó csak olvassa.
 Ezért a repóban **nincs** kérdésbank-másolat, és soha ne is kerüljön bele.
 
-Az elérési utat egyetlen helyen adjuk meg: `icdl-gyakorlo/admin/config.json`
+Az elérési utat egyetlen helyen adjuk meg: `rmg-kvizarena/admin/config.json`
 (a `config.pelda.json` alapján, `.gitignore`-ban). A publikáló ebből olvassa,
 hol van a kvízbázis. Ha a mappa nem elérhető, a CLI **álljon meg érthető hibaüzenettel**,
 ne dolgozzon üres bankkal.
 
 Fejlesztéshez és teszthez a repó egy **kicsi mintát** tartalmazhat
-(`icdl-gyakorlo/tesztek/minta/`, 20-30 kérdés) — de az csak teszt-fixture, sosem forrás.
+(`rmg-kvizarena/tesztek/minta/`, 20-30 kérdés) — de az csak teszt-fixture, sosem forrás.
 
 ---
 
@@ -65,7 +65,7 @@ GitHub Pages  (statikus SPA, ingyenes, HTTPS)
       ├── Cloud Firestore           ← osztályok, kérdések, kvízek, eredmények, élő játék
       │
 Tanári gép:
-      └── icdl-admin (Node CLI, Firebase Admin SDK)
+      └── rmg-admin (Node CLI, Firebase Admin SDK)
              ← diákfiókok tömeges létrehozása, jelszó-visszaállítás,
                kérdésbank publikálása a kvizbazis YAML-ekből
 ```
@@ -311,7 +311,7 @@ jogos kereszthivatkozások (pl. az akadálymentesség témakör a képek fejezet
 
 ### 4.3 Publikálás: a kvízbázistól a Firestore-ig
 
-Az `icdl-admin publikal` parancs:
+Az `rmg-admin publikal` parancs:
 
 1. Beolvassa a a kvízbázis `**/*.yaml` bankjait bankokat és a `diarend.json`-okat.
 2. Kiszedi a `kifejtos` kérdéseket (nem javíthatók gépileg).
@@ -574,7 +574,7 @@ létezik, levelet nem kap, a diák soha nem látja.
 ### 9.2 Jelszó-visszaállítás
 
 Mivel nincs valódi e-mail-cím, az „elfelejtett jelszó" link nem működik. Helyette:
-a tanár az admin CLI-vel állít be új jelszót (`icdl-admin jelszo <osztaly> <azonosito>`).
+a tanár az admin CLI-vel állít be új jelszót (`rmg-admin jelszo <osztaly> <azonosito>`).
 Ez a Firebase Admin SDK-val megy, a tanár gépéről, ingyen. **Ezt a felületen is ki kell
 írni**, hogy a diák tudja: a tanárhoz kell fordulnia.
 
@@ -630,7 +630,7 @@ megpróbálja, elbukik" eset).
 
 ### 2. fázis — Kérdésbank publikálása és kvízösszeállítás
 
-Az `icdl-admin publikal` parancs, a `kerdesek`/`kulcsok` szétvágással. Tanári
+Az `rmg-admin publikal` parancs, a `kerdesek`/`kulcsok` szétvágással. Tanári
 kvízösszeállító felület mindhárom válogatási móddal, élő találatszámlálóval és előnézettel.
 
 **Kész, ha:** a tanár beállítja, hogy „`adatbaziskezeles_icdl`, 1–43. dia, 12 kérdés",
@@ -714,7 +714,7 @@ gondolatmenetét kiütné.
 
 ```
 C:\Loci\prog\                        ← ITT indítsd a Claude Code-ot
-└── icdl-gyakorlo/                    ← csak ez alá dolgozz
+└── rmg-kvizarena/                    ← csak ez alá dolgozz
     ├── README.md
     ├── CLAUDE.md                     ← a repó szabályai (Claude Code ezt olvassa elsőként)
     ├── docs/
@@ -733,7 +733,7 @@ C:\Loci\prog\                        ← ITT indítsd a Claude Code-ot
     │   └── assets/
     ├── admin/                        ← Node CLI, a tanár gépén fut
     │   ├── package.json
-    │   ├── icdl-admin.js
+    │   ├── rmg-admin.js
     │   ├── config.pelda.json         ← a kvízbázis útvonala (a config.json .gitignore-ban)
     │   └── parancsok/  (diakok.js, jelszo.js, publikal.js, tanar.js)
     ├── firestore.rules
@@ -743,7 +743,7 @@ C:\Loci\prog\                        ← ITT indítsd a Claude Code-ot
         └── minta/                    (kis kérdés-fixture a fejlesztéshez)
 ```
 
-**Titkok kezelése:** a Firebase service account kulcs (`icdl-gyakorlo/admin/`) **soha ne kerüljön a
+**Titkok kezelése:** a Firebase service account kulcs (`rmg-kvizarena/admin/`) **soha ne kerüljön a
 repóba** — `.gitignore`, és a README írja le, hogyan kell letölteni a Firebase konzolból.
 A webes Firebase-konfig (apiKey stb.) viszont nyugodtan publikus lehet: azt a biztonsági
 szabályok védik, nem a titkosság.

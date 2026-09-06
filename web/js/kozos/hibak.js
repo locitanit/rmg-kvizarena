@@ -25,6 +25,6 @@ const UZENETEK = {
 export function magyarHiba(hiba) {
   const kod = hiba?.code || '';
   if (UZENETEK[kod]) return UZENETEK[kod];
-  console.error('ICDL Gyakorlo - kezeletlen hiba:', hiba);
+  console.error('RMG Kvizarena - kezeletlen hiba:', hiba);
   return 'Valami nem sikerült. Próbáld újra, és ha úgy sem megy, szólj a tanárodnak.';
 }

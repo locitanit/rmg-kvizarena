@@ -35,7 +35,7 @@ export async function kvizosszeallitotIndit(tanarOsztalyai, inditoFuggveny) {
   if (!bankok.length) {
     legordulo.innerHTML = '<option value="">(még nincs publikált bank)</option>';
     uzenet('kviz-uzenet',
-      'Még nincs publikált kérdésbank. Futtasd: node admin/icdl-admin.js publikal', 'info');
+      'Még nincs publikált kérdésbank. Futtasd: node admin/rmg-admin.js publikal', 'info');
     return;
   }
   for (const bank of bankok) {

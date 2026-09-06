@@ -1,11 +1,11 @@
 {
-  "name": "icdl-admin",
+  "name": "rmg-admin",
   "version": "0.1.0",
   "private": true,
-  "description": "ICDL Gyakorlo - tanari admin parancssor (a tanar gepen fut)",
+  "description": "RMG Kvizarena - tanari admin parancssor (a tanar gepen fut)",
   "type": "module",
   "bin": {
-    "icdl-admin": "./icdl-admin.js"
+    "rmg-admin": "./rmg-admin.js"
   },
   "dependencies": {
     "firebase-admin": "^13.0.0",

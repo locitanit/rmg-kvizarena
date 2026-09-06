@@ -119,7 +119,7 @@ export async function tanarBelepes(email, jelszo) {
     await signOut(auth);
     throw new BelepesHiba(
       'Ennek a fióknak nincs tanári joga. Tanári jogot csak az admin parancssor adhat: ' +
-      'icdl-admin tanar hozzaad <email> <nev>'
+      'rmg-admin tanar hozzaad <email> <nev>'
     );
   }
   return tanarDok.data();

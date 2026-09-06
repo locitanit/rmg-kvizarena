@@ -20,5 +20,5 @@ export const db = getFirestore(alkalmazas);
 if (EMULATOR) {
   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
   connectFirestoreEmulator(db, 'localhost', 8080);
-  console.info('ICDL Gyakorlo: helyi emulator modban futok.');
+  console.info('RMG Kvizarena: helyi emulator modban futok.');
 }

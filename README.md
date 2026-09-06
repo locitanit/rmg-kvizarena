@@ -1,4 +1,4 @@
-# ICDL Gyakorló
+# RMG Kvízaréna
 
 Osztálytermi kvízverseny a Radnóti digitális kultúra óráihoz. A tanár órán élő kvízt indít
 az osztálynak a diasor aktuális állásához igazítva, a diákok telefonról versenyeznek, és
@@ -10,8 +10,8 @@ publikálva 21 bankból, és az élő kvíz végigmegy (lobbi, pontozás, rangli
 összeomlás utáni folytatás), a csillagrendszer, a statisztikák és az önálló
 gyakorló mód is működik. **Hátra: a diákazonosítók feltöltése és az éles kipróbálás.**
 
-- Diák: <https://locitanit.github.io/icdl-gyakorlo/>
-- Tanári pult: <https://locitanit.github.io/icdl-gyakorlo/tanar.html>
+- Diák: <https://locitanit.github.io/rmg-kvizarena/>
+- Tanári pult: <https://locitanit.github.io/rmg-kvizarena/tanar.html>
 
 - A teljes terv: [`docs/IMPLEMENTACIOS_TERV.md`](docs/IMPLEMENTACIOS_TERV.md)
 - Beüzemelés lépésről lépésre: [`docs/telepites.md`](docs/telepites.md)
@@ -33,7 +33,7 @@ gyakorló mód is működik. **Hátra: a diákazonosítók feltöltése és az �
 
 ```
 web/          a GitHub Pages-re menő felület (index.html = diák, tanar.html = tanári pult)
-admin/        a tanár gépén futó parancssor (icdl-admin)
+admin/        a tanár gépén futó parancssor (rmg-admin)
 firestore.rules   az EGYETLEN védelmi vonal — nincs mögötte szerver
 tesztek/rules/    emulátoros bizonyíték, hogy a szabályok tényleg tiltanak
 docs/         a terv és a beüzemelési útmutató
@@ -44,7 +44,7 @@ docs/         a terv és a beüzemelési útmutató
 Részletesen: [`docs/telepites.md`](docs/telepites.md). Röviden:
 
 ```powershell
-cd C:\Loci\prog\icdl-gyakorlo
+cd C:\Loci\prog\rmg-kvizarena
 npm install
 copy admin\config.pelda.json admin\config.json
 ```
@@ -54,7 +54,7 @@ kitöltése, és:
 
 ```powershell
 npm run teszt
-node admin\icdl-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
+node admin\rmg-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
 ```
 
 ## Fázisok

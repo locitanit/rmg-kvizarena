@@ -1,4 +1,4 @@
-// icdl-admin diakok <osztaly> [--fiokok]
+// rmg-admin diakok <osztaly> [--fiokok]
 //
 // Beolvassa az azonositok.txt-t a tanari munkamappabol, es feltolti az osztaly
 // "engedelyezett" listajara. Csak az szerepelhet ezen, aki regisztralhat.
@@ -16,20 +16,20 @@ import { ok, info, fejlec, figyelem } from '../lib/kiiras.js';
 
 export async function diakokParancs(argumentumok, kapcsolo, config) {
   const osztalyId = argumentumok[0];
-  if (!osztalyId) throw new Error('Hasznalat: icdl-admin diakok <osztaly> [--fiokok]');
+  if (!osztalyId) throw new Error('Használat: rmg-admin diakok <osztaly> [--fiokok]');
 
   const osztalyDok = await db().doc(`osztalyok/${osztalyId}`).get();
   if (!osztalyDok.exists) {
     throw new Error(
-      `Nincs ilyen osztaly a Firestore-ban: ${osztalyId}\n` +
-      `  Elobb hozd letre:  icdl-admin osztaly letrehoz ${osztalyId}`
+      `Nincs ilyen osztály a Firestore-ban: ${osztalyId}\n` +
+      `  Előbb hozd létre:  rmg-admin osztaly letrehoz ${osztalyId}`
     );
   }
 
   mappatEllenoriz(config.osztalyok_ut, 'osztalyok');
   const azonositok = azonositokBeolvas(config.osztalyok_ut, osztalyId);
 
-  fejlec(`${osztalyId} - ${azonositok.length} azonosito`);
+  fejlec(`${osztalyId} – ${azonositok.length} azonosító`);
 
   // 1. Az engedelyezett lista. Az "email" mezot a biztonsagi szabaly hasonlitja
   //    ossze a bejelentkezett fiok cimevel, ezert itt kell kiszamolni.
@@ -41,17 +41,17 @@ export async function diakokParancs(argumentumok, kapcsolo, config) {
     }, { merge: true });
   }
   await koteg.commit();
-  ok(`Engedelyezett lista feltoltve (${azonositok.length} db).`);
+  ok(`Engedélyezett lista feltöltve (${azonositok.length} db).`);
 
   if (!kapcsolo.fiokok) {
-    info('A diakok most mar regisztralhatnak a belepokoddal:');
+    info('A diákok most már regisztrálhatnak a belépőkóddal:');
     info(`  ${osztalyDok.data().belepokod}`);
-    info('Ha inkabb kesz fiokokat osztanal ki:  --fiokok');
+    info('Ha inkább kész fiókokat osztanál ki:  --fiokok');
     return;
   }
 
   // 2. Belepesi fiokok letrehozasa.
-  const sorok = [['azonosito', 'jelszo']];
+  const sorok = [['azonosító', 'jelszó']];
   let uj = 0;
   let meglevo = 0;
 
@@ -68,11 +68,11 @@ export async function diakokParancs(argumentumok, kapcsolo, config) {
     uj++;
   }
 
-  ok(`${uj} uj fiok letrejott, ${meglevo} mar letezett.`);
+  ok(`${uj} új fiók létrejött, ${meglevo} már létezett.`);
 
   if (uj === 0) {
-    info('Nincs mit kiosztani. Jelszot igy allithatsz vissza:');
-    info(`  icdl-admin jelszo ${osztalyId} <azonosito>`);
+    info('Nincs mit kiosztani. Jelszót így állíthatsz vissza:');
+    info(`  rmg-admin jelszo ${osztalyId} <azonosito>`);
     return;
   }
 
@@ -80,6 +80,6 @@ export async function diakokParancs(argumentumok, kapcsolo, config) {
   const csvUt = join(ADMIN_MAPPA, `kiosztas_${osztalyId}.csv`);
   writeFileSync(csvUt, '﻿' + sorok.map((s) => s.join(';')).join('\r\n'), 'utf8');
 
-  ok(`Kiosztolap: ${csvUt}`);
-  figyelem('Ez a fajl jelszavakat tartalmaz. Kiosztas utan torold.');
+  ok(`Kiosztólap: ${csvUt}`);
+  figyelem('Ez a fájl jelszavakat tartalmaz. Kiosztás után töröld.');
 }

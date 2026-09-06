@@ -1,11 +1,11 @@
 {
-  "_megjegyzes": "Masold config.json neven, es igazitsd az utakat. A config.json gitignore-olva van.",
+  "_megjegyzes": "Másold config.json néven, és igazítsd az utakat. A config.json gitignore-olva van.",
 
   "kvizbazis_ut": "C:\\Loci\\munka\\radnoti\\oraanyagok\\kvizbazis",
   "diarend_ut": "C:\\Loci\\munka\\radnoti\\oraanyagok\\kvizbazis\\_diarend",
   "osztalyok_ut": "C:\\Loci\\munka\\radnoti\\2026_27",
 
-  "_szolgaltatasfiok": "A Firebase konzolbol letoltott kulcs utvonala. NE tedd a repoba.",
+  "_szolgaltatasfiok": "A Firebase konzolból letöltött kulcs útvonala. NE tedd a repóba.",
   "szolgaltatasfiok_ut": "C:\\Loci\\titkok\\icdl-gyakorlo-serviceaccount.json",
 
   "firebase_projekt": "icdl-gyakorlo",

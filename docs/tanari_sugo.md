@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| Tanári pult | <https://locitanit.github.io/icdl-gyakorlo/tanar.html> |
-| Diák | <https://locitanit.github.io/icdl-gyakorlo/> |
+| Tanári pult | <https://locitanit.github.io/rmg-kvizarena/tanar.html> |
+| Diák | <https://locitanit.github.io/rmg-kvizarena/> |
 
 ---
 
@@ -92,13 +92,13 @@ Excelben.
 ## Parancssor (a saját gépeden)
 
 ```powershell
-cd C:\Loci\prog\icdl-gyakorlo
-node admin\icdl-admin.js osztaly letrehoz 10T      # új osztály + belépőkód
-node admin\icdl-admin.js diakok 10T                # azonositok.txt feltöltése
-node admin\icdl-admin.js diakok 10T --fiokok       # + kész fiókok, kiosztólappal
-node admin\icdl-admin.js jelszo 10T kovacs_b12     # elfelejtett jelszó
-node admin\icdl-admin.js publikal --proba          # mi változna a kérdésbankban
-node admin\icdl-admin.js publikal                  # kérdésbank feltöltése
+cd C:\Loci\prog\rmg-kvizarena
+node admin\rmg-admin.js osztaly letrehoz 10T      # új osztály + belépőkód
+node admin\rmg-admin.js diakok 10T                # azonositok.txt feltöltése
+node admin\rmg-admin.js diakok 10T --fiokok       # + kész fiókok, kiosztólappal
+node admin\rmg-admin.js jelszo 10T kovacs_b12     # elfelejtett jelszó
+node admin\rmg-admin.js publikal --proba          # mi változna a kérdésbankban
+node admin\rmg-admin.js publikal                  # kérdésbank feltöltése
 ```
 
 ## Ha valami nem megy
@@ -109,8 +109,8 @@ node admin\icdl-admin.js publikal                  # kérdésbank feltöltése
 | „A rendszer elerte a napi ingyenes kereteet" | elfogyott a napi ingyenes keret. **A képernyőn látható végeredmény érvényes** — nyomd meg a „Végeredmény mentése CSV-be" gombot |
 | „Ebben az osztalyban mar fut egy kviz" | egy korábbi kvíz nincs lezárva; nyisd meg a pultot, és fejezd be |
 | „… nem tanari fiok" | ugyanabban a böngészőben diákként is beléptél. Használj másik böngészőt vagy inkognitó ablakot |
-| a diák: „Nincs ilyen azonosito ebben az osztalyban" | az `azonositok.txt` nincs feltöltve: `icdl-admin diakok <osztaly>` |
-| a diák elfelejtette a jelszavát | `icdl-admin jelszo <osztaly> <azonosito>` — nincs „elfelejtett jelszó" e-mail |
+| a diák: „Nincs ilyen azonosito ebben az osztalyban" | az `azonositok.txt` nincs feltöltve: `rmg-admin diakok <osztaly>` |
+| a diák elfelejtette a jelszavát | `rmg-admin jelszo <osztaly> <azonosito>` — nincs „elfelejtett jelszó" e-mail |
 
 ## Tartalék
 

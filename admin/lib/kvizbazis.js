@@ -27,8 +27,8 @@ export const ELO_KVIZ_TIPUSOK = ['feleletvalasztos', 'igaz_hamis', 'tobb_valaszt
 export function diarendekBetolt(diarendUt) {
   if (!existsSync(diarendUt)) {
     throw new KonfigHiba(
-      `Nem talalom a diarend mappat:\n  ${diarendUt}\n\n` +
-      `  Ellenorizd a config.json "diarend_ut" mezojet.`
+      `Nem találom a diarend mappát:\n  ${diarendUt}\n\n` +
+      `  Ellenőrizd a config.json "diarend_ut" mezőjét.`
     );
   }
 
@@ -48,7 +48,7 @@ export function diarendekBetolt(diarendUt) {
   }
 
   if (!kodSzerint.size) {
-    throw new KonfigHiba(`A diarend mappaban nincs egyetlen hasznalhato .json sem:\n  ${diarendUt}`);
+    throw new KonfigHiba(`A diarend mappában nincs egyetlen használható .json sem:\n  ${diarendUt}`);
   }
   return { pptxSzerint, kodSzerint };
 }
@@ -95,8 +95,8 @@ export function fejezetFeloldo(diarendAdat) {
 export function bankokBetolt(kvizbazisUt) {
   if (!existsSync(kvizbazisUt)) {
     throw new KonfigHiba(
-      `Nem talalom a kvizbazist:\n  ${kvizbazisUt}\n\n` +
-      `  Ellenorizd a config.json "kvizbazis_ut" mezojet.`
+      `Nem találom a kvízbázist:\n  ${kvizbazisUt}\n\n` +
+      `  Ellenőrizd a config.json "kvizbazis_ut" mezőjét.`
     );
   }
 
@@ -123,7 +123,7 @@ export function bankokBetolt(kvizbazisUt) {
   }
 
   if (!bankok.length) {
-    throw new KonfigHiba(`A kvizbazisban nincs egyetlen bank sem:\n  ${kvizbazisUt}`);
+    throw new KonfigHiba(`A kvízbázisban nincs egyetlen bank sem:\n  ${kvizbazisUt}`);
   }
   return bankok.sort((a, b) => a.kod.localeCompare(b.kod));
 }
@@ -157,7 +157,7 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
   if (KIHAGYOTT_TIPUSOK.has(tipus)) return { kihagyva: 'kifejtos' };
   if (kerdes.kep) return { kihagyva: 'kepes' };
   if (!kerdes.kerdes || typeof kerdes.kerdes !== 'string') {
-    return { hiba: 'nincs kerdesszoveg' };
+    return { hiba: 'nincs kérdésszöveg' };
   }
 
   const id = kerdesAzonosito(bank.kod, kerdes.kerdes);
@@ -181,11 +181,11 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
   switch (tipus) {
     case 'feleletvalasztos': {
       if (!Array.isArray(kerdes.valaszok) || kerdes.valaszok.length < 2) {
-        return { hiba: 'nincs eleg valaszlehetoseg' };
+        return { hiba: 'nincs elég válaszlehetőség' };
       }
       if (!Number.isInteger(kerdes.helyes)
           || kerdes.helyes < 0 || kerdes.helyes >= kerdes.valaszok.length) {
-        return { hiba: `a "helyes" index (${kerdes.helyes}) nincs a valaszok kozott` };
+        return { hiba: `a "helyes" index (${kerdes.helyes}) nincs a válaszok között` };
       }
       publikus.valaszok = kerdes.valaszok.map(String);
       kulcs.helyes = [kerdes.helyes];
@@ -193,12 +193,12 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
     }
     case 'tobb_valasztos': {
       if (!Array.isArray(kerdes.valaszok) || kerdes.valaszok.length < 2) {
-        return { hiba: 'nincs eleg valaszlehetoseg' };
+        return { hiba: 'nincs elég válaszlehetőség' };
       }
       const helyesek = Array.isArray(kerdes.helyes) ? kerdes.helyes : [kerdes.helyes];
       if (!helyesek.length
           || helyesek.some((h) => !Number.isInteger(h) || h < 0 || h >= kerdes.valaszok.length)) {
-        return { hiba: 'a "helyes" indexek kozott van ervenytelen' };
+        return { hiba: 'a "helyes" indexek között van érvénytelen' };
       }
       publikus.valaszok = kerdes.valaszok.map(String);
       kulcs.helyes = [...helyesek].sort((a, b) => a - b);
@@ -215,13 +215,13 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
     }
     case 'rovid_valasz': {
       const valaszok = Array.isArray(kerdes.helyes) ? kerdes.helyes : [kerdes.helyes];
-      if (!valaszok.length || valaszok.some((v) => !v)) return { hiba: 'nincs elfogadhato valasz' };
+      if (!valaszok.length || valaszok.some((v) => !v)) return { hiba: 'nincs elfogadható válasz' };
       kulcs.helyes = valaszok.map(String);
       break;
     }
     case 'parosito': {
       if (!Array.isArray(kerdes.parok) || kerdes.parok.length < 2) {
-        return { hiba: 'nincs eleg par' };
+        return { hiba: 'nincs elég pár' };
       }
       const parok = kerdes.parok.map((p) => ({ bal: String(p.bal), jobb: String(p.jobb) }));
       publikus.parok_bal = parok.map((p) => p.bal);
@@ -230,7 +230,7 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
       break;
     }
     default:
-      return { hiba: `ismeretlen tipus: ${tipus}` };
+      return { hiba: `ismeretlen típus: ${tipus}` };
   }
 
   // A hash a TELJES tartalmat fedi (publikus + kulcs), hogy a magyarazat vagy a
