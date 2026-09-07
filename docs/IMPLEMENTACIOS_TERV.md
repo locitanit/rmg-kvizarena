@@ -169,7 +169,15 @@ kerdesek/{kerdesId}               # kerdesId = bankKod + "_" + a kérdésszöveg
   parok_jobb_kevert: [...]
   nehezseg: 1..3
   cimkek: [...]
-  # FIGYELEM: a helyes válasz NINCS ebben a dokumentumban
+  kep: {                          # OPCIONÁLIS, csak képes kérdésnél (6. fázis A)
+    adat: "data:image/png;base64,…",   # a fájl BEÁGYAZVA — nincs külön tárhely,
+    felirat: "Négy hálózati ikon…",    # így nem kell új biztonsági szabály sem
+    szelesseg: 50,                     # a szövegtükör %-a, 1–100
+    mime: "image/png",
+    meret: 12345                       # bájt (diagnosztika; a publikáló 200 KB fölött hibát ad)
+  }
+  # FIGYELEM: a helyes válasz NINCS ebben a dokumentumban. A kép sem árulhatja
+  # el a választ — ez a kérdésbank felelőssége (kvizbazis/SEMA.md 1. szabálya).
 
 kulcsok/{kerdesId}                # csak tanár olvashatja (lásd 3. pont)
   helyes: [2] | "igaz" | ["ciklusváltozó","számláló"] | [{bal,jobb}...]
@@ -266,6 +274,14 @@ Ez a kérés lényege: *„1-től a 43-as diáig"*. Három választási mód kel
 
 A tanári felületen mindhárom elérhető, **alapértelmezés a diatartomány**, egy csúszkával
 („meddig jutottunk?"), és mellette élőben látszik: *„ebben a tartományban 87 kérdés van"*.
+
+**Keresztszűrők a három mód fölött.** A nehézség és a **címke** nem negyedik mód, hanem
+minden módban tovább szűkít. A címke a kérdés `cimkek` listájának egy eleme; a
+legördülőbe azok kerülnek, amik legalább 5 kérdésen szerepelnek, a `hivatalos_minta`
+(szó szerinti NJSZT ICDL-vizsgamintakérdés) mindig elöl. A „kihagyva" kapcsolóval
+fordítva szűr. A `valogatas` mentődik a kvíz dokumentumába, így az archívumból is
+látszik, hogy egy kvíz mintakérdéses volt-e. Ugyanez a szűrő a gyakorló mód „rész"
+legördülőjében is ott van — ettől tud a diák otthon a valódi vizsgakérdéseken gyakorolni.
 
 ### 4.2 ELŐFELTÉTEL — **elkészült 2026-09-05-én**
 
@@ -777,7 +793,6 @@ szabályok védik, nem a titkosság.
 ## 13. Ami szándékosan NEM része az első verziónak
 
 - Házi feladatként kiadható, határidős kvíz (később, ha kell)
-- Képes kérdések (a kvízbázis `kep` mezője) — a második körben
 - Párosítós és rövid válaszos kérdés az élő kvízben (elsőre csak feleletválasztós,
   igaz/hamis és többválasztós; a másik kettő a gyakorló módban már mehet)
 - Osztályok közötti verseny, örökranglista

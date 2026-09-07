@@ -98,6 +98,50 @@ A gyakorlás **nem ér csillagot**, és nem számít bele az élő kvízek stati
 Mindenhonnan van **CSV-letöltés**, ami dupla kattintásra, ékezethelyesen nyílik magyar
 Excelben.
 
+## Képes kérdések
+
+Ha egy kérdéshez ábra tartozik, a kvízbázisban a `kep` mezővel add meg:
+
+```yaml
+kep:
+  fajl: kepek/wifi_ikonok.png     # a téma mappájához képest
+  felirat: "Négy hálózati ikon: a), b), c), d)"
+  szelesseg: 50                   # a szövegtükör %-a, elhagyható
+```
+
+A kép a téma mappájának `kepek/` almappájában legyen, és a `publikal` **beleteszi
+a kérdés dokumentumába** — nem kell külön feltölteni sehova. A kép ugyanúgy látszik
+a kivetítőn, a diák telefonján és a gyakorló módban is.
+
+Amit tudni kell:
+
+- **200 KB fölött a kép nem megy fel**, és a `publikal` kiírja, melyik az. Kicsinyítsd.
+  60 KB fölött felmegy, de figyelmeztet.
+- Ha a fájl **nincs meg**, csak az az egy kérdés marad ki, a többi felmegy.
+- A `publikal` a végén kiírja, hány képes kérdés ment fel és mekkora összesen.
+- Ha kicseréled a képfájlt, a következő `publikal` „módosultként" újraírja a kérdést.
+- A **kép nem árulhatja el a választ** (pl. ne legyen bekarikázva a jó ikon).
+- A kvízösszeállító előnézetében a képes kérdés `📷 képes` jelölőt kap.
+## Címkeszűrő – csak a hivatalos ICDL-mintakérdések
+
+A kvízösszeállítóban a nehézség alatt van egy **Címke** legördülő. Ez a három
+válogatási mód (dia / fejezet / témakör) **fölött** szűr: bármelyiket választod,
+tovább szűkít.
+
+A legfontosabb címke a **„hivatalos ICDL-mintakérdés"** (a bankban: `hivatalos_minta`).
+Ezek szó szerint az NJSZT hivatalos ICDL-vizsgafeladat-gyűjteményéből valók, nem
+átfogalmazva. Ha ezt választod, próbavizsga-hangulatú kvízt kapsz.
+
+- A **„inkább kihagyva"** pipával fordítva szűr: pont ezek nélkül sorsol.
+- A legördülőben csak azok a címkék jelennek meg, amik **legalább 5 kérdésen**
+  szerepelnek a bankban. Ha egy sincs, a szűrő nem is látszik.
+- A kvíz **címébe belekerül** (pl. „… – csak: hivatalos ICDL-mintakérdés"), így az
+  archívumban visszakereshető.
+- Az előnézetben az ilyen kérdés kék **ICDL-minta** jelölőt kap.
+- **A gyakorló módban** ugyanez a „Melyik rész?" legördülőben van („csak hivatalos
+  ICDL-mintakérdés"), tehát a diák otthon is gyakorolhat a valódi vizsgakérdéseken —
+  ha az adott bankot felszabadítottad.
+
 ## Parancssor (a saját gépeden)
 
 ```powershell

@@ -14,6 +14,37 @@ import { db } from '../firebase.js';
 // A parosito es a rovid valasz a gyakorlo modban mar hasznalhato.
 export const ELO_KVIZ_TIPUSOK = ['feleletvalasztos', 'igaz_hamis', 'tobb_valasztos'];
 
+// A cimkek gepi neve -> emberi nev. Ami nincs benne, az onmagat adja vissza.
+// A "hivatalos_minta" a szo szerinti NJSZT ICDL-vizsgamintakerdes.
+export const CIMKE_NEVE = {
+  hivatalos_minta: 'hivatalos ICDL-mintakérdés',
+};
+
+export const cimkeNeve = (cimke) => CIMKE_NEVE[cimke] || cimke;
+
+// Egy cimke csak akkor kerul a valaszthato listaba, ha ennyi kerdesen szerepel.
+// Ket-harom kerdes nem er meg egy legordulo-sort.
+export const CIMKE_KUSZOB = 5;
+
+// A bank cimkei darabszammal, csokkeno hasznossag szerint: a hivatalos_minta
+// mindig elol (azt keresi a tanar), a tobbi abecerendben.
+export function cimkeketOsszeszamol(kerdesek, kuszob = CIMKE_KUSZOB) {
+  const szamlalo = new Map();
+  for (const kerdes of kerdesek) {
+    for (const cimke of kerdes.cimkek || []) {
+      szamlalo.set(cimke, (szamlalo.get(cimke) || 0) + 1);
+    }
+  }
+  return [...szamlalo]
+    .filter(([, db]) => db >= kuszob)
+    .map(([cimke, db]) => ({ cimke, db }))
+    .sort((a, b) => {
+      if (a.cimke === 'hivatalos_minta') return -1;
+      if (b.cimke === 'hivatalos_minta') return 1;
+      return a.cimke.localeCompare(b.cimke, 'hu');
+    });
+}
+
 export const TIPUS_NEVE = {
   feleletvalasztos: 'feleletválasztós',
   igaz_hamis: 'igaz/hamis',
@@ -79,7 +110,12 @@ export async function kulcsokatBetolt(idk) {
 
 // valogatas = { mod: 'dia'|'fejezet'|'temakor', dia_tol, dia_ig,
 //               fejezetek: [index], temakorok: [kod],
-//               nehezseg_max: 1..3, csak_elo: true }
+//               nehezseg_max: 1..3, csak_elo: true,
+//               cimke: 'hivatalos_minta'|null, cimke_nelkul: false }
+//
+// A cimke a harom mod FOLOTT mukodik, mint a nehezseg: minden modban tovabb
+// szukit. A regi, mentett valogatas objektumokban nincs "cimke" mezo - a
+// hianya nem szur semmit.
 export function szur(kerdesek, valogatas) {
   return kerdesek.filter((k) => {
     if (k.nehezseg > (valogatas.nehezseg_max ?? 3)) return false;
@@ -87,6 +123,11 @@ export function szur(kerdesek, valogatas) {
     // Felszabaditott kerdesnel a diak elo kviz alatt is elerne a kulcsot.
     if (valogatas.kihagy_felszabaditott
         && felszabaditott(k, valogatas.felszabaditasok)) return false;
+
+    if (valogatas.cimke) {
+      const van = Array.isArray(k.cimkek) && k.cimkek.includes(valogatas.cimke);
+      if (valogatas.cimke_nelkul ? van : !van) return false;
+    }
 
     switch (valogatas.mod) {
       case 'dia':

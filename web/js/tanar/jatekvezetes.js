@@ -23,6 +23,7 @@ import {
 import { magyarHiba } from '../kozos/hibak.js';
 import { csvLetolt, szazalek, maiDatum, fajlnevre } from '../kozos/csv.js';
 import { elem, kepernyo, uzenet } from '../kozos/ui.js';
+import { kepetKirak } from '../kozos/kep.js';
 
 let kvizId = null;
 let kviz = null;
@@ -203,6 +204,7 @@ function kerdestMutat() {
   const kerdes = kerdesek[kviz.aktualis];
   elem('kerdes-sorszam').textContent = `${kviz.aktualis + 1}. kérdés`;
   elem('kerdes-szoveg').textContent = kerdes.kerdes;
+  kepetKirak(elem('kerdes-kep'), kerdes.kep);
 
   const racs = elem('kerdes-valaszok');
   racs.innerHTML = '';
@@ -411,7 +413,7 @@ function javitasiTerkep() {
   const diakonkent = new Map();   // uid -> { temakorok, jo_db }
   const kerdesenkent = kerdesek.map((kerdes) => ({
     kerdesId: kerdes.id, kerdes: kerdes.kerdes, temakor: kerdes.temakor || '(nincs)',
-    nehezseg: kerdes.nehezseg || null, jo: 0, ossz: 0,
+    nehezseg: kerdes.nehezseg || null, kepes: Boolean(kerdes.kep), jo: 0, ossz: 0,
   }));
 
   for (const jatekos of jatekosok.values()) {
