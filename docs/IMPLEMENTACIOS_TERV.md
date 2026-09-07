@@ -273,6 +273,14 @@ Ez a kérés lényege: *„1-től a 43-as diáig"*. Három választási mód kel
 A tanári felületen mindhárom elérhető, **alapértelmezés a diatartomány**, egy csúszkával
 („meddig jutottunk?"), és mellette élőben látszik: *„ebben a tartományban 87 kérdés van"*.
 
+**Keresztszűrők a három mód fölött.** A nehézség és a **címke** nem negyedik mód, hanem
+minden módban tovább szűkít. A címke a kérdés `cimkek` listájának egy eleme; a
+legördülőbe azok kerülnek, amik legalább 5 kérdésen szerepelnek, a `hivatalos_minta`
+(szó szerinti NJSZT ICDL-vizsgamintakérdés) mindig elöl. A „kihagyva" kapcsolóval
+fordítva szűr. A `valogatas` mentődik a kvíz dokumentumába, így az archívumból is
+látszik, hogy egy kvíz mintakérdéses volt-e. Ugyanez a szűrő a gyakorló mód „rész"
+legördülőjében is ott van — ettől tud a diák otthon a valódi vizsgakérdéseken gyakorolni.
+
 ### 4.2 ELŐFELTÉTEL — **elkészült 2026-09-05-én**
 
 A diaszám szerinti válogatásnak két akadálya volt, mindkettő elhárult. Az eszközök a

@@ -68,3 +68,4 @@ node admin\rmg-admin.js tanar hozzaad sajat@email.hu "Vezetek Kereszt"
 | 4. Csillagok és statisztika | ✅ kész |
 | 5. Gyakorlás és csiszolás | ✅ kész |
 | 6/A. Képes kérdések | ✅ kész |
+| 6/B. Címkeszűrő (ICDL-mintakérdések) | ✅ kész |

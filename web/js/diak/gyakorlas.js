@@ -15,7 +15,7 @@ import {
 import { auth, db } from '../firebase.js';
 import {
   bankokListaja, diasortBetolt, bankKerdesei, kulcsokatBetolt, felszabaditasokBetolt,
-  felszabaditott, sorsol,
+  felszabaditott, sorsol, cimkeketOsszeszamol, cimkeNeve,
 } from '../kozos/kerdesbank.js';
 import { valaszHelyes, helyesValaszSzovege } from '../kozos/kviz.js';
 import { kepetKirak } from '../kozos/kep.js';
@@ -107,7 +107,8 @@ async function bankotValaszt(bankKod) {
     return uzenet('gyak-uzenet', magyarHiba(hiba));
   }
 
-  // A "resz" legordulo: eloszor minden, aztan fejezetek, vegul temakorok.
+  // A "resz" legordulo: eloszor minden, aztan a cimkek (ICDL-mintakerdesek),
+  // aztan fejezetek, vegul temakorok.
   const legordulo = elem('gyak-resz');
   legordulo.innerHTML = '';
   const opcio = (ertek, szoveg) => {
@@ -117,6 +118,12 @@ async function bankotValaszt(bankKod) {
     legordulo.append(sor);
   };
   opcio('mind', `A teljes felszabadított anyag (${szabadKerdesek.length} kérdés)`);
+
+  // Cimke szerinti gyakorlas: ettol tud a diak otthon a valodi
+  // ICDL-vizsgamintakerdeseken gyakorolni.
+  for (const { cimke, db: cimkeDb } of cimkeketOsszeszamol(szabadKerdesek)) {
+    opcio(`cimke:${cimke}`, `csak ${cimkeNeve(cimke)} (${cimkeDb})`);
+  }
 
   const fejezetekben = new Map();
   const temakorokben = new Map();
@@ -140,6 +147,9 @@ function reszSzerintSzur() {
   const ertek = elem('gyak-resz').value;
   if (!ertek || ertek === 'mind') return szabadKerdesek;
   const [tipus, kulcs] = ertek.split(':');
+  if (tipus === 'cimke') {
+    return szabadKerdesek.filter((k) => (k.cimkek || []).includes(kulcs));
+  }
   if (tipus === 'fejezet') return szabadKerdesek.filter((k) => k.fejezet === Number(kulcs));
   return szabadKerdesek.filter((k) => (k.temakor || '(egyeb)') === kulcs);
 }

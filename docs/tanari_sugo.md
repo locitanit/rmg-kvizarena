@@ -113,6 +113,25 @@ Amit tudni kell:
 - Ha kicseréled a képfájlt, a következő `publikal` „módosultként" újraírja a kérdést.
 - A **kép nem árulhatja el a választ** (pl. ne legyen bekarikázva a jó ikon).
 - A kvízösszeállító előnézetében a képes kérdés `📷 képes` jelölőt kap.
+## Címkeszűrő – csak a hivatalos ICDL-mintakérdések
+
+A kvízösszeállítóban a nehézség alatt van egy **Címke** legördülő. Ez a három
+válogatási mód (dia / fejezet / témakör) **fölött** szűr: bármelyiket választod,
+tovább szűkít.
+
+A legfontosabb címke a **„hivatalos ICDL-mintakérdés"** (a bankban: `hivatalos_minta`).
+Ezek szó szerint az NJSZT hivatalos ICDL-vizsgafeladat-gyűjteményéből valók, nem
+átfogalmazva. Ha ezt választod, próbavizsga-hangulatú kvízt kapsz.
+
+- A **„inkább kihagyva"** pipával fordítva szűr: pont ezek nélkül sorsol.
+- A legördülőben csak azok a címkék jelennek meg, amik **legalább 5 kérdésen**
+  szerepelnek a bankban. Ha egy sincs, a szűrő nem is látszik.
+- A kvíz **címébe belekerül** (pl. „… – csak: hivatalos ICDL-mintakérdés"), így az
+  archívumban visszakereshető.
+- Az előnézetben az ilyen kérdés kék **ICDL-minta** jelölőt kap.
+- **A gyakorló módban** ugyanez a „Melyik rész?" legördülőben van („csak hivatalos
+  ICDL-mintakérdés"), tehát a diák otthon is gyakorolhat a valódi vizsgakérdéseken —
+  ha az adott bankot felszabadítottad.
 
 ## Parancssor (a saját gépeden)
 
