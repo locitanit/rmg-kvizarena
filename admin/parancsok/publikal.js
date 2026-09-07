@@ -57,6 +57,9 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
   const sorok = [];
   const osszesHiba = [];
   const osszesIsmetlodo = [];
+  const kepFigyelmeztetesek = [];
+  let kepDb = 0;
+  let kepBajt = 0;
   let nincsDiasor = 0;
 
   for (const bank of bankok) {
@@ -66,6 +69,9 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
     const feldolgozott = bankotFeldolgoz(bank, diasor);
     osszesHiba.push(...feldolgozott.hibak);
     osszesIsmetlodo.push(...feldolgozott.ismetlodo);
+    kepDb += feldolgozott.kepek.db;
+    kepBajt += feldolgozott.kepek.osszBajt;
+    kepFigyelmeztetesek.push(...feldolgozott.kepek.figyelmeztetesek);
 
     // A korabbi allapot: egyetlen olvasas bankonkent.
     const korabbiDok = await db().doc(`bankok/${bank.kod}`).get();
@@ -102,7 +108,15 @@ export async function publikalParancs(argumentumok, kapcsolo, config) {
 
   console.log('');
   ok(`${osszesen} kérdés a bankokban. ${ujOssz} új, ${modOssz} módosult, ${torOssz} törölt.`);
-  info('A "kihagyva" a kifejtős és a képes kérdés – ezek az első verzióban nem mennek fel.');
+  info('A "kihagyva" a kifejtős kérdés – az gépileg nem javítható.');
+  if (kepDb) {
+    ok(`${kepDb} képes kérdés, összesen ${Math.round(kepBajt / 1024)} KB beágyazva.`);
+  }
+  if (kepFigyelmeztetesek.length) {
+    figyelem(`${kepFigyelmeztetesek.length} nagy kép (60 KB fölött):`);
+    kepFigyelmeztetesek.slice(0, 10).forEach((s) => info(`  ${s}`));
+    if (kepFigyelmeztetesek.length > 10) info(`  … és még ${kepFigyelmeztetesek.length - 10}`);
+  }
 
   if (nincsDiasor) {
     figyelem(`${nincsDiasor} banknak nincs diasora – ezek csak témakör szerint válogathatók.`);

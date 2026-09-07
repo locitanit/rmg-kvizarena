@@ -62,7 +62,7 @@ kerdesek:
     dia: 15
     temakor: masodik
 
-  # Kihagyando: kepes (a kep az elso verzioban nem jelenik meg)
+  # Kepes kerdes: a kep beagyazva megy fel (6. fazis A resz)
   - tipus: feleletvalasztos
     kerdes: Mit latsz az abran?
     valaszok: ["Kort", "Negyzetet", "Haromszoget", "Semmit"]
@@ -73,6 +73,7 @@ kerdesek:
     kep:
       fajl: kepek/proba.png
       felirat: Egy alakzat
+      szelesseg: 50
 
   # Hibas: a helyes index tullog a valaszokon
   - tipus: feleletvalasztos

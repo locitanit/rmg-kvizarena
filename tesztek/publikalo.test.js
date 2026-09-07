@@ -7,9 +7,11 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import {
   diarendekBetolt, bankokBetolt, bankotFeldolgoz, bankDiasora,
-  fejezetFeloldo, diasorDokumentum,
+  fejezetFeloldo, diasorDokumentum, kepetBeagyaz,
 } from '../admin/lib/kvizbazis.js';
 
 const ittVagyunk = dirname(fileURLToPath(import.meta.url));
@@ -86,11 +88,6 @@ describe('Amit kihagyunk vagy hibanak jelzunk', () => {
     expect(kerdesSzerint('Fejtsd ki')).toBeUndefined();
   });
 
-  it('a kepes kerdes sem megy fel (a kep a masodik korben jon)', () => {
-    expect(feldolgozott.kihagyva.kepes).toBe(1);
-    expect(kerdesSzerint('Mit latsz az abran')).toBeUndefined();
-  });
-
   it('a hibas kerdes nem megy fel, es jelentve van', () => {
     expect(kerdesSzerint('Ez a kerdes hibas')).toBeUndefined();
     expect(feldolgozott.hibak).toHaveLength(1);
@@ -98,8 +95,8 @@ describe('Amit kihagyunk vagy hibanak jelzunk', () => {
   });
 
   it('a jo kerdesek felmennek', () => {
-    // 9 kerdes a bankban - 1 kifejtos - 1 kepes - 1 hibas = 6
-    expect(feldolgozott.kerdesek.size).toBe(6);
+    // 9 kerdes a bankban - 1 kifejtos - 1 hibas = 7 (a kepes mar felmegy)
+    expect(feldolgozott.kerdesek.size).toBe(7);
   });
 });
 
@@ -128,9 +125,9 @@ describe('A bank dokumentuma', () => {
     const dok = feldolgozott.bankDokumentum;
     expect(dok.cim).toBe('Probatananyag');
     expect(dok.diasor).toBe('proba');
-    expect(dok.kerdes_db).toBe(6);
-    expect(dok.temakorok).toEqual([{ kod: 'alapok', db: 3 }, { kod: 'masodik', db: 3 }]);
-    expect(Object.keys(dok.hashok)).toHaveLength(6);
+    expect(dok.kerdes_db).toBe(7);
+    expect(dok.temakorok).toEqual([{ kod: 'alapok', db: 3 }, { kod: 'masodik', db: 4 }]);
+    expect(Object.keys(dok.hashok)).toHaveLength(7);
   });
 });
 
@@ -142,5 +139,104 @@ describe('A diasor dokumentuma', () => {
     // A cimlapnak nincs szamozott diaszama, ezert kimarad.
     expect(dok.diak.some((d) => d.cim === 'CIMLAP')).toBe(false);
     expect(dok.fejezetek).toHaveLength(3);
+  });
+});
+
+// -------------------------------------------------------------- kepes kerdes
+
+// A kepes kerdes tesztjeihez kell egy sajat bank-mappa, ahova tetszoleges
+// meretu fajlt irhatunk. A minta-PNG-k a repoban vannak (nehany tiz bajt).
+function ideiglenesBank() {
+  const mappa = mkdtempSync(join(tmpdir(), 'kvizarena-kep-'));
+  return { kod: 'ideiglenes', mappa, fejlec: {}, kerdesek: [] };
+}
+
+describe('Kepes kerdes: a kep beagyazva megy fel', () => {
+  it('a kepes kerdes felmegy, a kep data URI-kent', () => {
+    const e = kerdesSzerint('Mit latsz az abran');
+    expect(e).toBeDefined();
+    expect(e.publikus.kep.adat.startsWith('data:image/png;base64,')).toBe(true);
+    expect(e.publikus.kep.felirat).toBe('Egy alakzat');
+    expect(e.publikus.kep.szelesseg).toBe(50);      // a YAML-bol
+    expect(e.publikus.kep.mime).toBe('image/png');
+    expect(e.publikus.kep.meret).toBeGreaterThan(0);
+  });
+
+  it('a kep nem szivarogtat kulcsot, es a szamlalo szamon tartja', () => {
+    const e = kerdesSzerint('Mit latsz az abran');
+    expect(e.publikus).not.toHaveProperty('helyes');
+    expect(feldolgozott.kepek.db).toBe(1);
+    expect(feldolgozott.kepek.osszBajt).toBe(e.publikus.kep.meret);
+    expect(feldolgozott.kepek.figyelmeztetesek).toHaveLength(0);
+    expect(feldolgozott.kihagyva.kepes).toBe(0);
+  });
+
+  it('mas kepbajtok = mas hash, de ugyanaz az azonosito', () => {
+    const eredeti = kerdesSzerint('Mit latsz az abran');
+    const modositott = {
+      ...bank,
+      kerdesek: bank.kerdesek.map((k) => (k.kep
+        ? { ...k, kep: { ...k.kep, fajl: 'kepek/masik.png' } }
+        : k)),
+    };
+    const ujra = bankotFeldolgoz(modositott, diasor);
+    expect(ujra.kerdesek.has(eredeti.id)).toBe(true);
+    expect(ujra.kerdesek.get(eredeti.id).hash).not.toBe(eredeti.hash);
+  });
+
+  it('a hianyzo kepfajl csak azt az egy kerdest hagyja ki', () => {
+    const modositott = {
+      ...bank,
+      kerdesek: bank.kerdesek.map((k) => (k.kep
+        ? { ...k, kep: { ...k.kep, fajl: 'kepek/nincs_ilyen.png' } }
+        : k)),
+    };
+    const ujra = bankotFeldolgoz(modositott, diasor);
+    expect(ujra.kerdesek.size).toBe(6);              // a tobbi 6 megy
+    expect(ujra.hibak.some((h) => h.includes('a kép nem található'))).toBe(true);
+  });
+
+  it('a ".." utvonal tiltott', () => {
+    const b = ideiglenesBank();
+    const e = kepetBeagyaz({ fajl: '../titkos.png', felirat: 'Felirat' }, b);
+    expect(e.hiba).toContain('kimutat a témamappából');
+  });
+
+  it('felirat nelkul hiba', () => {
+    const b = ideiglenesBank();
+    writeFileSync(join(b.mappa, 'x.png'), Buffer.alloc(100));
+    expect(kepetBeagyaz({ fajl: 'x.png' }, b).hiba).toContain('felirat');
+  });
+
+  it('ismeretlen kepformatum hiba', () => {
+    const b = ideiglenesBank();
+    writeFileSync(join(b.mappa, 'x.bmp'), Buffer.alloc(100));
+    expect(kepetBeagyaz({ fajl: 'x.bmp', felirat: 'Felirat' }, b).hiba)
+      .toContain('ismeretlen képformátum');
+  });
+
+  it('200 KB folott hiba', () => {
+    const b = ideiglenesBank();
+    writeFileSync(join(b.mappa, 'nagy.png'), Buffer.alloc(220 * 1024));
+    const e = kepetBeagyaz({ fajl: 'nagy.png', felirat: 'Felirat' }, b);
+    expect(e.kep).toBeUndefined();
+    expect(e.hiba).toContain('200 KB');
+  });
+
+  it('60 es 200 KB kozott felmegy, de figyelmeztet', () => {
+    const b = ideiglenesBank();
+    writeFileSync(join(b.mappa, 'kozepes.png'), Buffer.alloc(100 * 1024));
+    const e = kepetBeagyaz({ fajl: 'kozepes.png', felirat: 'Felirat' }, b);
+    expect(e.hiba).toBeUndefined();
+    expect(e.kep.meret).toBe(100 * 1024);
+    expect(e.figyelmeztetes).toContain('KB');
+  });
+
+  it('ervenytelen szelesseg helyett 100', () => {
+    const b = ideiglenesBank();
+    writeFileSync(join(b.mappa, 'x.png'), Buffer.alloc(10));
+    expect(kepetBeagyaz({ fajl: 'x.png', felirat: 'F', szelesseg: 0 }, b).kep.szelesseg).toBe(100);
+    expect(kepetBeagyaz({ fajl: 'x.png', felirat: 'F', szelesseg: 999 }, b).kep.szelesseg).toBe(100);
+    expect(kepetBeagyaz({ fajl: 'x.png', felirat: 'F' }, b).kep.szelesseg).toBe(100);
   });
 });

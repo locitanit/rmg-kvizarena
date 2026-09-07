@@ -178,6 +178,9 @@ label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric:
   margin-bottom: 18px;
 }
 
+/* A kivetiton tobb hely van, de a valaszracsnak is ki kell ferni. */
+.nagykerdes + .kerdeskep img { max-height: 50vh; }
+
 .valaszracs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 @media (max-width: 640px) {
