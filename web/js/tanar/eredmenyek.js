@@ -223,7 +223,10 @@ async function kviztElemez(kviz) {
     sor.className = 'eloszlassor';
     sor.innerHTML = '<span class="cimke"></span><span class="rud"><i></i></span>'
                   + '<span class="ertek"></span>';
-    sor.querySelector('.cimke').textContent = `${kerdes.sorszam}. ${kerdes.kerdes}`.slice(0, 70);
+    // A kepes kerdest jeloljuk: a puszta szoveg nelkule felrevezeto lehet.
+    const jel = kerdes.kepes ? '\u{1F4F7} ' : '';
+    sor.querySelector('.cimke').textContent =
+      `${kerdes.sorszam}. ${jel}${kerdes.kerdes}`.slice(0, 70);
     sor.querySelector('.cimke').title = kerdes.kerdes;
     const rud = sor.querySelector('.rud i');
     rud.style.width = `${arany * 100}%`;

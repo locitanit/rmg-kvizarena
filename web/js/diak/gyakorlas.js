@@ -18,6 +18,7 @@ import {
   felszabaditott, sorsol,
 } from '../kozos/kerdesbank.js';
 import { valaszHelyes, helyesValaszSzovege } from '../kozos/kviz.js';
+import { kepetKirak } from '../kozos/kep.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, kepernyo, uzenet, gombbal } from '../kozos/ui.js';
 
@@ -176,6 +177,8 @@ function kerdestMutat() {
   elem('gyak-sorszam').textContent = `${hol + 1}. / ${sorozat.length}`;
   elem('gyak-allas').textContent = `${joDb} jo`;
   elem('gyak-kerdes').textContent = kerdes.kerdes;
+  // A visszajelzesnel NEM toroljuk: a magyarazat olvasasa kozben is kell a kep.
+  kepetKirak(elem('gyak-kep'), kerdes.kep);
   elem('gyak-visszajelzes').hidden = true;
   elem('gyak-valaszok').hidden = false;
   elem('gyak-beviteli-mezo').innerHTML = '';

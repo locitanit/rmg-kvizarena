@@ -7,16 +7,75 @@
 //      kvizbazisban (az duplikacio lenne) - egy igazsag van: a pptx.
 
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { join, basename, dirname, extname, resolve, sep } from 'node:path';
 import { parse as yamlBeolvas } from 'yaml';
 import { KonfigHiba } from './config.js';
 
-// Az elso verzioban ezek maradnak ki (terv 13. pont):
-//   kifejtos  - gepileg nem javithato
-//   kepes     - a kep megjelenitese a masodik korben jon; kep nelkul a kerdes
-//               ertelmezhetetlen lenne, ezert inkabb fel sem toltjuk
+// Ez marad ki: a kifejtos kerdes gepileg nem javithato.
+// (A kepes kerdes a 6. fazis A resze ota felmegy, beagyazott keppel.)
 const KIHAGYOTT_TIPUSOK = new Set(['kifejtos']);
+
+// ------------------------------------------------------------------- kepek
+//
+// A kep BEAGYAZVA megy a kerdesek/{id} dokumentumba, data URI-kent (6. fazis
+// terv, A/1): nincs uj tarhely es nincs uj biztonsagi szabaly - a kep ugyanazzal
+// az olvasasi joggal jon, mint a kerdesszoveg. Cserebe a Firestore 1 MiB-os
+// dokumentumkorlatja miatt meretkorlat kell.
+const KEP_MAX_BAJT = 200 * 1024;
+const KEP_FIGYELMEZTETES_BAJT = 60 * 1024;
+const KEP_MIME = {
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml',
+};
+
+// A kvizbazis "kep" mezoje -> beagyazott kep a publikus dokumentumba.
+// A fajl a bank YAML-jenek mappajahoz kepest relativ: <kvizbazis>/<tema>/kepek/x.png.
+// Visszaad: { kep } vagy { hiba }. A { kep } mellett lehet { figyelmeztetes }.
+export function kepetBeagyaz(kep, bank) {
+  if (!kep.fajl || typeof kep.fajl !== 'string') return { hiba: 'a képnek nincs "fajl" mezője' };
+  if (!kep.felirat || typeof kep.felirat !== 'string') {
+    return { hiba: `a képnek nincs "felirat" mezője: ${kep.fajl}` };
+  }
+
+  const mappa = bank.mappa || dirname(bank.ut || '');
+  const ut = resolve(mappa, kep.fajl);
+  // Utvonal-vedelem: a kep nem mutathat ki a bank mappajabol ("..").
+  if (ut !== resolve(mappa) && !ut.startsWith(resolve(mappa) + sep)) {
+    return { hiba: `a kép útvonala kimutat a témamappából: ${kep.fajl}` };
+  }
+  if (!existsSync(ut)) return { hiba: `a kép nem található: ${kep.fajl}` };
+
+  const kiterjesztes = extname(ut).toLowerCase();
+  const mime = KEP_MIME[kiterjesztes];
+  if (!mime) {
+    return { hiba: `ismeretlen képformátum (${kiterjesztes || 'nincs kiterjesztés'}): ${kep.fajl}` };
+  }
+
+  const meret = statSync(ut).size;
+  if (meret > KEP_MAX_BAJT) {
+    return {
+      hiba: `a kép ${Math.round(meret / 1024)} KB, a határ 200 KB – kicsinyítsd: ${kep.fajl}`,
+    };
+  }
+
+  const szelesseg = Number.isInteger(kep.szelesseg) && kep.szelesseg >= 1 && kep.szelesseg <= 100
+    ? kep.szelesseg : 100;
+
+  const eredmeny = {
+    kep: {
+      adat: `data:${mime};base64,${readFileSync(ut).toString('base64')}`,
+      felirat: kep.felirat,
+      szelesseg,
+      mime,
+      meret,
+    },
+  };
+  if (meret > KEP_FIGYELMEZTETES_BAJT) {
+    eredmeny.figyelmeztetes = `${kep.fajl}: ${Math.round(meret / 1024)} KB – nagy, de felmegy`;
+  }
+  return eredmeny;
+}
 
 export const ELO_KVIZ_TIPUSOK = ['feleletvalasztos', 'igaz_hamis', 'tobb_valasztos'];
 
@@ -116,6 +175,7 @@ export function bankokBetolt(kvizbazisUt) {
       bankok.push({
         kod: fajl.replace(/\.yaml$/, ''),
         ut: join(temaUt, fajl),
+        mappa: temaUt,           // a kepek ehhez kepest relativak
         fejlec: adat,
         kerdesek: adat.kerdesek,
       });
@@ -155,7 +215,6 @@ function keverDeterminisztikusan(elemek, mag) {
 export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
   const tipus = kerdes.tipus;
   if (KIHAGYOTT_TIPUSOK.has(tipus)) return { kihagyva: 'kifejtos' };
-  if (kerdes.kep) return { kihagyva: 'kepes' };
   if (!kerdes.kerdes || typeof kerdes.kerdes !== 'string') {
     return { hiba: 'nincs kérdésszöveg' };
   }
@@ -177,6 +236,16 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
     cimkek: Array.isArray(kerdes.cimkek) ? kerdes.cimkek : [],
   };
   const kulcs = { magyarazat: kerdes.magyarazat || '' };
+
+  // A kep a PUBLIKUS resz - igy a hash is fedi: ha a tanar kicsereli a PNG-t,
+  // a kovetkezo publikalas modosultkent irja ujra.
+  let kepFigyelmeztetes = null;
+  if (kerdes.kep) {
+    const beagyazott = kepetBeagyaz(kerdes.kep, bank);
+    if (beagyazott.hiba) return { hiba: beagyazott.hiba };
+    publikus.kep = beagyazott.kep;
+    kepFigyelmeztetes = beagyazott.figyelmeztetes || null;
+  }
 
   switch (tipus) {
     case 'feleletvalasztos': {
@@ -236,7 +305,7 @@ export function kerdestAtalakit(kerdes, bank, diarendAdat, fejezetet) {
   // A hash a TELJES tartalmat fedi (publikus + kulcs), hogy a magyarazat vagy a
   // helyes valasz javitasa is ujrairast valtson ki.
   const hash = hasit(JSON.stringify([publikus, kulcs])).slice(0, 16);
-  return { id, publikus, kulcs, hash };
+  return { id, publikus, kulcs, hash, kepFigyelmeztetes };
 }
 
 // Egy bank teljes feldolgozasa.
@@ -246,6 +315,7 @@ export function bankotFeldolgoz(bank, diarendAdat) {
   const hibak = [];
   const kihagyva = { kifejtos: 0, kepes: 0 };
   const ismetlodo = [];
+  const kepek = { db: 0, osszBajt: 0, figyelmeztetesek: [] };
 
   for (const [index, nyers] of bank.kerdesek.entries()) {
     const eredmeny = kerdestAtalakit(nyers, bank, diarendAdat, fejezetet);
@@ -261,6 +331,14 @@ export function bankotFeldolgoz(bank, diarendAdat) {
       continue;
     }
     kerdesek.set(eredmeny.id, eredmeny);
+
+    if (eredmeny.publikus.kep) {
+      kepek.db++;
+      kepek.osszBajt += eredmeny.publikus.kep.meret;
+      if (eredmeny.kepFigyelmeztetes) {
+        kepek.figyelmeztetesek.push(`${bank.kod} #${index + 1}: ${eredmeny.kepFigyelmeztetes}`);
+      }
+    }
   }
 
   const temakorSzamlalo = new Map();
@@ -273,6 +351,7 @@ export function bankotFeldolgoz(bank, diarendAdat) {
     kerdesek,
     hibak,
     kihagyva,
+    kepek,
     ismetlodo,
     bankDokumentum: {
       cim: bank.fejlec.tananyag || bank.kod,
