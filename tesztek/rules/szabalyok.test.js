@@ -137,6 +137,22 @@ describe('A diak megprobalja - es elbukik', () => {
     }));
   });
 
+  it('17/b. nem csatlakozhat elore beirt (kedvezo) osszidovel', async () => {
+    // Az osszido a rangsor holtversenyet donti - a nulla nala a legjobb ertek,
+    // ezert ugyanugy vedeni kell, mint a pontot.
+    const db = mint(kornyezet, 'diak3');
+    await assertFails(setDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak3`), {
+      becenev: 'Csongi', azonosito: 'szabo_c07', pont: 0, helyes_db: 0,
+      valasz_ido_osszeg_ms: -5000,
+    }));
+  });
+
+  it('17/c. nem irhatja at kesobb a sajat osszidejet', async () => {
+    const db = mint(kornyezet, 'diak1');
+    await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak1`),
+      { valasz_ido_osszeg_ms: 0 }));
+  });
+
   it('18. nem irhatja at a kerdesbankot', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertFails(updateDoc(doc(db, 'kerdesek/adatbaziskezeles_icdl_1'), { kerdes: 'atirva' }));
@@ -321,6 +337,7 @@ describe('Amit a diaknak tudnia KELL', () => {
     const db = mint(kornyezet, 'diak3');
     await assertSucceeds(setDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak3`), {
       becenev: 'Csongi', azonosito: 'szabo_c07', pont: 0, helyes_db: 0,
+      valasz_ido_osszeg_ms: 0, csatlakozott: serverTimestamp(),
     }));
   });
 
@@ -405,6 +422,12 @@ describe('Amit a tanarnak tudnia kell', () => {
   it('pontozhat a sajat kvizeben', async () => {
     const db = mint(kornyezet, 'tanar1');
     await assertSucceeds(updateDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak1`), { pont: 240 }));
+  });
+
+  it('novelheti a jatekos osszidejet (a rangsor holtversenyehez)', async () => {
+    const db = mint(kornyezet, 'tanar1');
+    await assertSucceeds(updateDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak1`),
+      { valasz_ido_osszeg_ms: 12500 }));
   });
 
   it('olvassa a beerkezett valaszokat', async () => {

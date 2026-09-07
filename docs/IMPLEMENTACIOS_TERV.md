@@ -191,9 +191,11 @@ kvizek/{kvizId}
 
 kvizek/{kvizId}/jatekosok/{uid}
   becenev, azonosito
-  pont: 0
-  helyes_db: 0
-  utolso_valasz_ms: 0             # a legutóbbi reakcióidő, a holtverseny eldöntésére
+  pont: 0                         # TÁJÉKOZTATÓ – a sorrendet nem ez adja (6.2)
+  helyes_db: 0                    # ELSŐDLEGES rendezés, csökkenő
+  valasz_ido_osszeg_ms: 0         # a teljes kvíz válaszideje – a holtversenyt ez dönti
+  utolso_valasz_ms: 0             # a legutóbbi reakcióidő (a diák képernyőjén hasznos)
+  csatlakozott: <ts>              # a harmadik döntő, hogy a sorrend determinisztikus legyen
   helyezes: 3                     # a kvíz végén beírva
   csillag: 1                      # a kvíz végén beírva
 
@@ -411,7 +413,33 @@ A `kvizek/{kvizId}` dokumentum `allapot` és `aktualis` mezője a közös igazs�
 kliens `onSnapshot`-tal figyeli. **Egyetlen dokumentum figyelése 15 diáknál 15 olvasás
 állapotváltásonként** — ez fér bele a keretbe.
 
-### 6.2 Pontozás egy kérdésen belül
+### 6.2 Pontozás és rangsorolás
+
+**A rangsort (a tanár döntése, 2026-09-07) három lépcső adja:**
+
+1. **A jó válaszok száma** (`helyes_db`), csökkenő.
+2. Holtversenynél **a válaszidők összege** (`valasz_ido_osszeg_ms`), növekvő —
+   a kevesebb a jobb.
+3. Ha ez is egyenlő: a belépés sorrendje (`csatlakozott`), hogy a sorrend
+   determinisztikus legyen.
+
+> **Miért nem a pont dönt.** A régi szabályban a gyorsasági pont nem csak a
+> holtversenyt döntötte el, hanem a sorrendet is átírta: 9 jó válasz villámgyorsan
+> (9 × 150 = 1350) megelőzte a 10 jó választ lassan (10 × 100 = 1000). Az új
+> szabályban **több jó válasz mindig előrébb visz**, és a gyorsaság csak holtversenyt
+> dönt — akkor is **a teljes kvíz idejével**, nem az utolsó kérdésével.
+
+**A válaszidő:** a kérdés indulásától (`kerdes_indult` szerver-időbélyeg) a válasz
+`kuldve` szerver-időbélyegéig. **A nem válaszolt kérdés a teljes időlimittel számít**,
+így a „kihagyom, hogy ne rontsa az időmet" trükk nem működik. A rossz válasz ideje is
+beleszámít: az összeg a gyorsaságot méri, a helyességet a `helyes_db`.
+
+**Holtverseny a helyezésben:** azonos `helyes_db` ÉS azonos összidő = azonos helyezés,
+a következő helyezés kimarad (1, 1, 3). A csillag-dobogón így két első helyezett is
+lehet, mindkettő 3 csillaggal — ez elfogadott.
+
+**A pont megmarad, de csak tájékoztató.** Látszik a diák képernyőjén, és belőle jön az
+`atlag_pont` a statisztikában, de **a rangsort sehol nem a pont adja**. A képlet:
 
 ```
 alappont      = 100, ha helyes; 0, ha nem
@@ -419,13 +447,9 @@ gyorsasagi    = 0…50, lineárisan: (hátralévő idő / időlimit) * 50
 kérdéspont    = alappont + gyorsasagi        (max 150)
 ```
 
-> **Szándékos eltérés a Kahoottól:** ott a gyorsaság a pont felénél is többet nyom, ami
-> kapkodásra tanít. Itt a tudás 100 pont, a sebesség maximum 50 — aki gondolkodik és jól
-> válaszol, mindig ver egy gyorsan hibázót.
-
-> **Pontosítás (3. fázis):** a gyorsasági pont **csak helyes válaszra** jár. A fenti
-> képlet szó szerint a rossz válaszra is adná (0 + gyorsasági), az viszont a gyors
-> találgatást jutalmazná — épp azt, amit el akarunk kerülni. Rossz válasz: 0 pont.
+A gyorsasági pont **csak helyes válaszra** jár (3. fázisbeli pontosítás): a képlet szó
+szerint a rossz válaszra is adná (0 + gyorsasági), az viszont a gyors találgatást
+jutalmazná. Rossz válasz: 0 pont.
 
 Többválasztósnál részpont nincs (mindet el kell találni). Rövid válasznál ékezet- és
 kisbetű-független egyezés, a bankban felsorolt bármelyik elfogadott alakkal.

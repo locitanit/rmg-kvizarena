@@ -148,6 +148,10 @@ label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric:
 
 .cimkesor { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
 
+/* Elo ranglista: a jo valaszok szama es az osszido a fo adat, a pont mellette
+   halvanyabban - a sorrendet mar nem a pont adja. */
+.jatekossor .pont i { font-style: normal; font-size: 0.85em; color: var(--halvany); }
+
 .jelolo {
   padding: 2px 8px;
   font-size: 0.75rem;

@@ -232,15 +232,19 @@ service cloud.firestore {
         allow read: if belepett()
           && (tanar() || tagja(kvizDok(kvizId).osztalyId));
 
-        // A diak felveszi magat a jatekba - nulla ponttal, es csak a SAJAT
-        // osztalya kvizehez.
+        // A diak felveszi magat a jatekba - nulla ponttal, nulla osszidovel, es
+        // csak a SAJAT osztalya kvizehez. Az osszidot (valasz_ido_osszeg_ms) a
+        // rangsor holtversenye hasznalja, ezert ugyanugy vedeni kell, mint a
+        // pontot: a diak csak nullaval hozhatja letre, novelni csak a tanar tudja.
         allow create: if sajat(uid)
           && tagja(kvizDok(kvizId).osztalyId)
           && request.resource.data.keys().hasOnly(
                ['becenev', 'azonosito', 'pont', 'helyes_db', 'utolso_valasz_ms',
-                'utolso_helyes', 'helyezes', 'csillag'])
+                'utolso_helyes', 'helyezes', 'csillag',
+                'valasz_ido_osszeg_ms', 'csatlakozott'])
           && request.resource.data.pont == 0
-          && request.resource.data.helyes_db == 0;
+          && request.resource.data.helyes_db == 0
+          && request.resource.data.get('valasz_ido_osszeg_ms', 0) == 0;
 
         // Pontot es csillagot KIZAROLAG a kvizt inditott tanar irhat.
         allow update, delete: if tanar()

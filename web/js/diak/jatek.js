@@ -8,7 +8,7 @@ import {
   doc, collection, getDoc, setDoc, onSnapshot, serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { auth, db } from '../firebase.js';
-import { ALLAPOTOK, hatralevoMasodperc } from '../kozos/kviz.js';
+import { ALLAPOTOK, hatralevoMasodperc, masodpercben } from '../kozos/kviz.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, kepernyo, uzenet } from '../kozos/ui.js';
 
@@ -45,6 +45,9 @@ export async function csatlakozas(kvizIdParam, pinBeirt, tag, visszaHivas) {
       azonosito: tag.azonosito,
       pont: 0,
       helyes_db: 0,
+      // A sorrendet a jo valaszok szama donti, holtversenynel ez az osszido.
+      valasz_ido_osszeg_ms: 0,
+      csatlakozott: serverTimestamp(),
     });
   }
 
@@ -258,7 +261,8 @@ function vegeredmenytMutat() {
   elem('vege-helyezes').textContent = helyezes ? `${helyezes}. helyezés` : 'Vége';
   elem('vege-pont').textContent = `${sajatAdat?.pont || 0} pont`;
   elem('vege-reszletek').textContent =
-    `${sajatAdat?.helyes_db || 0} jó válasz ${kviz.kerdesIdk.length} kérdésből`;
+    `${sajatAdat?.helyes_db || 0} jó válasz ${kviz.kerdesIdk.length} kérdésből`
+    + ` · ${masodpercben(sajatAdat?.valasz_ido_osszeg_ms)}`;
   allastFrissit();
 }
 
