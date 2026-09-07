@@ -32,16 +32,25 @@ Nyisd meg újra a pultot. Belépés után felajánlja:
 *„A(z) … kvíz az 5. kérdésnél tart. Folytatod?"* A diákok addig egy várakozó képernyőn
 állnak, nem esnek ki.
 
-## Pontozás
+## Sorrend és pontozás
 
-```
-helyes válasz          100 pont
-gyorsaság            0–50 pont (a hátralévő idővel arányosan)
-rossz válasz            0 pont
-```
+**A sorrendet a jó válaszok száma dönti.** Aki többet tud, mindig előrébb végez —
+akkor is, ha lassabb volt.
 
-Így aki gondolkodik és jól válaszol, mindig ver egy gyorsan hibázót. Többválaszosnál
-részpont nincs.
+1. **Hány jó válasz** — ez az első.
+2. **Holtversenynél: az összes válaszidő összege**, a kevesebb a jobb. A **teljes**
+   kvíz ideje számít, nem az utolsó kérdésé.
+3. Ha ez is egyenlő: aki előbb csatlakozott.
+
+**A kihagyott kérdés a teljes időlimittel számít**, tehát nem éri meg „nem
+válaszolok, hogy jobb legyen az időm".
+
+Két diák azonos jó válasszal ÉS azonos összidővel **azonos helyezést** kap (1., 1., 3.) —
+ilyenkor mindkettő megkapja a dobogós csillagot.
+
+A **pont** (100 a jó válaszért + legfeljebb 50 gyorsaságért) megmarad, látszik is a
+diákok telefonján és a CSV-ben, de **csak tájékoztató**: a sorrendet és a csillagokat
+nem ez adja. Többválaszosnál részpont nincs.
 
 ## Csillagok
 

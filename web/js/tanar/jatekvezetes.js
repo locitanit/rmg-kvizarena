@@ -12,8 +12,10 @@ import {
   serverTimestamp, increment,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { auth, db } from '../firebase.js';
-import { ALLAPOTOK, pontszam, valaszHelyes, helyesValaszSzovege, pintGeneral, hatralevoMasodperc }
-  from '../kozos/kviz.js';
+import {
+  ALLAPOTOK, pontszam, valaszHelyes, helyesValaszSzovege, pintGeneral,
+  hatralevoMasodperc, rangsorol, helyezesek, masodpercben,
+} from '../kozos/kviz.js';
 import { kulcsokatBetolt } from '../kozos/kerdesbank.js';
 import {
   csillagokatSzamol, temakoroketOsszead, ALAP_BEALLITASOK,
@@ -161,14 +163,17 @@ function kotesek() {
 
 // Mentokotel, ha a Firestore-ba nem sikerult kiirni (terv 9.3).
 function vegeredmenytCsvbe() {
-  const rendezett = [...jatekosok.values()]
-    .sort((a, b) => (b.pont || 0) - (a.pont || 0));
+  const rendezett = rangsorol([...jatekosok.values()]);
+  const helyek = helyezesek(rendezett);
   csvLetolt(
     `vegeredmeny_${fajlnevre(kviz.cim)}_${maiDatum()}`,
-    ['helyezés', 'azonosító', 'becenév', 'pont', 'jó válasz', 'kérdés', 'százalék'],
+    ['helyezés', 'azonosító', 'becenév', 'jó válasz', 'kérdés', 'százalék',
+     'összidő (mp)', 'pont'],
     rendezett.map((j, i) => [
-      j.helyezes || i + 1, j.azonosito, j.becenev, j.pont || 0, j.helyes_db || 0,
+      j.helyezes || helyek[i], j.azonosito, j.becenev, j.helyes_db || 0,
       kerdesek.length, szazalek((j.helyes_db || 0) / Math.max(1, kerdesek.length)),
+      Number.isFinite(j.valasz_ido_osszeg_ms) ? (j.valasz_ido_osszeg_ms / 1000).toFixed(1) : '',
+      j.pont || 0,
     ])
   );
 }
@@ -246,7 +251,9 @@ function visszaszamlalotIndit() {
 }
 
 function jatekosListakatFrissit() {
-  const rendezett = [...jatekosok.values()].sort((a, b) => (b.pont || 0) - (a.pont || 0));
+  // A koztes allas ugyanazt a logikat mutassa, mint a vegeredmeny.
+  const rendezett = rangsorol([...jatekosok.values()]);
+  const helyek = helyezesek(rendezett);
 
   elem('lobbi-db').textContent = jatekosok.size;
   elem('lobbi-lista').innerHTML = rendezett.length
@@ -263,9 +270,12 @@ function jatekosListakatFrissit() {
     sor.className = 'jatekossor';
     sor.innerHTML = '<span class="helyezes"></span><span class="nev"></span>' +
                     '<span class="pont"></span>';
-    sor.querySelector('.helyezes').textContent = `${index + 1}.`;
+    sor.querySelector('.helyezes').textContent = `${helyek[index]}.`;
     sor.querySelector('.nev').textContent = jatekos.becenev || jatekos.azonosito;
-    sor.querySelector('.pont').textContent = `${jatekos.pont || 0} pont`;
+    sor.querySelector('.pont').innerHTML = '<b></b><i></i>';
+    sor.querySelector('.pont b').textContent =
+      `${jatekos.helyes_db || 0} jó · ${masodpercben(jatekos.valasz_ido_osszeg_ms)}`;
+    sor.querySelector('.pont i').textContent = ` ${jatekos.pont || 0} pont`;
     if (jatekos.utolso_helyes !== undefined) {
       sor.classList.add(jatekos.utolso_helyes ? 'jo' : 'rossz');
     }
@@ -339,6 +349,9 @@ async function kerdestLezar() {
       utolso_helyes: helyes,
       utolso_pont: pont,
       utolso_valasz_ms: valasz ? Math.max(0, reakcioMs) : null,
+      // A nem valaszolt kerdes a TELJES idolimittel szamit (a reakcioMs mar igy
+      // jon), kulonben a kihagyas javitana a diak osszidejet.
+      valasz_ido_osszeg_ms: increment(Math.max(0, reakcioMs)),
     });
 
     for (const index of megjeloltIndexek(kerdes, valasz?.valasz)) {
@@ -434,11 +447,8 @@ async function kviztBefejez() {
   elem('jatek-kovetkezo').disabled = true;
   elem('jatek-megszakitas').disabled = true;
   clearInterval(visszaszamlaloOra);
-  const rendezett = [...jatekosok.values()].sort((a, b) => {
-    if ((b.pont || 0) !== (a.pont || 0)) return (b.pont || 0) - (a.pont || 0);
-    // Holtversenynel a gyorsabb reakcioido dont (terv 2. pont).
-    return (a.utolso_valasz_ms ?? 1e9) - (b.utolso_valasz_ms ?? 1e9);
-  });
+  const rendezett = rangsorol([...jatekosok.values()]);
+  const helyek = helyezesek(rendezett);
 
   const { diakonkent, kerdesenkent } = javitasiTerkep();
 
@@ -454,7 +464,7 @@ async function kviztBefejez() {
   const csillagSorok = [];
 
   rendezett.forEach((jatekos, index) => {
-    const helyezes = index + 1;
+    const helyezes = helyek[index];
     const sajat = diakonkent.get(jatekos.uid) || { temakorok: {}, jo_db: 0 };
     const korabbi = korabbiStatok.get(jatekos.uid);
     const ujTemakorAllas = temakoroketOsszead(korabbi?.temakor_teljesitmeny, sajat.temakorok);
@@ -557,7 +567,8 @@ function vegeredmenytMutat() {
     sor.querySelector('.nev').textContent = jatekos.becenev || jatekos.azonosito;
     const csillag = jatekos.csillag ? ' ' + '★'.repeat(jatekos.csillag) : '';
     sor.querySelector('.pont').textContent =
-      `${jatekos.pont || 0} pont – ${jatekos.helyes_db || 0}/${kerdesek.length} jó${csillag}`;
+      `${jatekos.helyes_db || 0}/${kerdesek.length} jó · `
+      + `${masodpercben(jatekos.valasz_ido_osszeg_ms)} · ${jatekos.pont || 0} pont${csillag}`;
     lista.append(sor);
   });
 }

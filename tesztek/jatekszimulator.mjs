@@ -88,6 +88,7 @@ async function egyKvizt(db, uid, diak, index, marJatszott) {
   const kvizDok = await getDoc(doc(db, `kvizek/${kvizId}`));
   await setDoc(doc(db, `kvizek/${kvizId}/jatekosok/${uid}`), {
     becenev: diak.becenev, azonosito: diak.azonosito, pont: 0, helyes_db: 0,
+    valasz_ido_osszeg_ms: 0, csatlakozott: serverTimestamp(),
   });
   console.log(`[${diak.becenev}] csatlakozott, PIN=${kvizDok.data().pin}`);
 
@@ -140,8 +141,10 @@ async function egyKvizt(db, uid, diak, index, marJatszott) {
   });
 
   const sajat = (await getDoc(doc(db, `kvizek/${kvizId}/jatekosok/${uid}`))).data();
-  console.log(`[${diak.becenev}] VEGE: ${sajat.pont} pont, ${sajat.helyes_db} jo, ` +
-              `${sajat.helyezes}. helyezes, ${sajat.csillag ?? '?'} csillag`);
+  const osszido = ((sajat.valasz_ido_osszeg_ms ?? 0) / 1000).toFixed(1);
+  console.log(`[${diak.becenev}] VEGE: ${sajat.helyes_db} jo, ${osszido} mp osszido, ` +
+              `${sajat.helyezes}. helyezes, ${sajat.csillag ?? '?'} csillag ` +
+              `(${sajat.pont} pont - tajekoztato)`);
   await varj(2000);
 }
 

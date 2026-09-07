@@ -11,10 +11,50 @@ export const ALLAPOTOK = {
   VEGE: 'vege',
 };
 
-// Terv 6.2. A tudas 100 pont, a sebesseg legfeljebb 50 - igy aki gondolkodik es
-// jol valaszol, mindig ver egy gyorsan hibazot.
+// Terv 6.2. A pont TAJEKOZTATO: latszik a diak kepernyojen, es belole jon az
+// atlag_pont a statisztikaban - de a SORRENDET nem ez adja, hanem a rangsorol().
+// A tudas 100 pont, a sebesseg legfeljebb 50.
 export const ALAPPONT = 100;
 export const GYORSASAGI_MAX = 50;
+
+// A vegso sorrend (terv 6.2, 2026-09-07-i valtozat).
+//
+// Miert nem a pont dont: a gyorsasagi pont a sorrendet is atirta, nem csak a
+// holtversenyt - 9 jo valasz villamgyorsan (9x150 = 1350) tobb volt, mint 10 jo
+// lassan (10x100 = 1000). Az uj szabaly szerint TOBB JO VALASZ MINDIG ELOREBB
+// visz, es a gyorsasag csak holtversenyt dont - akkor is a TELJES kviz idejevel,
+// nem az utolso kerdesevel.
+//
+// Tiszta fuggveny, Firestore nelkul: {helyes_db, valasz_ido_osszeg_ms,
+// csatlakozott} mezoket olvas. A hianyzo osszido (a C resz elott indult,
+// felbeszakadt kviz) a lista vegere kerul, de nem dob hibat.
+export function rangsorol(jatekosok) {
+  return [...jatekosok].sort((a, b) =>
+    (b.helyes_db || 0) - (a.helyes_db || 0)
+    || (a.valasz_ido_osszeg_ms ?? Infinity) - (b.valasz_ido_osszeg_ms ?? Infinity)
+    || (a.csatlakozott?.toMillis?.() ?? 0) - (b.csatlakozott?.toMillis?.() ?? 0));
+}
+
+// Helyezesek a rangsorolt listahoz. Azonos jo-valasz-szam ES azonos osszido =
+// azonos helyezes, es a kovetkezo helyezes kimarad (1, 1, 3) - a csillag-dobogon
+// igy ket elso helyezett is lehet.
+export function helyezesek(rendezett) {
+  const egyforma = (a, b) => (a.helyes_db || 0) === (b.helyes_db || 0)
+    && (a.valasz_ido_osszeg_ms ?? Infinity) === (b.valasz_ido_osszeg_ms ?? Infinity);
+
+  let elozoHelyezes = 0;
+  return rendezett.map((jatekos, index) => {
+    if (index > 0 && egyforma(jatekos, rendezett[index - 1])) return elozoHelyezes;
+    elozoHelyezes = index + 1;
+    return elozoHelyezes;
+  });
+}
+
+// "48,2 mp" - magyar tizedesvesszovel, egy tizedessel.
+export function masodpercben(ms) {
+  if (!Number.isFinite(ms)) return '–';
+  return `${(ms / 1000).toFixed(1).replace('.', ',')} mp`;
+}
 
 // Gyorsasagi pont CSAK helyes valaszra jar. A terv keplete szo szerint a rossz
 // valaszra is adna (0 + gyorsasagi), az viszont a gyors talalgatast jutalmazna.
