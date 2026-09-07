@@ -169,7 +169,15 @@ kerdesek/{kerdesId}               # kerdesId = bankKod + "_" + a kérdésszöveg
   parok_jobb_kevert: [...]
   nehezseg: 1..3
   cimkek: [...]
-  # FIGYELEM: a helyes válasz NINCS ebben a dokumentumban
+  kep: {                          # OPCIONÁLIS, csak képes kérdésnél (6. fázis A)
+    adat: "data:image/png;base64,…",   # a fájl BEÁGYAZVA — nincs külön tárhely,
+    felirat: "Négy hálózati ikon…",    # így nem kell új biztonsági szabály sem
+    szelesseg: 50,                     # a szövegtükör %-a, 1–100
+    mime: "image/png",
+    meret: 12345                       # bájt (diagnosztika; a publikáló 200 KB fölött hibát ad)
+  }
+  # FIGYELEM: a helyes válasz NINCS ebben a dokumentumban. A kép sem árulhatja
+  # el a választ — ez a kérdésbank felelőssége (kvizbazis/SEMA.md 1. szabálya).
 
 kulcsok/{kerdesId}                # csak tanár olvashatja (lásd 3. pont)
   helyes: [2] | "igaz" | ["ciklusváltozó","számláló"] | [{bal,jobb}...]
@@ -761,7 +769,6 @@ szabályok védik, nem a titkosság.
 ## 13. Ami szándékosan NEM része az első verziónak
 
 - Házi feladatként kiadható, határidős kvíz (később, ha kell)
-- Képes kérdések (a kvízbázis `kep` mezője) — a második körben
 - Párosítós és rövid válaszos kérdés az élő kvízben (elsőre csak feleletválasztós,
   igaz/hamis és többválasztós; a másik kettő a gyakorló módban már mehet)
 - Osztályok közötti verseny, örökranglista

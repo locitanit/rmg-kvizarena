@@ -334,6 +334,7 @@ async function elonezet(esemeny) {
           `<div class="cimkesor">` +
             `<span class="jelolo">${TIPUS_NEVE[kerdes.tipus] || kerdes.tipus}</span>` +
             `<span class="jelolo">nehézség ${kerdes.nehezseg}</span>` +
+            (kerdes.kep ? `<span class="jelolo">\u{1F4F7} képes</span>` : '') +
             ((kerdes.cimkek || []).includes('hivatalos_minta')
               ? '<span class="jelolo minta">ICDL-minta</span>' : '') +
             (Number.isInteger(kerdes.dia) ? `<span class="jelolo">${kerdes.dia}. dia</span>` : '') +

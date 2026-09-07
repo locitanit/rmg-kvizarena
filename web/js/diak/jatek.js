@@ -11,6 +11,7 @@ import { auth, db } from '../firebase.js';
 import { ALLAPOTOK, hatralevoMasodperc } from '../kozos/kviz.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, kepernyo, uzenet } from '../kozos/ui.js';
+import { kepetKirak } from '../kozos/kep.js';
 
 let kvizId = null;
 let kviz = null;
@@ -132,6 +133,8 @@ function kerdestMutat() {
 
   elem('jatek-sorszam').textContent = `${kviz.aktualis + 1}. / ${kviz.kerdesIdk.length}`;
   elem('jatek-kerdes').textContent = kerdes.kerdes;
+  // A kep a "valasz elkuldve" allapotban is lathato marad.
+  kepetKirak(elem('jatek-kep'), kerdes.kep);
   elem('jatek-elkuldve').hidden = !mar;
   elem('jatek-valaszok').hidden = mar;
   elem('jatek-kuldes').hidden = mar || kerdes.tipus !== 'tobb_valasztos';
