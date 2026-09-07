@@ -148,6 +148,11 @@ label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric:
 
 .cimkesor { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
 
+/* A cimkeszuro a harom mod FOLOTT szur, ezert a beallitasok kozott a helye. */
+.cimkeszuro { display: block; margin-bottom: 10px; }
+.cimkeszuro > span { display: block; margin-bottom: 4px; }
+.cimkeszuro .pipa { margin-top: 6px; }
+
 .jelolo {
   padding: 2px 8px;
   font-size: 0.75rem;
@@ -156,6 +161,9 @@ label.pipa .db { color: var(--halvany); font-size: 0.8rem; font-variant-numeric:
   border: 1px solid var(--keret);
   border-radius: 20px;
 }
+
+/* A hivatalos ICDL-mintakerdes kiemelve: a tanar ranezesre lassa a listaban. */
+.jelolo.minta { color: var(--fo); border-color: var(--fo); font-weight: 600; }
 
 .elonezetsor .helyes { font-size: 0.88rem; color: var(--jo); }
 

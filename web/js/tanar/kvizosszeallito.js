@@ -6,6 +6,7 @@
 import {
   bankokListaja, diasortBetolt, bankKerdesei, kulcsokatBetolt, felszabaditasokBetolt,
   felszabaditott, szur, sorsol, helyesValaszSzovege, TIPUS_NEVE,
+  cimkeketOsszeszamol, cimkeNeve,
 } from '../kozos/kerdesbank.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { elem, uzenet, gombbal } from '../kozos/ui.js';
@@ -63,7 +64,8 @@ function kotesek() {
   });
 
   for (const azonosito of ['kviz-dia-tol', 'kviz-dia-ig', 'kviz-nehezseg',
-                           'kviz-elo-tipusok', 'kviz-kihagy-felszabaditott', 'kviz-db']) {
+                           'kviz-elo-tipusok', 'kviz-kihagy-felszabaditott', 'kviz-db',
+                           'kviz-cimke', 'kviz-cimke-nelkul']) {
     elem(azonosito).oninput = () => {
       if (azonosito.startsWith('kviz-dia')) csuszkatFrissit(azonosito);
       szamlalotFrissit();
@@ -119,14 +121,21 @@ async function kviztInditaniGomb(esemeny) {
 // Beszedes cim, hogy az archivumban is vissza lehessen keresni.
 function kvizCime(valogatas) {
   const alap = aktualisBank.cim;
-  if (valogatas.mod === 'dia') return `${alap} - ${valogatas.dia_tol}-${valogatas.dia_ig}. dia`;
-  if (valogatas.mod === 'fejezet') {
+  let cim;
+  if (valogatas.mod === 'dia') {
+    cim = `${alap} - ${valogatas.dia_tol}-${valogatas.dia_ig}. dia`;
+  } else if (valogatas.mod === 'fejezet') {
     const cimek = valogatas.fejezetek
       .map((i) => aktualisDiasor?.fejezetek?.[i]?.cim)
       .filter(Boolean);
-    return `${alap} - ${cimek.join(', ') || 'fejezetek'}`;
+    cim = `${alap} - ${cimek.join(', ') || 'fejezetek'}`;
+  } else {
+    cim = `${alap} - ${valogatas.temakorok.join(', ') || 'temakorok'}`;
   }
-  return `${alap} - ${valogatas.temakorok.join(', ') || 'temakorok'}`;
+  if (valogatas.cimke) {
+    cim += `${valogatas.cimke_nelkul ? ' - kihagyva: ' : ' - csak: '}${cimkeNeve(valogatas.cimke)}`;
+  }
+  return cim;
 }
 
 async function bankotValaszt(bankKod) {
@@ -160,6 +169,7 @@ async function bankotValaszt(bankKod) {
   diaCsuszkatBeallit();
   fejezeteketKirak();
   temakorokKirak();
+  cimkeketKirak();
 
   // Diasor nelkul a dia- es fejezet-mod ertelmetlen: temakorre valtunk.
   const diaGomb = document.querySelector('.modgomb[data-mod="dia"]');
@@ -219,6 +229,24 @@ function temakorokKirak() {
   }
 }
 
+// A bankban eleg gyakori cimkek legorduloja. Ha egy sincs, a szuro rejtve marad -
+// a legtobb banknak nincs ertelmes cimkezese.
+function cimkeketKirak() {
+  const legordulo = elem('kviz-cimke');
+  const cimkek = cimkeketOsszeszamol(kerdesek);
+
+  legordulo.innerHTML = '<option value="">– mind –</option>';
+  for (const { cimke, db } of cimkek) {
+    const sor = document.createElement('option');
+    sor.value = cimke;
+    sor.textContent = `${cimkeNeve(cimke)} (${db})`;
+    legordulo.append(sor);
+  }
+  legordulo.value = '';
+  elem('kviz-cimke-nelkul').checked = false;
+  elem('kviz-cimkeszuro').hidden = !cimkek.length;
+}
+
 function pipa(csoport, ertek, cimke, db) {
   const sor = document.createElement('label');
   sor.className = 'pipa';
@@ -244,6 +272,8 @@ function valogatastOsszeszed() {
     fejezetek: bepipalt('fejezet').map(Number),
     temakorok: bepipalt('temakor'),
     nehezseg_max: Number(elem('kviz-nehezseg').value),
+    cimke: elem('kviz-cimke').value || null,
+    cimke_nelkul: elem('kviz-cimke-nelkul').checked,
     csak_elo: elem('kviz-elo-tipusok').checked,
     kihagy_felszabaditott: elem('kviz-kihagy-felszabaditott').checked,
     felszabaditasok,
@@ -304,6 +334,8 @@ async function elonezet(esemeny) {
           `<div class="cimkesor">` +
             `<span class="jelolo">${TIPUS_NEVE[kerdes.tipus] || kerdes.tipus}</span>` +
             `<span class="jelolo">nehézség ${kerdes.nehezseg}</span>` +
+            ((kerdes.cimkek || []).includes('hivatalos_minta')
+              ? '<span class="jelolo minta">ICDL-minta</span>' : '') +
             (Number.isInteger(kerdes.dia) ? `<span class="jelolo">${kerdes.dia}. dia</span>` : '') +
             `<span class="jelolo">${kerdes.temakor || ''}</span>` +
           `</div>` +
