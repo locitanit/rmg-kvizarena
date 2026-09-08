@@ -102,12 +102,16 @@ async function kviztInditaniGomb(esemeny) {
     return uzenet('kviz-uzenet', 'Nincs miből sorsolni. Bővítsd a tartományt vagy a nehézséget.');
   }
 
+  // A "felszabaditasok" egy Map (a szurohoz kell), de a Firestore nem tud Map-et
+  // menteni ("invalid-argument") - a kviz dokumentumaba nem is kell.
+  const { felszabaditasok: _nemMentendo, ...mentendoValogatas } = valogatas;
+
   await gombbal(esemeny.target, async () => {
     try {
       await kviztIndit({
         osztalyId,
         cim: kvizCime(valogatas),
-        valogatas,
+        valogatas: mentendoValogatas,
         kisorsolt: sorsol(talalatok, valogatas.db),
         idoLimit: valogatas.ido_limit,
       });
