@@ -405,7 +405,7 @@ function diakotMutat(tag) {
       bejegyzes.dobogo ? `dobogó ${bejegyzes.dobogo}` : null,
       bejegyzes.csucs ? 'csúcs 1' : null,
       bejegyzes.mesterfok ? `mesterfok ${bejegyzes.mesterfok}` : null,
-      bejegyzes.kitartas ? 'kitartás 1' : null,
+      bejegyzes.kitartas ? 'kitartás 1' : null,   // csak a torles elotti naplobejegyzesekben
     ].filter(Boolean).join(', ') || 'nem kapott';
     const sor = document.createElement('div');
     sor.className = 'jatekossor';
@@ -462,9 +462,9 @@ function diaklapCsv() {
 
 // -------------------------------------------------------- csillagbeallitas
 
-const SZAM_MEZOK = ['csucs_min_kviz', 'mesterfok_min_kerdes', 'kitartas_gyakorisag',
+const SZAM_MEZOK = ['csucs_min_kviz', 'mesterfok_min_kerdes',
                     'kviz_max_csillag', 'jegy_kuszob'];
-const PIPA_MEZOK = ['dobogo_be', 'csucs_be', 'csucs_dontetlen_is', 'mesterfok_be', 'kitartas_be'];
+const PIPA_MEZOK = ['dobogo_be', 'csucs_be', 'csucs_dontetlen_is', 'mesterfok_be'];
 
 async function beallitasokatBetolt() {
   try {

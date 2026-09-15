@@ -118,22 +118,13 @@ describe('Mesterfok', () => {
   });
 });
 
-describe('Kitartas', () => {
-  it('minden 5. kvizen jar', () => {
-    for (const [korabbi, varhato] of [[3, 0], [4, 1], [8, 0], [9, 1]]) {
-      const e = csillagokatSzamol(alap({
-        korabbiStat: { szemelyes_csucs: 0, kvizek_szama: korabbi, mesterfok: [] },
-      }));
-      expect(e.kitartas, `${korabbi} korabbi kviz`).toBe(varhato);
-    }
-  });
-
-  it('a gyakorisag atirhato', () => {
+describe('Reszvetel', () => {
+  it('a puszta reszvetelert nem jar csillag (az 5. kvizen sem)', () => {
     const e = csillagokatSzamol(alap({
-      korabbiStat: { szemelyes_csucs: 0, kvizek_szama: 2, mesterfok: [] },
-      beallitasok: { kitartas_gyakorisag: 3 },
+      korabbiStat: { szemelyes_csucs: 0.9, kvizek_szama: 4, mesterfok: [] }, // 50% < 90%
     }));
-    expect(e.kitartas).toBe(1);
+    expect(e.ossz).toBe(0);
+    expect(e.reszletek).toEqual([]);
   });
 });
 
@@ -141,10 +132,10 @@ describe('Kvizenkenti felso hatar', () => {
   it('legfeljebb 4 csillag egy kvizert', () => {
     const e = csillagokatSzamol(alap({
       jatekos: { helyezes: 1, helyes_db: 12 },                       // dobogo 3
-      korabbiStat: { szemelyes_csucs: 0.5, kvizek_szama: 4, mesterfok: [] }, // csucs 1 + kitartas 1
+      korabbiStat: { szemelyes_csucs: 0.5, kvizek_szama: 4, mesterfok: [] }, // csucs 1
       ujTemakorAllas: { egyik: { jo: 8, ossz: 8 } },                 // mesterfok 1
     }));
-    expect(e.nyers).toBe(6);
+    expect(e.nyers).toBe(5);
     expect(e.ossz).toBe(4);
     expect(e.levagva).toBe(true);
   });
@@ -156,7 +147,7 @@ describe('Kvizenkenti felso hatar', () => {
       ujTemakorAllas: { egyik: { jo: 8, ossz: 8 } },
       beallitasok: { kviz_max_csillag: 10 },
     }));
-    expect(e.ossz).toBe(6);
+    expect(e.ossz).toBe(5);
   });
 });
 
@@ -200,12 +191,11 @@ describe('Harom egymas utani kviz - kezzel utanaszamolva', () => {
       korabbiStat: stat, ujTemakorAllas: ujAllas, beallitasok: {},
     });
     // Kezzel: dobogo 3. hely = 1 | csucs 80% > 50% = 1 |
-    //         mesterfok urlapok 8/12 = 67% -> nem | kitartas 5. kviz = 1  => 3
+    //         mesterfok urlapok 8/12 = 67% -> nem                          => 2
     expect(e.dobogo).toBe(1);
     expect(e.csucs).toBe(1);
     expect(e.mesterfok).toBe(0);
-    expect(e.kitartas).toBe(1);
-    expect(e.ossz).toBe(3);
+    expect(e.ossz).toBe(2);
 
     csillagOssz += e.ossz; naplo.push(e.ossz);
     stat = { szemelyes_csucs: e.ujCsucs, kvizek_szama: e.kvizekSzama,
@@ -219,7 +209,7 @@ describe('Harom egymas utani kviz - kezzel utanaszamolva', () => {
       korabbiStat: stat, ujTemakorAllas: ujAllas, beallitasok: {},
     });
     // Kezzel: dobogo 0 | csucs 60% < 80% -> 0 |
-    //         mesterfok urlapok 14/18 = 78% -> meg nem | kitartas 6. kviz -> 0  => 0
+    //         mesterfok urlapok 14/18 = 78% -> meg nem                     => 0
     expect(e.ossz).toBe(0);
 
     csillagOssz += e.ossz; naplo.push(e.ossz);
@@ -234,23 +224,22 @@ describe('Harom egymas utani kviz - kezzel utanaszamolva', () => {
       korabbiStat: stat, ujTemakorAllas: ujAllas, beallitasok: {},
     });
     // Kezzel: dobogo 1. hely = 3 | csucs 90% > 80% = 1 |
-    //         mesterfok urlapok 18/22 = 82% -> 1 | kitartas 7. kviz -> 0
+    //         mesterfok urlapok 18/22 = 82% -> 1
     //         nyers 5, de a kvizenkenti hatar 4                       => 4
     expect(e.dobogo).toBe(3);
     expect(e.csucs).toBe(1);
     expect(e.mesterfok).toBe(1);
     expect(e.ujMesterfokok).toEqual(['urlapok']);
-    expect(e.kitartas).toBe(0);
     expect(e.nyers).toBe(5);
     expect(e.ossz).toBe(4);
     expect(e.levagva).toBe(true);
 
     csillagOssz += e.ossz; naplo.push(e.ossz);
 
-    // Harom kviz alatt osszesen 7 csillag - vagyis egy otos (5) es marad 2.
-    expect(naplo).toEqual([3, 0, 4]);
-    expect(csillagOssz).toBe(7);
+    // Harom kviz alatt osszesen 6 csillag - vagyis egy otos (5) es marad 1.
+    expect(naplo).toEqual([2, 0, 4]);
+    expect(csillagOssz).toBe(6);
     expect(otosigHatra(csillagOssz, {})).toBe(0);
-    expect(csillagOssz - ALAP_BEALLITASOK.jegy_kuszob).toBe(2);
+    expect(csillagOssz - ALAP_BEALLITASOK.jegy_kuszob).toBe(1);
   });
 });

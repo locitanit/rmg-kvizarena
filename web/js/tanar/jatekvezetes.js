@@ -508,7 +508,7 @@ async function kviztBefejez() {
           kvizId, cim: kviz.cim, mikor: new Date(),
           helyezes, szazalek: csillag.szazalek, csillag: csillag.ossz,
           dobogo: csillag.dobogo, csucs: csillag.csucs,
-          mesterfok: csillag.mesterfok, kitartas: csillag.kitartas,
+          mesterfok: csillag.mesterfok,
         },
       ],
       frissitve: serverTimestamp(),

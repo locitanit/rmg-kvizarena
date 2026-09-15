@@ -54,19 +54,20 @@ nem ez adja. Többválaszosnál részpont nincs.
 
 ## Csillagok
 
-Négy forrásból, kvízenként legfeljebb 4:
+Három forrásból, kvízenként legfeljebb 4:
 
 | Forrás | Csillag | Mikor |
 |---|---|---|
 | dobogó | 3 / 2 / 1 | 1., 2., 3. helyezés |
 | személyes csúcs | 1 | eléri vagy megdönti a saját legjobbját (3 kvíz után) |
 | mesterfok | 1 | egy témakörben 80% felett, min. 8 kérdésen — témakörönként egyszer |
-| kitartás | 1 | minden 5. kvízen, a részvételért |
+
+A puszta részvételért nem jár csillag.
 
 **5 csillag = egy órai munka ötös.** Beváltani az *Eredmények → Diákok* lapon lehet;
 a jegyet neked kell beírnod az osztálynaplóba.
 
-Mind a négy forrás kikapcsolható és átírható: *Eredmények → Csillagbeállítás*.
+Mind a három forrás kikapcsolható és átírható: *Eredmények → Csillagbeállítás*.
 
 > **Kis csoportnál figyelj:** a dobogós csillag a helyezésnek jár, nem a teljesítménynek.
 > Háromfős csoportban a harmadik helyezett is kap csillagot, akkor is, ha semmit nem

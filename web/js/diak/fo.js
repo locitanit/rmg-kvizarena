@@ -191,7 +191,8 @@ async function sajatAdatokatBetolt(uid) {
 
 const FORRAS_NEVE = {
   dobogo: 'dobogó', csucs: 'személyes csúcs',
-  mesterfok: 'mesterfok', kitartas: 'kitartás',
+  mesterfok: 'mesterfok',
+  kitartas: 'kitartás',   // csak a torles elotti naplobejegyzesekben
 };
 
 function csillagnaplotKirak() {

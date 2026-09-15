@@ -1,11 +1,12 @@
 // A csillagrendszer (terv 7. pont).
 //
-// Negy forrasbol lehet csillagot szerezni, es MIND A NEGY kulon kikapcsolhato,
+// Harom forrasbol lehet csillagot szerezni, es MIND A HAROM kulon kikapcsolhato,
 // az ertekek pedig atirhatok a tanari feluleten - kodot nem kell modositani.
 //
 // Miert nem tiszta dobogos a rendszer: 15 fos csoportban ugyanaz az 5-6 gyerek
-// forogna a dobogon, a tobbieknek fel ev alatt nulla csillaguk lenne. Igy viszont
-// a leggyengebb diak is osszeszed egy otost, ha vegig ott van es javul.
+// forogna a dobogon, a tobbieknek fel ev alatt nulla csillaguk lenne. A csucs es a
+// mesterfok a javulast jutalmazza. A puszta reszvetelert NEM jar csillag (a korabbi
+// "kitartas" forrast a tanar kerte torolni).
 
 export const ALAP_BEALLITASOK = {
   dobogo_be: true,
@@ -16,8 +17,6 @@ export const ALAP_BEALLITASOK = {
   mesterfok_be: true,
   mesterfok_kuszob: 0.80,
   mesterfok_min_kerdes: 8,
-  kitartas_be: true,
-  kitartas_gyakorisag: 5,         // minden 5. kvizert 1 csillag
   kviz_max_csillag: 4,
   jegy_kuszob: 5,                 // ennyi csillag = egy orai munka otos
 };
@@ -97,19 +96,11 @@ export function csillagokatSzamol(
     reszletek.push({ forras: 'mesterfok', csillag: 1, mire: temakor });
   }
 
-  // 4. Kitartas - a puszta reszvetelert, minden N. kvizen
-  let kitartas = 0;
-  if (b.kitartas_be && b.kitartas_gyakorisag > 0
-      && kvizekSzamaMost % b.kitartas_gyakorisag === 0) {
-    kitartas = 1;
-    reszletek.push({ forras: 'kitartas', csillag: 1, mire: `${kvizekSzamaMost}. kvíz` });
-  }
-
-  const nyers = dobogo + csucs + mesterfok + kitartas;
+  const nyers = dobogo + csucs + mesterfok;
   const ossz = Math.min(nyers, b.kviz_max_csillag);
 
   return {
-    dobogo, csucs, mesterfok, kitartas,
+    dobogo, csucs, mesterfok,
     nyers, ossz,
     levagva: nyers > b.kviz_max_csillag,
     ujMesterfokok: mesterfokok,

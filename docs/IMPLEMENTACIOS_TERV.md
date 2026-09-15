@@ -511,20 +511,24 @@ pont az ellenkezője annak, amit a rendszer akar.
 
 ### 7.2 Az ajánlott vegyes rendszer
 
-Négy forrásból lehet csillagot szerezni. **Kvízenként legfeljebb 4 csillag** egy diáknak.
+Három forrásból lehet csillagot szerezni. **Kvízenként legfeljebb 4 csillag** egy diáknak.
 
 | Forrás | Csillag | Feltétel |
 |---|---|---|
 | **Dobogó** | 3 / 2 / 1 | 1., 2., 3. helyezés a kvíz pontversenyében |
 | **Személyes csúcs** | 1 | Az eddigi legjobb kvíz-százalékodat **elérted vagy megdöntötted** (legalább 3 korábbi kvíz után) |
 | **Mesterfok** | 1 | Egy témakörben eléred a 80%-ot, legalább 8 megválaszolt kérdésen. **Témakörönként egyszer.** |
-| **Kitartás** | 1 | Minden 5. kvíz, amin részt vettél (a puszta megjelenésért) |
+
+> **Törölve: a „kitartás" (minden 5. kvíz után 1 csillag a részvételért).** A tanár
+> döntése: csillag teljesítményért jár, nem azért, hogy a diák ott van. A kvízszámláló
+> (`kvizek_szama`) megmaradt, mert a személyes csúcs „legalább 3 korábbi kvíz"
+> feltétele használja.
 
 **5 csillag = egy órai munka ötös.** Beváltáskor a számláló nullázódik, a diák
 újrakezdi a gyűjtést. Az összes valaha szerzett csillag külön számolódik (`csillag_ossz`) —
 az a „hírnév", a beváltható a `csillag_aktualis`.
 
-### 7.3 Miért pont ez a négy
+### 7.3 Miért pont ez a három
 
 - A **személyes csúcs** a saját legjobbadhoz mér, nem az átlagodhoz. Ez fontos: az átlaghoz
   mérés arra ösztönözne, hogy szándékosan rontsd el az elsőt. A csúcshoz mérés nem
@@ -535,19 +539,18 @@ az a „hírnév", a beváltható a `csillag_aktualis`.
   teljesítmény ismételten jutalmazódik — ami pont a kívánt üzenet.
 - A **mesterfok** azt jutalmazza, amit valójában akarsz: hogy a diák egy témát megtanuljon.
   Nem versenyhelyzet, mindenki elérheti, és pont a lemaradókat húzza be.
-- A **kitartás** garantálja, hogy a leggyengébb diák is lát haladást. 5 kvíz = 1 csillag,
-  vagyis fél év alatt 2 csillag a puszta részvételért. Nem sok, de nem is nulla.
 
 ### 7.4 Számoljunk utána (15 fő, 10 kvíz / félév)
 
-| Diáktípus | Dobogó | Csúcs | Mesterfok | Kitartás | Összesen | Jegy |
-|---|---:|---:|---:|---:|---:|---:|
-| Éllovas (top 2) | 15–20 | 1–2 | 4–5 | 2 | **22–29** | 4–5 ötös |
-| Középmezőny | 2–4 | 3–4 | 3–4 | 2 | **10–14** | 2 ötös |
-| Lemaradó | 0 | 2–3 | 1–2 | 2 | **5–7** | **1 ötös** |
+| Diáktípus | Dobogó | Csúcs | Mesterfok | Összesen | Jegy |
+|---|---:|---:|---:|---:|---:|
+| Éllovas (top 2) | 15–20 | 1–2 | 4–5 | **20–27** | 4–5 ötös |
+| Középmezőny | 2–4 | 3–4 | 3–4 | **8–12** | 1–2 ötös |
+| Lemaradó | 0 | 2–3 | 1–2 | **3–5** | **0–1 ötös** |
 
-A kulcsszám az utolsó sor: **a leggyengébb diák is összeszed egy ötöst egy félév alatt**,
-ha végig ott van és javul. A tiszta dobogós rendszerben ez a sor 0 lenne.
+Az utolsó sor: a leggyengébb diák **csak akkor** szed össze egy ötöst egy félév alatt,
+ha javul (csúcs) és legalább egy-két témát megtanul (mesterfok). Puszta jelenlétért
+nem jár csillag. A tiszta dobogós rendszerben ez a sor 0 lenne.
 
 ### 7.4.1 Amit a 4. fázis kiderített
 
@@ -562,12 +565,12 @@ ha végig ott van és javul. A tiszta dobogós rendszerben ez a sor 0 lenne.
 
 ### 7.5 Amit állíthatóvá kell tenni a tanári felületen
 
-Mind a négy forrás **külön ki-be kapcsolható**, és a csillagértékek átírhatók. Az
+Mind a három forrás **külön ki-be kapcsolható**, és a csillagértékek átírhatók. Az
 5-ös küszöb (`5 csillag = ötös`) szintén. Így ha félév közben kiderül, hogy túl könnyű
 vagy túl nehéz, nem kell kódot írni.
 
 Kapcsolók: `dobogo_be`, `dobogo_ertekek: [3,2,1]`, `csucs_be`, `csucs_dontetlen_is: true`, `mesterfok_be`,
-`mesterfok_kuszob: 0.80`, `mesterfok_min_kerdes: 8`, `kitartas_be`, `kitartas_gyakorisag: 5`,
+`mesterfok_kuszob: 0.80`, `mesterfok_min_kerdes: 8`,
 `kviz_max_csillag: 4`, `jegy_kuszob: 5`.
 
 ## 8. Statisztikák
