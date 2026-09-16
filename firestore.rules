@@ -49,6 +49,17 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/kvizek/$(kvizId)).data;
     }
 
+    // A kerdes kiosztasa utan "visszaszamlalas" masodpercig (3, 2, 1) meg nem
+    // lehet valaszolni. A kerdes szovege publikus, ezert a kliens elrejtese nem
+    // eleg: e nelkul egy ugyes diak a visszaszamlalas alatt kuldene, es elore
+    // gyujtene idot. A mezo nelkuli (regi) kvizeknel nincs varakozas.
+    function valaszNyitva(kviz) {
+      return kviz.get('visszaszamlalas', 0) == 0
+        || (kviz.visszaszamlalas is int
+            && kviz.kerdes_indult is timestamp
+            && request.time >= kviz.kerdes_indult + duration.value(kviz.visszaszamlalas, 's'));
+    }
+
     // Az "engedelyezett" dokumentum tartalmazza a szintetikus e-mail cimet, amit
     // az admin CLI szamolt ki (<azonosito>@<osztaly>.rmg.local, csupa kisbetuvel).
     // Itt NEM szoveget fuzunk ossze: a Firebase Auth kisbetusiti a cimeket, es
@@ -260,6 +271,7 @@ service cloud.firestore {
           && valaszId == request.auth.uid + '_' + string(request.resource.data.kerdesIndex)
           && kvizDok(kvizId).allapot == 'kerdes'
           && request.resource.data.kerdesIndex == kvizDok(kvizId).aktualis
+          && valaszNyitva(kvizDok(kvizId))
           // A reakcioidot a SZERVER orajabol szamoljuk (terv 6.3): a diak gepenek
           // oraja atallithato, ezert a "kuldve" mezo csak szerveridobelyeg lehet.
           && request.resource.data.kuldve == request.time

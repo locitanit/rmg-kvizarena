@@ -130,6 +130,23 @@ export const pintGeneral = () =>
 // A visszaszamlalo a diak kepernyojen. Ez CSAK megjelenites: a pontozas a
 // szerveridobelyegekbol szamol, ezert egy elallitott telefonora nem ad elonyt.
 // Ha megis nagyon eltoltnak tunik az ora, az idolimitre vagunk vissza.
+// Minden kerdes elott ennyi masodperc "3, 2, 1" visszaszamlalas van, hogy a diakok
+// felkeszulhessenek. A tanar a kviz dokumentumba is beirja (visszaszamlalas mezo),
+// a biztonsagi szabaly onnan tudja, mikortol fogadhat valaszt.
+export const VISSZASZAMLALAS_MP = 3;
+
+// Mikortol lehet valaszolni: a kerdes kiosztasa + a visszaszamlalas. A reakcioido
+// es az idolimit innen szamit, igy a visszaszamlalas senkinek nem vesz el idot.
+// A mezo nelkuli (regi) kvizeknel nincs visszaszamlalas.
+export function valaszNyilikMs(kerdesIndultMs, visszaszamlalasMp) {
+  return kerdesIndultMs + (visszaszamlalasMp || 0) * 1000;
+}
+
+// Hany masodperc van meg hatra a visszaszamlalasbol (3, 2, 1), 0 ha mar lehet valaszolni.
+export function visszaszamlalasHatra(nyilikMs, most = Date.now()) {
+  return Math.max(0, Math.ceil((nyilikMs - most) / 1000));
+}
+
 export function hatralevoMasodperc(kerdesIndultMs, idoLimitMp) {
   const eltelt = Date.now() - kerdesIndultMs;
   const hatralevo = Math.ceil((idoLimitMp * 1000 - eltelt) / 1000);

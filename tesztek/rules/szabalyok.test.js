@@ -125,6 +125,15 @@ describe('A diak megprobalja - es elbukik', () => {
     }));
   });
 
+  it('15/b. nem valaszolhat a "3, 2, 1" visszaszamlalas alatt', async () => {
+    // A kerdes szovege publikus, ezert a telefon elrejtese nem eleg: a szabalynak
+    // kell elutasitania a korai valaszt, kulonben elore gyujthetne idot.
+    const db = mint(kornyezet, 'diak2');
+    await assertFails(setDoc(doc(db, 'kvizek/kviz_felkeszules/valaszok/diak2_0'), {
+      uid: 'diak2', kerdesIndex: 0, valasz: [1], kuldve: serverTimestamp(),
+    }));
+  });
+
   it('16. nem irhatja at a sajat pontszamat', async () => {
     const db = mint(kornyezet, 'diak1');
     await assertFails(updateDoc(doc(db, `kvizek/${KVIZ}/jatekosok/diak1`), { pont: 9999 }));

@@ -126,6 +126,8 @@ async function egyKvizt(db, uid, diak, index, marJatszott) {
           ? [(jok[0] + 1) % (kerdes.valaszok?.length || 2)] : jok;
       }
 
+      // A "3, 2, 1" alatt a szabaly meg nem enged valaszolni - ki kell varni.
+      await varj((kviz.visszaszamlalas || 0) * 1000);
       if (diak.strategia === 'lassu_jo') await varj(2000);
       else await varj(300 + index * 200);
 

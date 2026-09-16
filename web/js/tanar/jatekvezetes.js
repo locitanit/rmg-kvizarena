@@ -15,6 +15,7 @@ import { auth, db } from '../firebase.js';
 import {
   ALLAPOTOK, pontszam, valaszHelyes, helyesValaszSzovege, pintGeneral,
   hatralevoMasodperc, rangsorol, helyezesek, masodpercben,
+  VISSZASZAMLALAS_MP, valaszNyilikMs, visszaszamlalasHatra,
 } from '../kozos/kviz.js';
 import { kulcsokatBetolt } from '../kozos/kerdesbank.js';
 import {
@@ -22,7 +23,7 @@ import {
 } from '../kozos/csillag.js';
 import { magyarHiba } from '../kozos/hibak.js';
 import { csvLetolt, szazalek, maiDatum, fajlnevre } from '../kozos/csv.js';
-import { elem, kepernyo, uzenet } from '../kozos/ui.js';
+import { elem, kepernyo, uzenet, felkeszulesSzam } from '../kozos/ui.js';
 import { kepetKirak } from '../kozos/kep.js';
 
 let kvizId = null;
@@ -231,13 +232,31 @@ function megjeloltIndexek(kerdes, valasz) {
   return Array.isArray(valasz) ? valasz : [valasz];
 }
 
+// A kviz valaszido-kezdete: kiosztas + "3, 2, 1". A reakcioido es az idolimit is
+// innen szamit.
+function valaszNyilik() {
+  const indult = kviz.kerdes_indult?.toMillis?.();
+  return indult ? valaszNyilikMs(indult, kviz.visszaszamlalas) : null;
+}
+
 function visszaszamlalotIndit() {
   clearInterval(visszaszamlaloOra);
-  const indult = kviz.kerdes_indult?.toMillis?.();
-  if (!indult) return;
+  const nyilik = valaszNyilik();
+  // Amig a szerveridobelyeg meg nem jott vissza, a felkeszulest mutatjuk.
+  elem('kerdes-felkeszules').hidden = Boolean(nyilik) || !kviz.visszaszamlalas;
+  elem('kerdes-lap').hidden = !elem('kerdes-felkeszules').hidden;
+  if (!nyilik) {
+    if (kviz.visszaszamlalas) felkeszulesSzam('kerdes-felkeszules-szam', kviz.visszaszamlalas);
+    return;
+  }
 
   const lepes = () => {
-    const hatra = hatralevoMasodperc(indult, kviz.ido_limit);
+    const felkeszules = visszaszamlalasHatra(nyilik);
+    elem('kerdes-felkeszules').hidden = felkeszules === 0;
+    elem('kerdes-lap').hidden = felkeszules > 0;
+    if (felkeszules > 0) felkeszulesSzam('kerdes-felkeszules-szam', felkeszules);
+
+    const hatra = hatralevoMasodperc(nyilik, kviz.ido_limit);
     elem('kerdes-ido').textContent = `${hatra} mp`;
     elem('kerdes-ido').classList.toggle('surgos', hatra <= 5);
     // Az ido lejarta a tanari gepen zar - nincs szerver, ami megtenne.
@@ -247,7 +266,8 @@ function visszaszamlalotIndit() {
     }
   };
   lepes();
-  visszaszamlaloOra = setInterval(lepes, 500);
+  // Surubben, mint 500 ms, hogy a "3, 2, 1" szamai egyenletesen valtsanak.
+  visszaszamlaloOra = setInterval(lepes, 200);
 }
 
 function jatekosListakatFrissit() {
@@ -310,6 +330,8 @@ async function kerdestKioszt(index) {
       allapot: ALLAPOTOK.KERDES,
       aktualis: index,
       kerdes_indult: serverTimestamp(),
+      // A biztonsagi szabaly ebbol tudja, hogy a "3, 2, 1" alatt meg nem fogadhat valaszt.
+      visszaszamlalas: VISSZASZAMLALAS_MP,
       utolso_eredmeny: null,
     });
   } catch (hiba) {
@@ -328,7 +350,9 @@ async function kerdestLezar() {
 
   const kerdes = kerdesek[kviz.aktualis];
   const kulcs = kulcsok.get(kerdes.id);
-  const indultMs = kviz.kerdes_indult?.toMillis?.() ?? Date.now();
+  // A reakcioido a visszaszamlalas VEGETOL szamit, kulonben mindenkinek 3 mp
+  // levonas jarna a gyorsasagi pontbol.
+  const indultMs = valaszNyilik() ?? Date.now();
 
   const koteg = writeBatch(db);
   // Valaszlehetosegenkent szamolunk (tobbvalaszosnal egy diak tobb rekeszt is

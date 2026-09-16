@@ -30,6 +30,17 @@ export async function gombbal(gomb, muvelet) {
   }
 }
 
+// A "3, 2, 1" szam kiirasa. Csak valtozaskor irjuk at, es akkor az animaciot is
+// ujrainditjuk, hogy minden szam kulon "beugorjon".
+export function felkeszulesSzam(azonosito, szam) {
+  const doboz = elem(azonosito);
+  if (!doboz || doboz.textContent === String(szam)) return;
+  doboz.textContent = szam;
+  doboz.style.animation = 'none';
+  void doboz.offsetWidth;
+  doboz.style.animation = '';
+}
+
 // Hatarozott nevelo szam ele: 1, 5 es a szazas/ezres alakjaik "az"-t kapnak
 // (az egy, az ot, az ezer). Minden mas "a".
 export function nevelo(szam) {

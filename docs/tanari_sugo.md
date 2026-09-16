@@ -18,7 +18,9 @@
 3. **Kvíz indítása.** Kivetítőre a nagy **PIN**.
 4. A diákok belépnek a telefonjukon, és beírják a PIN-t. Ha az osztályukban fut kvíz,
    egy gombbal is csatlakozhatnak.
-5. **Indítás**, ha mindenki bent van. Innentől a kérdés megy a kivetítőn.
+5. **Indítás**, ha mindenki bent van. Minden kérdés előtt 3 másodperces „3, 2, 1"
+   visszaszámlálás jön, utána a kérdés megy a kivetítőn. Ez a 3 mp nem vesz el a
+   válaszidőből.
 6. A kérdés magától lezárul, ha lejárt az idő **vagy mindenki válaszolt**. Sürgős esetben
    ott a „Lezárás most".
 7. **Következő kérdés** → … → **Végeredmény**.

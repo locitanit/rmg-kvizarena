@@ -8,9 +8,11 @@ import {
   doc, collection, getDoc, setDoc, onSnapshot, serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { auth, db } from '../firebase.js';
-import { ALLAPOTOK, hatralevoMasodperc, masodpercben } from '../kozos/kviz.js';
+import {
+  ALLAPOTOK, hatralevoMasodperc, masodpercben, valaszNyilikMs, visszaszamlalasHatra,
+} from '../kozos/kviz.js';
 import { magyarHiba } from '../kozos/hibak.js';
-import { elem, kepernyo, uzenet } from '../kozos/ui.js';
+import { elem, kepernyo, uzenet, felkeszulesSzam } from '../kozos/ui.js';
 import { kepetKirak } from '../kozos/kep.js';
 
 let kvizId = null;
@@ -20,6 +22,8 @@ let sajatAdat = null;
 let jatekosok = [];
 let valasztott = null;      // amit a diak bejelolt, de meg nem kuldott el
 let elkuldottIndex = -1;    // melyik kerdesre kuldott mar valaszt
+// Mikortol valaszolhat a diak - a SAJAT telefonja oraja szerint (lasd kerdestBetolt).
+let valaszNyilikHelyi = 0;
 
 let leiratkozok = [];
 let visszaszamlaloOra = null;
@@ -71,6 +75,7 @@ async function jatekotFigyel(azonosito, visszaHivas) {
 
       if (kviz.allapot === ALLAPOTOK.KERDES
           && (kviz.aktualis !== elozoIndex || elozoAllapot !== ALLAPOTOK.KERDES)) {
+        valaszNyilastBeallit(elozoAllapot === undefined);
         await kerdestBetolt();
       }
       nezetetFrissit();
@@ -118,6 +123,17 @@ function lobbitFrissit() {
     jatekosok.length === 1 ? '1 játékos' : `${jatekosok.length} játékos`;
 }
 
+// A "3, 2, 1" vege. Ha a kerdest elo adasban kapjuk meg, a MEGERKEZESTOL
+// szamolunk: az mindig a szerveren rogzitett kiosztas utan van, igy a telefon
+// nem nyit korabban, mint ahogy a biztonsagi szabaly engedi - akkor sem, ha az
+// oraja elallitott. Oldal-ujratoltesnel nincs megerkezes, ott a szerver ideje szamit.
+function valaszNyilastBeallit(ujratoltes) {
+  const indult = kviz.kerdes_indult?.toMillis?.();
+  valaszNyilikHelyi = ujratoltes && indult
+    ? valaszNyilikMs(indult, kviz.visszaszamlalas)
+    : valaszNyilikMs(Date.now(), kviz.visszaszamlalas);
+}
+
 async function kerdestBetolt() {
   const kerdesId = kviz.kerdesIdk[kviz.aktualis];
   const dok = await getDoc(doc(db, `kerdesek/${kerdesId}`));
@@ -144,6 +160,14 @@ function kerdestMutat() {
 
   if (!mar) valaszgombokatKirak();
   visszaszamlalotIndit();
+}
+
+// A felkeszules alatt a kerdes es a gombok rejtve vannak (de mar ki vannak rakva).
+function felkeszulestFrissit() {
+  const hatra = visszaszamlalasHatra(valaszNyilikHelyi);
+  elem('jatek-felkeszules').hidden = hatra === 0;
+  elem('jatek-kerdesresz').hidden = hatra > 0;
+  if (hatra > 0) felkeszulesSzam('jatek-felkeszules-szam', hatra);
 }
 
 function valaszgombokatKirak() {
@@ -175,22 +199,26 @@ function valaszgombokatKirak() {
 
 function visszaszamlalotIndit() {
   clearInterval(visszaszamlaloOra);
+  felkeszulestFrissit();
   const indult = kviz.kerdes_indult?.toMillis?.();
-  if (!indult) return;
 
   const lepes = () => {
-    const hatra = hatralevoMasodperc(indult, kviz.ido_limit);
+    felkeszulestFrissit();
+    if (!indult) return;
+    const hatra = hatralevoMasodperc(valaszNyilikMs(indult, kviz.visszaszamlalas), kviz.ido_limit);
     elem('jatek-ido').textContent = `${hatra} mp`;
     elem('jatek-ido').classList.toggle('surgos', hatra <= 5);
   };
   lepes();
-  visszaszamlaloOra = setInterval(lepes, 500);
+  // Surubben, mint 500 ms, hogy a "3, 2, 1" szamai egyenletesen valtsanak.
+  visszaszamlaloOra = setInterval(lepes, 200);
 }
 
 // -------------------------------------------------------------- valaszkuldes
 
 async function valasztKuld() {
   if (elkuldottIndex === kviz.aktualis) return;
+  if (Date.now() < valaszNyilikHelyi) return;   // meg tart a "3, 2, 1"
   if (valasztott === null || (Array.isArray(valasztott) && !valasztott.length)) {
     return uzenet('jatek-uzenet', 'Válassz először!');
   }

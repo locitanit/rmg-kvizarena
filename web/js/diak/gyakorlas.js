@@ -35,6 +35,7 @@ let kulcsok = new Map();
 let hol = 0;
 let joDb = 0;
 let valasztott = null;
+let javitva = false;          // az AKTUALIS kerdest mar leellenoriztuk-e
 let eredmenyek = [];          // kerdesenkent: eltalalta-e
 
 export async function gyakorlastIndit(osztaly, visszaHivas) {
@@ -183,6 +184,7 @@ async function sorozatotInditani(esemeny) {
 function kerdestMutat() {
   const kerdes = sorozat[hol];
   valasztott = kerdes.tipus === 'tobb_valasztos' ? [] : null;
+  javitva = false;
 
   elem('gyak-sorszam').textContent = `${hol + 1}. / ${sorozat.length}`;
   elem('gyak-allas').textContent = `${joDb} jo`;
@@ -262,6 +264,10 @@ function parositoMezok(kerdes) {
 // ---------------------------------------------------------------- javitas
 
 function ellenoriz() {
+  // Egy kerdes CSAK EGYSZER szamit. A rovid valasz mezoje a visszajelzes alatt is
+  // ott marad, es az Enter ujra ide hivott: aki tobbszor utotte le, tobb pontot
+  // kapott (igy lett 10 kerdesbol 14 jo valasz).
+  if (javitva) return;
   const kerdes = sorozat[hol];
   const ures = valasztott === null
     || (Array.isArray(valasztott) && !valasztott.length)
@@ -270,6 +276,7 @@ function ellenoriz() {
   if (ures) return uzenet('gyak-uzenet', 'Válaszolj először!');
 
   uzenet('gyak-uzenet', '');
+  javitva = true;
   const kulcs = kulcsok.get(kerdes.id);
   const helyes = valaszHelyes(kerdes, kulcs, valasztott);
   eredmenyek[hol] = helyes;
@@ -277,6 +284,10 @@ function ellenoriz() {
 
   elem('gyak-valaszok').hidden = true;
   elem('gyak-kuldes').hidden = true;
+  // A beviteli mezoket is lezarjuk, kulonben tovabb lehet bennuk irkalni.
+  for (const mezo of elem('gyak-beviteli-mezo').querySelectorAll('input, select')) {
+    mezo.disabled = true;
+  }
   elem('gyak-visszajelzes').hidden = false;
   elem('gyak-visszajelzes').className = `lap kozepre ${helyes ? 'jolap' : 'rosszlap'}`;
   elem('gyak-jelzes').textContent = helyes ? 'Jó válasz!' : 'Nem talált';
@@ -286,6 +297,9 @@ function ellenoriz() {
 }
 
 async function kovetkezo() {
+  // Csak javitott kerdes utan, es a sorozat vege utan mar nem: a dupla kattintas
+  // kulonben atugorna egy kerdest, vagy ketszer mentene el az eredmenyt.
+  if (!javitva || hol >= sorozat.length) return;
   hol++;
   if (hol < sorozat.length) return kerdestMutat();
 

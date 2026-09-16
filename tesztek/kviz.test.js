@@ -8,6 +8,7 @@ import {
   pontszam, valaszHelyes, helyesValaszSzovege, hatralevoMasodperc,
   rangsorol, helyezesek, masodpercben,
   ALAPPONT, GYORSASAGI_MAX,
+  VISSZASZAMLALAS_MP, valaszNyilikMs, visszaszamlalasHatra,
 } from '../web/js/kozos/kviz.js';
 
 describe('Pontozas', () => {
@@ -199,5 +200,32 @@ describe('Az osszido kiirasa', () => {
   it('hianyzo osszido eseten gondolatjel', () => {
     expect(masodpercben(undefined)).toBe('–');
     expect(masodpercben(null)).toBe('–');
+  });
+});
+
+describe('"3, 2, 1" visszaszamlalas', () => {
+  it('3 masodperc, es a valaszido utana nyilik', () => {
+    expect(VISSZASZAMLALAS_MP).toBe(3);
+    expect(valaszNyilikMs(10_000, 3)).toBe(13_000);
+  });
+
+  it('a regi, mezo nelkuli kvizeknel nincs varakozas', () => {
+    expect(valaszNyilikMs(10_000, undefined)).toBe(10_000);
+  });
+
+  it('3, 2, 1, majd 0', () => {
+    const nyilik = 13_000;
+    expect(visszaszamlalasHatra(nyilik, 10_000)).toBe(3);
+    expect(visszaszamlalasHatra(nyilik, 10_001)).toBe(3);
+    expect(visszaszamlalasHatra(nyilik, 11_500)).toBe(2);
+    expect(visszaszamlalasHatra(nyilik, 12_999)).toBe(1);
+    expect(visszaszamlalasHatra(nyilik, 13_000)).toBe(0);
+    expect(visszaszamlalasHatra(nyilik, 99_000)).toBe(0);
+  });
+
+  it('a visszaszamlalas nem vesz el a valaszidobol', () => {
+    // A kiosztas utan 3 mp-cel meg a teljes idolimit van hatra.
+    const nyilik = valaszNyilikMs(Date.now() - 3000, 3);
+    expect(hatralevoMasodperc(nyilik, 25)).toBe(25);
   });
 });

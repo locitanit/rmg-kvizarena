@@ -120,6 +120,17 @@ export async function adatokatFeltolt(kornyezet) {
       osztalyId: OSZTALY, tanarUid: 'tanar1', cim: 'Ismetles',
       allapot: 'kerdes', aktualis: 0, ido_limit: 25, pin: '418293',
       kerdesIdk: ['adatbaziskezeles_icdl_1'],
+      // A "3, 2, 1" mar reg lejart - ide lehet valaszolni.
+      kerdes_indult: new Date(Date.now() - 60_000), visszaszamlalas: 3,
+    });
+
+    // Epp most kiosztott kerdes: meg tart a "3, 2, 1". (A jovobeli idopont miatt
+    // a teszt akkor is biztosan a visszaszamlalas alatt fut, ha lassu a gep.)
+    await db.doc('kvizek/kviz_felkeszules').set({
+      osztalyId: OSZTALY, tanarUid: 'tanar1', cim: 'Most indul',
+      allapot: 'kerdes', aktualis: 0, ido_limit: 25, pin: '552211',
+      kerdesIdk: ['adatbaziskezeles_icdl_1'],
+      kerdes_indult: new Date(Date.now() + 60_000), visszaszamlalas: 3,
     });
     await db.doc(`kvizek/${KVIZ}/jatekosok/diak1`).set({
       becenev: 'kovacs_b12', azonosito: 'kovacs_b12', pont: 120, helyes_db: 1,

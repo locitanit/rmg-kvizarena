@@ -193,6 +193,7 @@ kvizek/{kvizId}
   allapot: "varakozik"|"kerdes"|"eredmeny"|"vege"
   aktualis: 0                     # hányadik kérdésnél tartunk
   kerdes_indult: <ts>             # a szerveridő-bélyeg a kérdés kiosztásakor
+  visszaszamlalas: 3              # „3, 2, 1" mp a kérdés előtt (lásd 6.1.1)
   ido_limit: 25                   # másodperc
   pin: "418293"                   # a lobbihoz
   indult, vege: <ts>
@@ -429,6 +430,24 @@ A `kvizek/{kvizId}` dokumentum `allapot` és `aktualis` mezője a közös igazs�
 kliens `onSnapshot`-tal figyeli. **Egyetlen dokumentum figyelése 15 diáknál 15 olvasás
 állapotváltásonként** — ez fér bele a keretbe.
 
+### 6.1.1 „3, 2, 1" minden kérdés előtt (a tanár kérése, 2026-09-16)
+
+Minden kérdés kiosztása után **3 másodperc visszaszámlálás** jön a kivetítőn és a
+telefonokon, hogy a diákok felkészülhessenek. Ez alatt a kérdés rejtve van.
+
+- **Nem új állapot**, hanem a `kerdes` állapot eleje: a tanár a kiosztáskor beírja a
+  `visszaszamlalas: 3` mezőt. Így nem kell külön írás a visszaszámlálás végén.
+- **A válaszidő a visszaszámlálás VÉGÉTŐL számít** (`kerdes_indult + visszaszamlalas`),
+  az időlimit is. A „3, 2, 1" senkinek nem vesz el időt és gyorsasági pontot.
+- **A biztonsági szabály is kényszeríti:** a visszaszámlálás alatt nem lehet választ
+  küldeni (`request.time >= kerdes_indult + visszaszamlalas`). A kérdés szövege
+  publikus, ezért a telefon elrejtése egyedül nem lenne elég. Teszt: 15/b.
+- **A telefon a kérdés MEGÉRKEZÉSÉTŐL számol**, nem a saját órájából. A megérkezés
+  mindig a szerveren rögzített kiosztás után van, így egy elállított telefonóra sem
+  nyitja ki korábban a gombokat, mint ahogy a szabály engedi. (Oldal-újratöltésnél
+  nincs megérkezés, ott a szerveridő számít.)
+- A mező nélküli, régi kvízeknél nincs visszaszámlálás.
+
 ### 6.2 Pontozás és rangsorolás
 
 **A rangsort (a tanár döntése, 2026-09-07) három lépcső adja:**
@@ -445,7 +464,8 @@ kliens `onSnapshot`-tal figyeli. **Egyetlen dokumentum figyelése 15 diáknál 1
 > szabályban **több jó válasz mindig előrébb visz**, és a gyorsaság csak holtversenyt
 > dönt — akkor is **a teljes kvíz idejével**, nem az utolsó kérdésével.
 
-**A válaszidő:** a kérdés indulásától (`kerdes_indult` szerver-időbélyeg) a válasz
+**A válaszidő:** a kérdés indulásától (`kerdes_indult` szerver-időbélyeg + a „3, 2, 1",
+lásd 6.1.1) a válasz
 `kuldve` szerver-időbélyegéig. **A nem válaszolt kérdés a teljes időlimittel számít**,
 így a „kihagyom, hogy ne rontsa az időmet" trükk nem működik. A rossz válasz ideje is
 beleszámít: az összeg a gyorsaságot méri, a helyességet a `helyes_db`.

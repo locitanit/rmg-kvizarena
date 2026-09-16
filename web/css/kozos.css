@@ -180,6 +180,24 @@ th { color: var(--halvany); font-weight: 600; font-size: 0.8rem; }
 
 .visszaszamlalo.surgos { color: var(--rossz); }
 
+/* "3, 2, 1" a kerdes elott. A szam minden valtasnal ujra "beugrik". */
+.felkeszules-szam {
+  font-size: clamp(4rem, 22vw, 9rem);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  animation: felkeszules-ugras 0.4s ease-out;
+}
+
+@keyframes felkeszules-ugras {
+  from { transform: scale(1.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .felkeszules-szam { animation: none; }
+}
+
 .kerdesszoveg-diak { font-size: 1.1rem; line-height: 1.45; }
 
 /* Kepes kerdes. A szelesseg a kerdesbankbol jon, szazalekban - fix pixel nem
