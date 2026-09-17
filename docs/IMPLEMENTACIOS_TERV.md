@@ -537,7 +537,13 @@ Három forrásból lehet csillagot szerezni. **Kvízenként legfeljebb 4 csillag
 |---|---|---|
 | **Dobogó** | 3 / 2 / 1 | 1., 2., 3. helyezés a kvíz pontversenyében |
 | **Személyes csúcs** | 1 | Az eddigi legjobb kvíz-százalékodat **elérted vagy megdöntötted** (legalább 3 korábbi kvíz után) |
-| **Mesterfok** | 1 | Egy témakörben eléred a 80%-ot, legalább 8 megválaszolt kérdésen. **Témakörönként egyszer.** |
+| **Mesterfok** | 1 | **Minden** kvízen, ha a kvízben eléred a 80%-ot (legalább 8 kérdéses kvíznél) |
+
+> **Módosítva (a tanár kérése, 2026-09-17):** a mesterfok régen témakörönként csak
+> egyszer járt (az összesített témakör-eredmény 80%-áért). Most minden éles kvízen jár,
+> ha az adott kvízben 80% fölött teljesít a diák. A témakörönkénti 80% megmaradt
+> **jelvénynek** (★ a statisztikában a témakör mellett), de csillagot már nem ad.
+> Kvízenként legfeljebb 1 mesterfok-csillag jár, akárhány témakörből áll a kvíz.
 
 > **Törölve: a „kitartás" (minden 5. kvíz után 1 csillag a részvételért).** A tanár
 > döntése: csillag teljesítményért jár, nem azért, hogy a diák ott van. A kvízszámláló
@@ -557,20 +563,22 @@ az a „hírnév", a beváltható a `csillag_aktualis`.
   100 %-ot elérő diák soha többé nem kaphatna csúcs-csillagot: a saját tökéletes
   eredményét definíció szerint nem tudja túlszárnyalni. Így viszont a hibátlan
   teljesítmény ismételten jutalmazódik — ami pont a kívánt üzenet.
-- A **mesterfok** azt jutalmazza, amit valójában akarsz: hogy a diák egy témát megtanuljon.
-  Nem versenyhelyzet, mindenki elérheti, és pont a lemaradókat húzza be.
+- A **mesterfok** a jó teljesítményt jutalmazza, helyezéstől függetlenül. Nem
+  versenyhelyzet: aki 80%-ot hoz, az kap csillagot, akkor is, ha tízen megelőzték.
 
 ### 7.4 Számoljunk utána (15 fő, 10 kvíz / félév)
 
 | Diáktípus | Dobogó | Csúcs | Mesterfok | Összesen | Jegy |
 |---|---:|---:|---:|---:|---:|
-| Éllovas (top 2) | 15–20 | 1–2 | 4–5 | **20–27** | 4–5 ötös |
-| Középmezőny | 2–4 | 3–4 | 3–4 | **8–12** | 1–2 ötös |
-| Lemaradó | 0 | 2–3 | 1–2 | **3–5** | **0–1 ötös** |
+| Éllovas (top 2) | 15–20 | 1–2 | 7–9 | **23–31*** | 4–6 ötös |
+| Középmezőny | 2–4 | 3–4 | 2–4 | **7–12** | 1–2 ötös |
+| Lemaradó | 0 | 2–3 | 0–1 | **2–4** | **0 ötös** |
 
-Az utolsó sor: a leggyengébb diák **csak akkor** szed össze egy ötöst egy félév alatt,
-ha javul (csúcs) és legalább egy-két témát megtanul (mesterfok). Puszta jelenlétért
-nem jár csillag. A tiszta dobogós rendszerben ez a sor 0 lenne.
+\* A kvízenkénti 4-es felső határ az éllovasoknál levág belőle.
+
+Az utolsó sor: a leggyengébb diák ötöshöz **csak akkor** jut, ha javul (csúcs) és
+néha 80%-ot hoz (mesterfok). Puszta jelenlétért nem jár csillag. A kvízenkénti
+mesterfok leginkább a középmezőny jobbjainak és az éllovasoknak ad többet.
 
 ### 7.4.1 Amit a 4. fázis kiderített
 

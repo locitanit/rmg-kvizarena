@@ -62,7 +62,7 @@ Három forrásból, kvízenként legfeljebb 4:
 |---|---|---|
 | dobogó | 3 / 2 / 1 | 1., 2., 3. helyezés |
 | személyes csúcs | 1 | eléri vagy megdönti a saját legjobbját (3 kvíz után) |
-| mesterfok | 1 | egy témakörben 80% felett, min. 8 kérdésen — témakörönként egyszer |
+| mesterfok | 1 | **minden** kvízen, ha a diák eléri a 80%-ot (legalább 8 kérdéses kvíznél) |
 
 A puszta részvételért nem jár csillag.
 

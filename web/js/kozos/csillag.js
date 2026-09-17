@@ -4,9 +4,10 @@
 // az ertekek pedig atirhatok a tanari feluleten - kodot nem kell modositani.
 //
 // Miert nem tiszta dobogos a rendszer: 15 fos csoportban ugyanaz az 5-6 gyerek
-// forogna a dobogon, a tobbieknek fel ev alatt nulla csillaguk lenne. A csucs es a
-// mesterfok a javulast jutalmazza. A puszta reszvetelert NEM jar csillag (a korabbi
-// "kitartas" forrast a tanar kerte torolni).
+// forogna a dobogon, a tobbieknek fel ev alatt nulla csillaguk lenne. A csucs a
+// javulast, a mesterfok a jo teljesitmenyt jutalmazza - helyezestol fuggetlenul.
+// A puszta reszvetelert NEM jar csillag (a korabbi "kitartas" forrast a tanar
+// kerte torolni).
 
 export const ALAP_BEALLITASOK = {
   dobogo_be: true,
@@ -15,8 +16,9 @@ export const ALAP_BEALLITASOK = {
   csucs_dontetlen_is: true,       // a csucs ELERESE is er csillagot, nem csak a dontese
   csucs_min_kviz: 3,              // legalabb ennyi korabbi kviz utan
   mesterfok_be: true,
-  mesterfok_kuszob: 0.80,
-  mesterfok_min_kerdes: 8,
+  mesterfok_kuszob: 0.80,         // MINDEN kvizen 1 csillag, ha legalabb ennyi a szazaleka
+  mesterfok_min_kerdes: 8,        // legalabb ennyi kerdeses kviznel
+  jelveny_min_kerdes: 8,          // a temakoronkenti jelvenyhez (csillagot nem ad)
   kviz_max_csillag: 4,
   jegy_kuszob: 5,                 // ennyi csillag = egy orai munka otos
 };
@@ -36,16 +38,16 @@ export function temakoroketOsszead(korabbi, ujKviz) {
   return eredmeny;
 }
 
-// Melyik temakorokben ert el a diak mesterfokot - azokat kiveve, amiket MAR
-// megkapott korabban (temakoronkent egyszer jar).
+// Melyik temakorokben ert el a diak uj temakor-jelvenyt (a statisztikaban a ★ a
+// temakor mellett) - azokat kiveve, amiket MAR megkapott. Ez CSILLAGOT NEM AD:
+// 2026-09-17 ota a mesterfok-csillag minden kvizen a kviz szazalekaert jar.
 export function ujMesterfokok(temakorTeljesitmeny, mar, beallitasok) {
   const b = { ...ALAP_BEALLITASOK, ...beallitasok };
-  if (!b.mesterfok_be) return [];
 
   return Object.entries(temakorTeljesitmeny || {})
     .filter(([temakor, adat]) =>
       !(mar || []).includes(temakor)
-      && adat.ossz >= b.mesterfok_min_kerdes
+      && adat.ossz >= b.jelveny_min_kerdes
       && adat.jo / adat.ossz >= b.mesterfok_kuszob)
     .map(([temakor]) => temakor)
     .sort();
@@ -89,12 +91,16 @@ export function csillagokatSzamol(
     }
   }
 
-  // 3. Mesterfok - temakoronkent egyszer
-  const mesterfokok = ujMesterfokok(ujTemakorAllas, korabbiStat?.mesterfok, b);
-  const mesterfok = mesterfokok.length;
-  for (const temakor of mesterfokok) {
-    reszletek.push({ forras: 'mesterfok', csillag: 1, mire: temakor });
+  // 3. Mesterfok - MINDEN kvizen, ha a kviz szazaleka eleri a kuszobot.
+  // (Regen temakoronkent csak egyszer jart; a tanar kerte, hogy minden jo kviz
+  // erjen csillagot.) A tul rovid kvizert nem jar, ott tul konnyu a 80%.
+  let mesterfok = 0;
+  if (b.mesterfok_be && kerdesSzam >= b.mesterfok_min_kerdes
+      && szazalek >= b.mesterfok_kuszob) {
+    mesterfok = 1;
+    reszletek.push({ forras: 'mesterfok', csillag: 1, mire: `${Math.round(szazalek * 100)}%` });
   }
+  const mesterfokok = ujMesterfokok(ujTemakorAllas, korabbiStat?.mesterfok, b);
 
   const nyers = dobogo + csucs + mesterfok;
   const ossz = Math.min(nyers, b.kviz_max_csillag);
