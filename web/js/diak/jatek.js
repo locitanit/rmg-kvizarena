@@ -129,9 +129,14 @@ function lobbitFrissit() {
 // oraja elallitott. Oldal-ujratoltesnel nincs megerkezes, ott a szerver ideje szamit.
 function valaszNyilastBeallit(ujratoltes) {
   const indult = kviz.kerdes_indult?.toMillis?.();
+  const most = Date.now();
+  const teljes = valaszNyilikMs(most, kviz.visszaszamlalas);
+  // Ujratoltesnel a szerverido csak becsles: egy nagyon elallitott telefonon
+  // orakig tartana a "3, 2, 1". Ezert a mostani pillanat es a teljes
+  // visszaszamlalas koze szoritjuk.
   valaszNyilikHelyi = ujratoltes && indult
-    ? valaszNyilikMs(indult, kviz.visszaszamlalas)
-    : valaszNyilikMs(Date.now(), kviz.visszaszamlalas);
+    ? Math.min(teljes, Math.max(most, valaszNyilikMs(indult, kviz.visszaszamlalas)))
+    : teljes;
 }
 
 async function kerdestBetolt() {

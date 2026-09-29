@@ -12,6 +12,8 @@
 //   rmg-admin diakok <osztaly> [--fiokok]     azonositok.txt feltoltese
 //   rmg-admin jelszo <osztaly> <azonosito>    jelszo visszaallitasa
 //   rmg-admin publikal [bank] [--proba]       kerdesbank feltoltese
+//   rmg-admin kviz lista <osztaly>            lefutott kvizek azonositoja
+//   rmg-admin kviz visszavon <kvizId> [--proba]  hibas kviz csillagainak visszavonasa
 //
 // Kozos kapcsolo:
 //   --emulator     a helyi emulator ellen dolgozik (offline, nem kell kulcs)
@@ -25,6 +27,7 @@ import { osztalyParancs } from './parancsok/osztaly.js';
 import { diakokParancs } from './parancsok/diakok.js';
 import { jelszoParancs } from './parancsok/jelszo.js';
 import { publikalParancs } from './parancsok/publikal.js';
+import { kvizParancs } from './parancsok/kviz.js';
 
 const SUGO = `
 RMG Kvízaréna – tanári admin
@@ -42,6 +45,11 @@ RMG Kvízaréna – tanári admin
 
   rmg-admin publikal [bank] [--proba]       kérdésbank feltöltése a kvízbázisból
                                             (bank nélkül: mind; --proba: nem ír)
+
+  rmg-admin kviz lista <osztaly>            a kvízek azonosítója, legújabb elöl
+  rmg-admin kviz visszavon <kvizId> [--proba]
+                                            hibás kvíz csillagainak visszavonása
+                                            (--proba: csak megmutatja, nem ír)
 
 Kapcsolók:
   --emulator          a helyi emulátor ellen (offline, kulcs nélkül)
@@ -83,6 +91,8 @@ async function fut() {
       return jelszoParancs(argumentumok);
     case 'publikal':
       return publikalParancs(argumentumok, kapcsolo, config);
+    case 'kviz':
+      return kvizParancs(argumentumok, kapcsolo);
     default:
       throw new Error(`Ismeretlen parancs: ${parancs}\n${SUGO}`);
   }

@@ -155,7 +155,13 @@ node admin\rmg-admin.js diakok 10T --fiokok       # + kész fiókok, kiosztólap
 node admin\rmg-admin.js jelszo 10T kovacs_b12     # elfelejtett jelszó
 node admin\rmg-admin.js publikal --proba          # mi változna a kérdésbankban
 node admin\rmg-admin.js publikal                  # kérdésbank feltöltése
+node admin\rmg-admin.js kviz lista 10T            # a kvízek azonosítója
+node admin\rmg-admin.js kviz visszavon <id> --proba   # mit vonna vissza
+node admin\rmg-admin.js kviz visszavon <id>       # hibás kvíz csillagainak visszavonása
 ```
+
+A visszavonás a csillagokat, a statisztikát és a személyes csúcsot is
+visszaállítja. A kvíz az archívumban megmarad, „csillagok visszavonva” jelzéssel.
 
 ## Ha valami nem megy
 

@@ -190,7 +190,9 @@ function archivumotKirak() {
     gomb.className = 'osztalygomb';
     const mikor = kviz.indult?.toDate?.();
     gomb.textContent = `${mikor ? mikor.toLocaleDateString('hu') : ''} - ${kviz.cim}`
-      + ` (${kviz.osszegzes?.resztvevok ?? '?'} fő)`;
+      + ` (${kviz.osszegzes?.resztvevok ?? '?'} fő)`
+      // Az "rmg-admin kviz visszavon" jeloli: a csillagai mar nem szamitanak.
+      + (kviz.visszavonva ? ' – csillagok visszavonva' : '');
     gomb.onclick = () => kviztElemez(kviz);
     lista.append(gomb);
   }
