@@ -200,12 +200,11 @@ function valaszgombokatKirak() {
 function visszaszamlalotIndit() {
   clearInterval(visszaszamlaloOra);
   felkeszulestFrissit();
-  const indult = kviz.kerdes_indult?.toMillis?.();
-
   const lepes = () => {
     felkeszulestFrissit();
-    if (!indult) return;
-    const hatra = hatralevoMasodperc(valaszNyilikMs(indult, kviz.visszaszamlalas), kviz.ido_limit);
+    // A telefon sajat orajaval, a megerkezestol (valaszNyilastBeallit): a
+    // szerverido es egy elallitott telefonora nem hasonlithato ossze.
+    const hatra = hatralevoMasodperc(valaszNyilikHelyi, kviz.ido_limit);
     elem('jatek-ido').textContent = `${hatra} mp`;
     elem('jatek-ido').classList.toggle('surgos', hatra <= 5);
   };

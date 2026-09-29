@@ -446,6 +446,13 @@ telefonokon, hogy a diákok felkészülhessenek. Ez alatt a kérdés rejtve van.
   mindig a szerveren rögzített kiosztás után van, így egy elállított telefonóra sem
   nyitja ki korábban a gombokat, mint ahogy a szabály engedi. (Oldal-újratöltésnél
   nincs megérkezés, ott a szerveridő számít.)
+- **A tanári gép is a MEGÉRKEZÉSTŐL számol** (javítás, 2026-09-29). A kivetítő órája
+  és az automatikus lezárás a gép saját óráját használja, a `kerdes_indult` időbélyeg
+  megérkezésétől. Korábban a szerveridőt vetette össze a saját órájával: egy 30 mp-et
+  siető iskolai gép a „3, 2, 1" után azonnal lejártnak látta a 25 mp-es kérdést, és
+  mindenkit „nem válaszolt"-ként zárt le. A pontozás továbbra is csak
+  szerveridőbélyegekből számol. (Tanári oldal-újratöltésnél a kérdés újra teljes
+  időt kap — ritka, és jobb, mint egy rossz óra miatt azonnal lezárni.)
 - A mező nélküli, régi kvízeknél nincs visszaszámlálás.
 
 ### 6.2 Pontozás és rangsorolás

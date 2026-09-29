@@ -239,16 +239,34 @@ function valaszNyilik() {
   return indult ? valaszNyilikMs(indult, kviz.visszaszamlalas) : null;
 }
 
+// A kepernyon futo ora es a lezaras a tanari gep SAJAT orajat hasznalja, a
+// szerveridobelyeg MEGERKEZESETOL szamolva. A szerverido es a gep oraja kozvetlenul
+// nem hasonlithato ossze: egy 30 mp-et siető iskolai gep a "3, 2, 1" utan azonnal
+// lejartnak latta a 25 mp-es kerdest, es mindenkit "nem valaszolt"-kent zart le.
+// A pontozas tovabbra is a szerveridobelyegekbol szamol (kerdestLezar).
+let helyiNyilas = null;
+let helyiNyilasKerdes = -1;
+
+function helyiNyilasMs() {
+  if (helyiNyilasKerdes !== kviz.aktualis) {
+    helyiNyilasKerdes = kviz.aktualis;
+    // Oldal-ujratoltesnel is ide jutunk: akkor a kerdes a teljes idejet ujra kapja.
+    // Ritka eset, es jobb, mint egy elallitott ora miatt azonnal lezarni.
+    helyiNyilas = valaszNyilikMs(Date.now(), kviz.visszaszamlalas);
+  }
+  return helyiNyilas;
+}
+
 function visszaszamlalotIndit() {
   clearInterval(visszaszamlaloOra);
-  const nyilik = valaszNyilik();
   // Amig a szerveridobelyeg meg nem jott vissza, a felkeszulest mutatjuk.
-  elem('kerdes-felkeszules').hidden = Boolean(nyilik) || !kviz.visszaszamlalas;
+  elem('kerdes-felkeszules').hidden = Boolean(valaszNyilik()) || !kviz.visszaszamlalas;
   elem('kerdes-lap').hidden = !elem('kerdes-felkeszules').hidden;
-  if (!nyilik) {
+  if (!valaszNyilik()) {
     if (kviz.visszaszamlalas) felkeszulesSzam('kerdes-felkeszules-szam', kviz.visszaszamlalas);
     return;
   }
+  const nyilik = helyiNyilasMs();
 
   const lepes = () => {
     const felkeszules = visszaszamlalasHatra(nyilik);
@@ -325,6 +343,7 @@ let befejezesFolyamatban = false;
 async function kerdestKioszt(index) {
   clearInterval(visszaszamlaloOra);
   lezarasFolyamatban = false;
+  helyiNyilasKerdes = -1;   // az uj kerdes ideje a szerveridobelyeg megerkezesetol indul
   try {
     await updateDoc(doc(db, `kvizek/${kvizId}`), {
       allapot: ALLAPOTOK.KERDES,
